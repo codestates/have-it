@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "nodemon app.js"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
@@ -13,6 +13,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-prettier": "^4.0.0",
+    "nodemon": "^2.0.13",
     "prettier": "2.4.1"
   }
 }
