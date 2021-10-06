@@ -9,6 +9,8 @@
     "ecmaVersion": 12
   },
   "rules": {
-    "no-console": "off"
+    "no-console": "off",
+    "import/no-dynamic-require": "off",
+    "global-require": "off"
   }
 }
