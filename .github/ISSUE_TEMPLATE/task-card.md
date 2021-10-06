@@ -1,5 +1,5 @@
 ---
-name: Task Card
+name: task-card
 about: Task Card
 title: "[Task] 이슈카드 제목"
 labels: ''
