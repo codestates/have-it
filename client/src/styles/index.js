@@ -3,7 +3,16 @@ import { normalize } from "styled-normalize";
 
 const GlobalStyle = createGlobalStyle`
   ${normalize}
-  // You can continue writing global styles here
+
+  /* HTML elements */
+
+  *,
+  :after,
+  :before {
+    box-sizing: border-box;
+  }
+
+
 `;
 
 export default GlobalStyle;
