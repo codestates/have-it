@@ -11,7 +11,13 @@ const GlobalStyle = createGlobalStyle`
   :before {
     box-sizing: border-box;
   }
-
+  
+  body {
+    font-family: var(--fontFamily);
+    color: var(--color-black);
+    background-color: var(--color-white);
+  }
+  
   /* CSS Custom Properties Definitions */
 
   @font-face {
