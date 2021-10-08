@@ -9,7 +9,9 @@ const GlobalStyle = createGlobalStyle`
   *,
   :after,
   :before {
+    margin: 0;
     box-sizing: border-box;
+    line-height: var(---lineHeight-normal);
   }
   
   body {
@@ -23,6 +25,17 @@ const GlobalStyle = createGlobalStyle`
     cursor: pointer;
     background-color: inherit;
     border: none;
+  }
+
+  i {
+    position: relative;
+    ::before {   
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin: 0 !important;
+      font-size: 0.8em !important;
+    }
   }
   
   /* CSS Custom Properties Definitions */
