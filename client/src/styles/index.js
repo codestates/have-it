@@ -92,7 +92,7 @@ const GlobalStyle = createGlobalStyle`
     --color-darkblue: #3239B2;
     --color-white: #F4F4F9;
     --color-black: #111A3D;
-    --color-gray: #111A3D;
+    --color-gray: #61637F;
     --color-midgray: #9EA0B8;
     --color-lightgray: #E6E7EF;
     --color-red: #F97384;
@@ -100,6 +100,7 @@ const GlobalStyle = createGlobalStyle`
     --color-gray--04: #111A3D66;
     --color-midgray--04: #111A3D66;
     --color-midgray--08: #111A3DCC;
+    --color-black--05: #111A3D80;
   }
 
 `;
