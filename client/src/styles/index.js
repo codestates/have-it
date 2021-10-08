@@ -9,7 +9,9 @@ const GlobalStyle = createGlobalStyle`
   *,
   :after,
   :before {
+    margin: 0;
     box-sizing: border-box;
+    line-height: var(---lineHeight-normal);
   }
   
   body {
