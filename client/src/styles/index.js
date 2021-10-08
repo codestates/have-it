@@ -26,17 +26,6 @@ const GlobalStyle = createGlobalStyle`
     background-color: inherit;
     border: none;
   }
-
-  i {
-    position: relative;
-    ::before {   
-      position: absolute;
-      top: 0;
-      left: 0;
-      margin: 0 !important;
-      font-size: 0.8em !important;
-    }
-  }
   
   /* CSS Custom Properties Definitions */
 
