@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import Home from "./pages/Home";
 import MyPage from "./pages/MyPage";
 import Habit from "./pages/Habit";
@@ -9,14 +10,25 @@ import Modal from "./components/Modal";
 import Auth from "./components/Auth";
 import HabitCreate from "./components/HabitCreate";
 import HabitJoin from "./components/HabitJoin";
+import { habitCreateModalOnAction } from "./store/actions";
 
 const App = () => {
-  const isModal = false;
-  const isAuthModal = false;
-  const isHabitCreateModal = false;
-  const isHabitJoinModal = false;
+  const dispatch = useDispatch();
+  const { isAuthModal, isHabitCreateModal, isHabitJoinModal } = useSelector(
+    ({ modalReducer }) => modalReducer
+  );
+  const isModal = isAuthModal || isHabitCreateModal || isHabitJoinModal;
+
   return (
     <BrowserRouter>
+      <button
+        type="button"
+        onClick={() => {
+          dispatch(habitCreateModalOnAction);
+        }}
+      >
+        habitCreateModalOnAction
+      </button>
       <Nav />
       <div>
         <Header />
