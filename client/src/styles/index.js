@@ -17,6 +17,13 @@ const GlobalStyle = createGlobalStyle`
     color: var(--color-black);
     background-color: var(--color-white);
   }
+
+  button {
+    padding: 0;
+    cursor: pointer;
+    background-color: inherit;
+    border: none;
+  }
   
   /* CSS Custom Properties Definitions */
 
