@@ -30,4 +30,3 @@ export const habitJoinModalOnAction = {
 export const modalOffAction = {
   type: MODAL_OFF,
 };
-
