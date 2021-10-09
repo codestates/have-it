@@ -26,6 +26,25 @@ const GlobalStyle = createGlobalStyle`
     background-color: inherit;
     border: none;
   }
+
+  input {
+    padding: 0;
+    border: none;
+    outline: none;
+    background-color: inherit;
+  }
+
+  textarea {
+    border: none;
+    background-color: inherit;
+    outline: none;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    outline: none;
+  }
   
   /* CSS Custom Properties Definitions */
 
