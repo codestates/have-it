@@ -21,7 +21,7 @@ const Container = styled.div`
 
 const Wrapper = styled.div`
   position: relative;
-  padding: 0.5rem;
+  padding: 2rem;
   background-color: var(--color-white);
   display: flex;
   flex-direction: column;
@@ -30,12 +30,11 @@ const Wrapper = styled.div`
 `;
 
 const CloseBtn = styled.button`
+  font-size: 1.2rem;
   color: var(--color-black);
 `;
 
-const ChildrenWrapper = styled.div`
-  padding: 0.5rem 2rem;
-`;
+const ChildrenWrapper = styled.div``;
 
 const Modal = ({ children }) => {
   const dispatch = useDispatch();
