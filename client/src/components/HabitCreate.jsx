@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled, { css } from "styled-components";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
@@ -79,19 +79,17 @@ const ColorPickerContainer = styled.div`
 
 const TitleInput = styled.input`
   flex: 1;
-  /* border-bottom: 1px solid ${({ selectColor }) => selectColor}; */
   border-bottom: 1px solid var(--color-gray);
   padding: 0.5rem;
 `;
 
 const DescriptionInput = styled.textarea`
-  /* border: 1px solid ${({ selectColor }) => selectColor}; */
+  border-radius: 0.25rem;
   border: 1px solid var(--color-gray);
   width: 100%;
   padding: 1rem;
   resize: none;
   height: 10rem;
-  border-radius: 1rem;
 `;
 
 const EmojiTitleContainer = styled.div`
@@ -99,20 +97,52 @@ const EmojiTitleContainer = styled.div`
   margin-bottom: 2rem;
 `;
 
-const SubmitButtonContainer = styled.div`
+const MessageSubmitButtonContainer = styled.div`
   margin-top: 1rem;
   display: flex;
   justify-content: flex-end;
+  height: 3rem;
+`;
+
+const MessageContainer = styled.div`
+  border-radius: 0.25rem;
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  background-color: #fffbe6;
+  border: 1px solid #ffe58f;
+  color: var(--color-black);
+`;
+
+const Message = styled.span`
+  flex: 1;
+`;
+
+const AttentionIcon = styled.div`
+  margin-right: 0.2rem;
+  color: #faad14;
 `;
 
 const SubmitButton = styled.button`
+  border-radius: 0.25rem;
   font-family: Interop-SemiBold;
+  height: 100%;
+  padding: 0 1rem;
   font-size: 1.2rem;
   background-color: ${({ selectColor }) => selectColor};
-  padding: 1rem;
   text-align: right;
-  border-radius: 1rem;
   color: var(--color-white);
+  margin-left: 1rem;
+`;
+
+const MessageCloseButton = styled.button``;
+
+const CloseIcon = styled.div`
+  ::before {
+    margin: 0;
+  }
 `;
 
 const HabitCreate = () => {
@@ -122,12 +152,9 @@ const HabitCreate = () => {
   const [selectCategory, setSelectCategory] = useState(null);
   const [selectColor, setSelectColor] = useState("#78B0FA");
   const [inputValue, setInputValue] = useState({ title: "", description: "" });
+  const [message, setMessage] = useState(null);
   const colors = ["#FF80B3", "#FF8C80", "#F0CA4D", "#46DBA0", "#78B0FA", "#AD8CFA"];
 
-  console.log(selectCategory);
-  // const handleSubmit = () => {
-  // TODO: 요청보내기
-  // }
   const handlePickerSelect = (emoji) => {
     setIsEmojiPicker(false);
     setSelectEmoji(emoji);
@@ -135,9 +162,12 @@ const HabitCreate = () => {
   const handleEmojiPickerClick = () => {
     setIsEmojiPicker(true);
   };
-  const handleCategoryClick = (category) => {
-    setSelectCategory(category);
-  };
+  const handleCategoryClick = useCallback(
+    (category) => {
+      setSelectCategory(category);
+    },
+    [setSelectCategory]
+  );
   const handleColorPickerClick = () => {
     setIsColorPicker(true);
   };
@@ -154,8 +184,32 @@ const HabitCreate = () => {
       setIsColorPicker(true);
     }
   };
+  const handleMessageCloseClick = () => {
+    setMessage(null);
+  };
+  const validate = (item, msg) => {
+    if (!item) {
+      setMessage(msg);
+      return false;
+    }
+    return true;
+  };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (
+      !validate(selectCategory, "카테고리를 선택해주세요.") ||
+      !validate(selectColor, "색상을 선택해주세요.") ||
+      !validate(selectEmoji, "이모지를 선택해주세요.") ||
+      !validate(inputValue.title, "제목을 적어주세요.") ||
+      !validate(inputValue.description, "설명을 적어주세요.")
+    ) {
+      return;
+    }
+    console.log("모두 통과");
+    // TODO: 서버로 요청보내기
+  };
   return (
-    <Form>
+    <Form onSubmit={handleSubmit}>
       <h1>해빗 생성</h1>
       <CategoryColorPickerContainer>
         <CategoryList handleCategoryClick={handleCategoryClick} selectColor={selectColor} />
@@ -215,9 +269,18 @@ const HabitCreate = () => {
         onChange={handleInputChange}
         selectColor={selectColor}
       />
-      <SubmitButtonContainer>
+      <MessageSubmitButtonContainer>
+        {message && (
+          <MessageContainer>
+            <AttentionIcon className="icon-attention-2" />
+            <Message>{message}</Message>
+            <MessageCloseButton type="button" onClick={handleMessageCloseClick}>
+              <CloseIcon className="icon-cancel" />
+            </MessageCloseButton>
+          </MessageContainer>
+        )}
         <SubmitButton selectColor={selectColor}>만들기</SubmitButton>
-      </SubmitButtonContainer>
+      </MessageSubmitButtonContainer>
     </Form>
   );
 };
