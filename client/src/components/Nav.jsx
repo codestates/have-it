@@ -34,8 +34,11 @@ const MenuContainer = styled.div`
 `;
 
 const HabitContainer = styled.div`
-  overflow-y: scroll;
+  overflow: scroll;
   margin-bottom: 100px;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const HabitCreateContainer = styled.div`
@@ -81,6 +84,14 @@ const Nav = () => {
     { id: 2, title: "집중 50분, 10분 휴식 지키기", color: "red", icon: "123" },
     { id: 3, title: "하루 2L 물마시기", color: "red", icon: "123" },
     { id: 4, title: "12가지 인생의 법칙!", color: "red", icon: "123" },
+    { id: 5, title: "달리기", color: "red", icon: "123" },
+    { id: 6, title: "집중 50분, 10분 휴식 지키기", color: "red", icon: "123" },
+    { id: 7, title: "하루 2L 물마시기", color: "red", icon: "123" },
+    { id: 8, title: "12가지 인생의 법칙!", color: "red", icon: "123" },
+    { id: 9, title: "달리기", color: "red", icon: "123" },
+    { id: 10, title: "집중 50분, 10분 휴식 지키기", color: "red", icon: "123" },
+    { id: 11, title: "하루 2L 물마시기", color: "red", icon: "123" },
+    { id: 12, title: "12가지 인생의 법칙!", color: "red", icon: "123" },
   ];
 
   const handleSignInModalOn = () => {
