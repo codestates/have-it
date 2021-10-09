@@ -1,5 +1,8 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
+import { authModalOnAction } from "../store/actions";
 
 const CardContainer = styled.div`
   position: absolute;
@@ -84,11 +87,22 @@ const Count = styled.div`
   height: 1.15rem;
 `;
 
-export default function Card() {
+const Card = ({ info }) => {
+  const { isLogin } = useSelector(({ authReducer }) => authReducer);
+  const dispatch = useDispatch();
+
+  const handleSignInModalOn = () => {
+    dispatch(authModalOnAction);
+  };
+
+  const handleHabitJoinModalOn = () => {
+    dispatch(authModalOnAction);
+  };
+
   return (
-    <CardContainer>
-      <Icon>🚲</Icon>
-      <Title>자전거 같이 타면,얼마나 재밌게요~? 😆</Title>
+    <CardContainer onClick={() => (isLogin ? handleHabitJoinModalOn() : handleSignInModalOn())}>
+      <Icon>{info.icon}</Icon>
+      <Title>{info.title}</Title>
       <Info>
         <Users>
           <More className="icon-dot-3" />
@@ -97,8 +111,14 @@ export default function Card() {
           <Profile className="icon-user" />
           <Profile className="icon-user" />
         </Users>
-        <Count>1500명 참여중</Count>
+        <Count>{info.count}명 참여중</Count>
       </Info>
     </CardContainer>
   );
-}
+};
+
+Card.propTypes = {
+  info: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
+
+export default Card;

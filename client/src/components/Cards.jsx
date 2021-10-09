@@ -18,36 +18,39 @@ const CardItem = styled.div`
   height: 0;
   padding-top: 60%;
   border-radius: 10px;
-  background-color: var(--color-lightblue);
+  background-color: ${(props) => props.color};
   max-width: 360px;
 `;
 
-export default function Cards() {
+const Cards = () => {
+  const dummy = [
+    { id: 1, title: "달리기", icon: "🏃🏻", color: "#46DBA0", count: 5 },
+    {
+      id: 2,
+      title: "집중 50분, 10분 휴식 지키기",
+      icon: "🧘🏻",
+      color: "#F0CA4D",
+      count: 1072,
+    },
+    { id: 3, title: "하루 2L 물마시기", icon: "💧", color: "#78B0FA", count: 4 },
+    { id: 4, title: "12가지 인생의 법칙!", icon: "❗️", color: "#FF8C80", count: 32 },
+  ];
+
+  // const colors = ["#FF80B3", "#FF8C80", "#F0CA4D", "#46DBA0", "#78B0FA", "#AD8CFA"];
+
   return (
     <>
       <CardList>
-        <CardItem>
-          <Card />
-        </CardItem>
-        <CardItem>
-          <Card />
-        </CardItem>
-        <CardItem>
-          <Card />
-        </CardItem>
-        <CardItem>
-          <Card />
-        </CardItem>
-        <CardItem>
-          <Card />
-        </CardItem>
-        <CardItem>
-          <Card />
-        </CardItem>
-        <CardItem>
-          <Card />
-        </CardItem>
+        {dummy.map((el) => (
+          <CardItem key={el.id} color={el.color}>
+            <Card info={el} />
+          </CardItem>
+        ))}
       </CardList>
     </>
   );
-}
+};
+
+// prop types 해줘야 함
+
+export default Cards;
