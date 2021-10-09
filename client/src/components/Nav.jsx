@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import "../styles/fontello/css/fontello.css";
 import { useDispatch, useSelector } from "react-redux";
-import { authModalOnAction } from "../store/actions";
+import { authModalOnAction, habitCreateModalOnAction } from "../store/actions";
 
 const NavContainer = styled.div`
   display: flex;
@@ -64,7 +64,7 @@ const Button = styled.div`
   margin: 10px 0px;
 `;
 
-const HabitJoinButton = styled(Button)`
+const HabitCreateButton = styled(Button)`
   background-color: var(--color-mainblue);
 `;
 
@@ -94,12 +94,12 @@ const Nav = () => {
     { id: 12, title: "12가지 인생의 법칙!", color: "red", icon: "123" },
   ];
 
-  const handleSignInModalOn = () => {
+  const handleSignIn = () => {
     dispatch(authModalOnAction);
   };
 
-  const handlehabitCreateModalOn = () => {
-    dispatch(authModalOnAction);
+  const handleCreatehabit = () => {
+    dispatch(habitCreateModalOnAction);
   };
 
   return (
@@ -134,9 +134,9 @@ const Nav = () => {
           <HabitCreateContainer>
             <Divider />
             {isLogin ? (
-              <HabitJoinButton onClick={handlehabitCreateModalOn}>+</HabitJoinButton>
+              <HabitCreateButton onClick={handleCreatehabit}>+</HabitCreateButton>
             ) : (
-              <HabitJoinButton onClick={handleSignInModalOn}>+</HabitJoinButton>
+              <HabitCreateButton onClick={handleSignIn}>+</HabitCreateButton>
             )}
           </HabitCreateContainer>
         </FlexContainer>
