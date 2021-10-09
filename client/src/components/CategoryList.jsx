@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import styled, { css } from "styled-components";
 import PropTypes from "prop-types";
 
@@ -21,7 +21,7 @@ const Category = styled.button`
     `}
 `;
 
-const CategoryList = ({ handleCategoryClick, selectColor }) => {
+const CategoryList = memo(({ handleCategoryClick, selectColor }) => {
   const [selectCategoryId, setSelectCategoryId] = useState(null);
 
   // TODO: categories를 서버에서 받아오기
@@ -51,7 +51,7 @@ const CategoryList = ({ handleCategoryClick, selectColor }) => {
       ))}
     </Container>
   );
-};
+});
 
 CategoryList.propTypes = {
   handleCategoryClick: PropTypes.func.isRequired,
