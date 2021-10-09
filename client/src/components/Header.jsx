@@ -10,9 +10,10 @@ const HeaderContatiner = styled.div`
   align-items: center;
   justify-content: space-between;
   width: calc(100vw - 80px);
-  height: 80px;
+  height: 96px;
   background-color: var(--color-white);
   padding: 0px 40px 0px 40px;
+  border-bottom: 1px solid var(--color-midgray);
 `;
 
 const PageInfoContainer = styled.div`
