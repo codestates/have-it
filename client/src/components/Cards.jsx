@@ -24,19 +24,72 @@ const CardItem = styled.div`
 
 const Cards = () => {
   const dummy = [
-    { id: 1, title: "달리기", icon: "🏃🏻", color: "#46DBA0", count: 5 },
+    {
+      id: 1,
+      title: "달리기",
+      icon: "🏃🏻",
+      color: "#46DBA0",
+      count: 5,
+      users: [
+        "../images/profile/pf_1.svg",
+        "../images/profile/pf_3.svg",
+        "../images/profile/pf_5.svg",
+      ],
+    },
     {
       id: 2,
       title: "집중 50분, 10분 휴식 지키기",
       icon: "🧘🏻",
       color: "#F0CA4D",
-      count: 1072,
+      count: 8888,
+      users: [
+        "../images/profile/pf_1.svg",
+        "../images/profile/pf_2.svg",
+        "../images/profile/pf_3.svg",
+        "../images/profile/pf_4.svg",
+        "../images/profile/pf_5.svg",
+      ],
     },
-    { id: 3, title: "하루 2L 물마시기", icon: "💧", color: "#78B0FA", count: 4 },
-    { id: 4, title: "12가지 인생의 법칙!", icon: "❗️", color: "#FF8C80", count: 32 },
+    {
+      id: 3,
+      title: "하루 2L 물마시기",
+      icon: "💧",
+      color: "#78B0FA",
+      count: 4,
+      users: [
+        "../images/profile/pf_1.svg",
+        "../images/profile/pf_2.svg",
+        "../images/profile/pf_3.svg",
+        "../images/profile/pf_4.svg",
+      ],
+    },
+    {
+      id: 4,
+      title: "12가지 인생의 법칙!",
+      icon: "❗️",
+      color: "#FF8C80",
+      count: 32,
+      users: [
+        "../images/profile/pf_1.svg",
+        "../images/profile/pf_2.svg",
+        "../images/profile/pf_3.svg",
+        "../images/profile/pf_4.svg",
+        "../images/profile/pf_5.svg",
+      ],
+    },
+    {
+      id: 6,
+      title: "자전거 같이 타요~!",
+      icon: "🚲",
+      color: "#AD8CFA",
+      count: 8,
+      users: [
+        "../images/profile/pf_1.svg",
+        "../images/profile/pf_2.svg",
+        "../images/profile/pf_3.svg",
+      ],
+    },
   ];
-
-  // const colors = ["#FF80B3", "#FF8C80", "#F0CA4D", "#46DBA0", "#78B0FA", "#AD8CFA"];
 
   return (
     <>
@@ -50,7 +103,5 @@ const Cards = () => {
     </>
   );
 };
-
-// prop types 해줘야 함
 
 export default Cards;
