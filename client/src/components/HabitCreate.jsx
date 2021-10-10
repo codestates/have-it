@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import styled, { css } from "styled-components";
 import "emoji-mart/css/emoji-mart.css";
-import { Picker } from "emoji-mart";
+import { Picker, Emoji } from "emoji-mart";
 import CategoryList from "./CategoryList";
 
 const Form = styled.form`
@@ -28,10 +28,6 @@ const EmojiPicker = styled.button`
 const PlusIcon = styled.div`
   font-size: 1.5rem;
   color: ${({ selectColor }) => selectColor};
-`;
-
-const Emoji = styled.span`
-  font-size: 1.5rem;
 `;
 
 const EmojiPickerContainer = styled.div`
@@ -148,7 +144,7 @@ const CloseIcon = styled.div`
 const HabitCreate = () => {
   const [isEmojiPicker, setIsEmojiPicker] = useState(false);
   const [isColorPicker, setIsColorPicker] = useState(false);
-  const [selectEmoji, setSelectEmoji] = useState(null);
+  const [selectEmojiId, setSelectEmojiId] = useState(null);
   const [selectCategory, setSelectCategory] = useState(null);
   const [selectColor, setSelectColor] = useState("#78B0FA");
   const [inputValue, setInputValue] = useState({ title: "", description: "" });
@@ -157,7 +153,7 @@ const HabitCreate = () => {
 
   const handlePickerSelect = (emoji) => {
     setIsEmojiPicker(false);
-    setSelectEmoji(emoji);
+    setSelectEmojiId(emoji.id);
   };
   const handleEmojiPickerClick = () => {
     setIsEmojiPicker(true);
@@ -199,14 +195,17 @@ const HabitCreate = () => {
     if (
       !validate(selectCategory, "카테고리를 선택해주세요.") ||
       !validate(selectColor, "색상을 선택해주세요.") ||
-      !validate(selectEmoji, "이모지를 선택해주세요.") ||
+      !validate(selectEmojiId, "이모지를 선택해주세요.") ||
       !validate(inputValue.title, "제목을 적어주세요.") ||
       !validate(inputValue.description, "설명을 적어주세요.")
     ) {
       return;
     }
     console.log("모두 통과");
-    // TODO: 서버로 요청보내기
+    // TODO:
+    // 1. 서버로 요청보내어 해빗 생성
+    // 2. habitJoin State update
+    // 3. 모달 창 끄고, habitJoin 모달 창 켜기
   };
   return (
     <Form onSubmit={handleSubmit}>
@@ -236,8 +235,8 @@ const HabitCreate = () => {
       <EmojiTitleContainer>
         <EmojiPickerContainer>
           <EmojiPicker type="button" onClick={handleEmojiPickerClick} selectColor={selectColor}>
-            {selectEmoji ? (
-              <Emoji>{selectEmoji.native}</Emoji>
+            {selectEmojiId ? (
+              <Emoji emoji={selectEmojiId} size={24} />
             ) : (
               <PlusIcon className="icon-plus" selectColor={selectColor} />
             )}
