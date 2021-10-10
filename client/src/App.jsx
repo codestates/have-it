@@ -8,9 +8,10 @@ import Habit from "./pages/Habit";
 import Nav from "./components/Nav";
 import Header from "./components/Header";
 import Modal from "./components/Modal";
-import Auth from "./components/Auth";
 import HabitCreate from "./components/HabitCreate";
 import HabitJoin from "./components/HabitJoin";
+import Cards from "./components/Cards";
+import Login from "./components/LoginOrSignup";
 
 const FlexColumnContainer = styled.div`
   display: flex;
@@ -35,7 +36,9 @@ const App = () => {
         <FlexColumnContainer>
           <Header />
           <Switch>
-            <Route path="/" exact component={Home} />
+            <Route path="/" exact component={Home}>
+              <Cards />
+            </Route>
             <Route path="/mypage" component={MyPage} />
             <Route path="/habit/:id" component={Habit} />
             <Redirect from="*" to="/" />
@@ -44,7 +47,7 @@ const App = () => {
       </FlexContainer>
       {isModal && (
         <Modal>
-          {isAuthModal && <Auth />}
+          {isAuthModal && <Login />}
           {isHabitCreateModal && <HabitCreate />}
           {isHabitJoinModal && <HabitJoin />}
         </Modal>
