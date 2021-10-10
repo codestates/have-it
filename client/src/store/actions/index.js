@@ -1,5 +1,6 @@
 import {
-  AUTH_MODAL_ON,
+  SIGNIN_MODAL_ON,
+  SIGNUP_MODAL_ON,
   HABIT_CREATE_MODAL_ON,
   HABIT_JOIN_MODAL_ON,
   MODAL_OFF,
@@ -22,8 +23,11 @@ import {
 // });
 
 // Modal
-export const authModalOnAction = {
-  type: AUTH_MODAL_ON,
+export const signInModalOnAction = {
+  type: SIGNIN_MODAL_ON,
+};
+export const signUpModalOnAction = {
+  type: SIGNUP_MODAL_ON,
 };
 export const habitCreateModalOnAction = {
   type: HABIT_CREATE_MODAL_ON,

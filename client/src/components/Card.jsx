@@ -3,7 +3,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import uuid from "react-uuid";
-import { authModalOnAction, habitJoinModalOnAction } from "../store/actions";
+import { signInModalOnAction, habitJoinModalOnAction } from "../store/actions";
 
 const CardContainer = styled.div`
   position: absolute;
@@ -84,7 +84,7 @@ const Card = ({ info }) => {
   const dispatch = useDispatch();
 
   const handleSignInModalOn = () => {
-    dispatch(authModalOnAction);
+    dispatch(signInModalOnAction);
   };
 
   const handleHabitJoinModalOn = () => {

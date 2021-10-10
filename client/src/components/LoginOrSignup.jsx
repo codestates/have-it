@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const Form = styled.form`
   width: 17.5rem;
@@ -118,13 +119,17 @@ const SocialLoginButton = styled(Button)`
   }
 `;
 
-const Login = () => {
-  const [type, setType] = useState("로그인");
+const LoginOrSignup = ({ defaultType }) => {
+  const [type, setType] = useState(defaultType);
   const [inputValue, setInputValue] = useState({ username: "", email: "", password: "" });
+  // const [usernameMessage, setUsernameMessage] = useState(null);
+  // const [emailMessage, setEmailMessage] = useState(null);
+  // const [passwordMessage, setPasswordMessage] = useState(null);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue((prevState) => ({ ...prevState, [name]: value }));
+    // TODO: validation
   };
 
   const handleSwitchClick = () => {
@@ -145,13 +150,16 @@ const Login = () => {
         <Logo />
         <Title>{type}</Title>
         {type !== "로그인" && (
-          <Input
-            placeholder="username"
-            type="text"
-            name="username"
-            value={inputValue.username}
-            onChange={handleInputChange}
-          />
+          <>
+            <Input
+              placeholder="username"
+              type="text"
+              name="username"
+              value={inputValue.username}
+              onChange={handleInputChange}
+            />
+            <div>사용할 수 없는 아이디입니다.</div>
+          </>
         )}
         <Input
           placeholder="email"
@@ -193,4 +201,8 @@ const Login = () => {
   );
 };
 
-export default Login;
+LoginOrSignup.propTypes = {
+  defaultType: PropTypes.string.isRequired,
+};
+
+export default LoginOrSignup;
