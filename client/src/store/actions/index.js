@@ -5,6 +5,8 @@ import {
   MODAL_OFF,
   SIGN_IN,
   SIGN_OUT,
+  SHOW_POPUP,
+  HIDE_POPUP,
 } from "./actionTypes";
 
 // action
@@ -32,9 +34,19 @@ export const habitJoinModalOnAction = {
 export const modalOffAction = {
   type: MODAL_OFF,
 };
+
+// Auth
 export const signInAction = {
   type: SIGN_IN,
 };
 export const signOutAction = {
   type: SIGN_OUT,
+};
+
+// Home
+export const showPopupAction = {
+  type: SHOW_POPUP,
+};
+export const hidePopupAction = {
+  type: HIDE_POPUP,
 };
