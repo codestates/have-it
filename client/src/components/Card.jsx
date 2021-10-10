@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
+import uuid from "react-uuid";
 import { authModalOnAction, habitJoinModalOnAction } from "../store/actions";
 
 const CardContainer = styled.div`
@@ -98,8 +99,7 @@ const Card = ({ info }) => {
         <Users>
           {info.users.length &&
             (info.count === info.users.length && info.count <= 5 ? (
-              // TODO: uuid key 부여
-              info.users.reverse().map((url) => <ProfileImage profileUrl={url} />)
+              info.users.reverse().map((url) => <ProfileImage key={uuid()} profileUrl={url} />)
             ) : (
               <>
                 <More className="icon-dot-3" />
@@ -107,8 +107,7 @@ const Card = ({ info }) => {
                   .slice(0, 4)
                   .reverse()
                   .map((url) => (
-                    // TODO: uuid key 부여
-                    <ProfileImage profileUrl={url} />
+                    <ProfileImage key={uuid()} profileUrl={url} />
                   ))}
               </>
             ))}
