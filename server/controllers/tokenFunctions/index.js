@@ -20,4 +20,15 @@ module.exports = {
       return null;
     }
   },
+  setCookie: (res, token, clear = 0) => {
+    if (clear) {
+      res.clearCookie("jwt", token, {
+        httpOnly: true,
+      });
+    } else {
+      res.cookie("jwt", token, {
+        httpOnly: true,
+      });
+    }
+  },
 };
