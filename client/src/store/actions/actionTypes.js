@@ -11,3 +11,7 @@ export const SIGN_OUT = "SIGN_OUT";
 // Home
 export const SHOW_POPUP = "SHOW_POPUP";
 export const HIDE_POPUP = "HIDE_POPUP";
+
+// HabitJoin
+export const HABIT_JOIN_PROCEED = "HABIT_JOIN_PROCEED";
+export const HABIT_JOIN_CANCEL = "HABIT_JOIN_CANCEL";

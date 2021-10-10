@@ -1,7 +1,9 @@
 import {
   AUTH_MODAL_ON,
   HABIT_CREATE_MODAL_ON,
+  HABIT_JOIN_CANCEL,
   HABIT_JOIN_MODAL_ON,
+  HABIT_JOIN_PROCEED,
   MODAL_OFF,
   SIGN_IN,
   SIGN_OUT,
@@ -49,4 +51,12 @@ export const showPopupAction = {
 };
 export const hidePopupAction = {
   type: HIDE_POPUP,
+};
+// Habit Join
+export const habitJoinProceedAction = (habit) => ({
+  type: HABIT_JOIN_PROCEED,
+  payload: habit,
+});
+export const habitJoinCancelAction = {
+  type: HABIT_JOIN_CANCEL,
 };
