@@ -7,18 +7,20 @@ const Container = styled.div`
 `;
 
 const Category = styled.button`
-  padding: 0.2rem 0.7rem;
+  font-family: Interop-Bold;
+  padding: 0.4rem 0.8rem;
   margin-right: 0.5rem;
   color: var(--color-gray);
   border: 1px solid var(--color-gray);
   border-radius: 1.5rem;
   font-size: ${(props) => props.isAtHome && "24px"};
+  opacity: 0.6;
   ${({ selected, selectColor }) =>
     selected &&
     css`
-      font-family: Interop-SemiBold;
       border-color: ${selectColor};
       color: ${selectColor};
+      opacity: 1;
     `}
 `;
 
