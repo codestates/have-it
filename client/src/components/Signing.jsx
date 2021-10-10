@@ -119,7 +119,7 @@ const SocialLoginButton = styled(Button)`
   }
 `;
 
-const LoginOrSignup = ({ defaultType }) => {
+const Signing = ({ defaultType }) => {
   const [type, setType] = useState(defaultType);
   const [inputValue, setInputValue] = useState({ username: "", email: "", password: "" });
   // const [usernameMessage, setUsernameMessage] = useState(null);
@@ -201,8 +201,8 @@ const LoginOrSignup = ({ defaultType }) => {
   );
 };
 
-LoginOrSignup.propTypes = {
+Signing.propTypes = {
   defaultType: PropTypes.string.isRequired,
 };
 
-export default LoginOrSignup;
+export default Signing;
