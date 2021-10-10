@@ -25,7 +25,7 @@ const Category = styled.button`
 `;
 
 const CategoryList = memo(({ handleCategoryClick, selectColor, isAtHome }) => {
-  const [selectCategoryId, setSelectCategoryId] = useState(null);
+  const [selectCategoryId, setSelectCategoryId] = useState(isAtHome ? 1 : null);
 
   // TODO: categories를 서버에서 받아오기
   const categories = [
@@ -48,7 +48,7 @@ const CategoryList = memo(({ handleCategoryClick, selectColor, isAtHome }) => {
             setSelectCategoryId(category.id);
             handleCategoryClick(category);
           }}
-          isAtHome={isAtHome}
+          isAtHome
         >
           {category.name}
         </Category>
