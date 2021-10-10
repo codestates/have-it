@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
+import uuid from "react-uuid";
 import { authModalOnAction, habitJoinModalOnAction } from "../store/actions";
 
 const CardContainer = styled.div`
@@ -43,25 +44,6 @@ const Users = styled.div`
   flex-direction: row-reverse;
   width: fit-content;
 `;
-
-// const ProfileBlank = styled.div`
-//   position: relative;
-//   width: 2rem;
-//   height: 2rem;
-//   border-radius: 1rem;
-//   margin-right: -0.25rem;
-//   color: var(--color-midgray);
-//   background-color: var(--color-white);
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   font-size: 1.4rem;
-//   filter: drop-shadow(0 0 6px var(--color-shadow));
-
-//   ::before {
-//     margin-top: 0.2rem;
-//   }
-// `;
 
 const ProfileImage = styled.div`
   width: 2rem;
@@ -117,7 +99,7 @@ const Card = ({ info }) => {
         <Users>
           {info.users.length &&
             (info.count === info.users.length && info.count <= 5 ? (
-              info.users.reverse().map((url) => <ProfileImage profileUrl={url} />)
+              info.users.reverse().map((url) => <ProfileImage key={uuid()} profileUrl={url} />)
             ) : (
               <>
                 <More className="icon-dot-3" />
@@ -125,7 +107,7 @@ const Card = ({ info }) => {
                   .slice(0, 4)
                   .reverse()
                   .map((url) => (
-                    <ProfileImage profileUrl={url} />
+                    <ProfileImage key={uuid()} profileUrl={url} />
                   ))}
               </>
             ))}
