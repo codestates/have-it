@@ -17,6 +17,7 @@ const Container = styled.div`
   justify-content: center;
   background-color: rgba(17, 26, 61, 0.5);
   padding: 3rem;
+  z-index: 10;
 `;
 
 const Wrapper = styled.div`

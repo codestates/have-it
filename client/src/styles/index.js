@@ -25,6 +25,13 @@ const GlobalStyle = createGlobalStyle`
     cursor: pointer;
     background-color: inherit;
     border: none;
+    outline: 0;
+    
+    :active,
+    :hover,
+    :focus {
+      outline: 0;
+    }
   }
 
   input {
