@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { users, isLoggedIn } = require("../controllers");
+const { users } = require("../controllers");
 const { signin, signout, signup, modify, remove } = users;
 
 router.post("/signin", signin);
-router.get("/signout", isLoggedIn, signout);
+router.get("/signout", signout);
 router.post("/signup", signup);
-router.put("/modification", isLoggedIn, modify);
-router.delete("/modification", isLoggedIn, remove);
+router.put("/modification", modify);
+router.delete("/modification", remove);
 
 module.exports = router;
