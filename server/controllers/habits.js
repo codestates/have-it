@@ -1,14 +1,14 @@
 module.exports = {
-  create: (req, res) => {
+  createHabit: (req, res) => {
     res.status(200).send("habits create");
   },
-  findAll: (req, res) => {
+  findHabits: (req, res) => {
     res.status(200).send("habits findAll");
   },
-  findById: (req, res) => {
+  findHabitById: (req, res) => {
     res.status(200).send("habits findById");
   },
-  participate: (req, res) => {
+  joinHabit: (req, res) => {
     res.status(200).send("habits participate");
   },
 };

@@ -2,10 +2,10 @@ const { generateAccessToken, sendAccessToken, setCookie } = require("./tokenFunc
 const { bcrypt } = require("../config");
 const { User } = require("../models");
 module.exports = {
-  modify: (req, res) => {
+  modifyUserInfo: (req, res) => {
     res.status(200).send("users modify");
   },
-  remove: (req, res) => {
+  removeUserInfo: (req, res) => {
     res.status(200).send("users remove");
   },
   signin: (req, res) => {
