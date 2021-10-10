@@ -92,15 +92,13 @@ const Cards = () => {
   ];
 
   return (
-    <>
-      <CardList>
-        {dummy.map((el) => (
-          <CardItem key={el.id} color={el.color}>
-            <Card info={el} />
-          </CardItem>
-        ))}
-      </CardList>
-    </>
+    <CardList>
+      {dummy.map((el) => (
+        <CardItem key={el.id} color={el.color}>
+          <Card info={el} />
+        </CardItem>
+      ))}
+    </CardList>
   );
 };
 

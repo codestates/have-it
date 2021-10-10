@@ -12,6 +12,7 @@ const Category = styled.button`
   color: var(--color-gray);
   border: 1px solid var(--color-gray);
   border-radius: 1.5rem;
+  font-size: ${(props) => props.isAtHome && "24px"};
   ${({ selected, selectColor }) =>
     selected &&
     css`
@@ -21,16 +22,16 @@ const Category = styled.button`
     `}
 `;
 
-const CategoryList = memo(({ handleCategoryClick, selectColor }) => {
+const CategoryList = memo(({ handleCategoryClick, selectColor, isAtHome }) => {
   const [selectCategoryId, setSelectCategoryId] = useState(null);
 
   // TODO: categories를 서버에서 받아오기
   const categories = [
-    { id: 1, name: "💪🏻 운동" },
-    { id: 2, name: "📚 독서" },
-    { id: 3, name: "✏️ 공부" },
-    { id: 4, name: "💖 마음" },
-    { id: 5, name: "⏰ 생활 습관" },
+    { id: 1, name: "💪🏻 운동", name_en: "exercise" },
+    { id: 2, name: "📚 독서", name_en: "book" },
+    { id: 3, name: "✏️ 공부", name_en: "study" },
+    { id: 4, name: "💖 마음", name_en: "mind" },
+    { id: 5, name: "⏰ 생활 습관", name_en: "routine" },
   ];
 
   return (
@@ -45,6 +46,7 @@ const CategoryList = memo(({ handleCategoryClick, selectColor }) => {
             setSelectCategoryId(category.id);
             handleCategoryClick(category);
           }}
+          isAtHome={isAtHome}
         >
           {category.name}
         </Category>
@@ -56,6 +58,7 @@ const CategoryList = memo(({ handleCategoryClick, selectColor }) => {
 CategoryList.propTypes = {
   handleCategoryClick: PropTypes.func.isRequired,
   selectColor: PropTypes.string,
+  isAtHome: PropTypes.bool.isRequired,
 };
 
 CategoryList.defaultProps = {
