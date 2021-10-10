@@ -84,7 +84,7 @@ const Home = () => {
         <Cards />
         <CategoryListContainer>
           <CategoryList isAtHome handleCategoryClick={handleCategoryClick} />
-          <Link to={selectCategory.name_en ? `/more/${selectCategory.name_en}` : "/more"}>
+          <Link to={`/more/${selectCategory.name_en}`}>
             <ViewMore>
               더보기
               <i className="icon-right-open" style={{ fontSize: "20px", color: "#4D4DFF" }} />
