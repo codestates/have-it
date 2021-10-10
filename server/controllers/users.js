@@ -1,12 +1,26 @@
-const { generateAccessToken, sendAccessToken, setCookie } = require("./tokenFunctions");
-const { bcrypt } = require("../config");
+const bcrypt = require("bcrypt");
+const { generateAccessToken, setJwtCookie, isAuthorized } = require("./tokenFunctions");
+const { saltRounds } = require("../config");
 const { User } = require("../models");
 module.exports = {
   modifyUserInfo: (req, res) => {
     res.status(200).send("users modify");
   },
   removeUserInfo: (req, res) => {
-    res.status(200).send("users remove");
+    const { users_id } = req.params;
+    const accessTokenData = isAuthorized(req);
+    if (!accessTokenData) {
+      res.status(404).send("invalid user");
+    } else {
+      if (accessTokenData.users_id !== users_id) {
+        res.status(403).send("don't have permission.");
+      } else {
+        setJwtCookie(res, req.cookies.jwt, 1);
+        res.status(200).json({
+          email: accessTokenData.email,
+        });
+      }
+    }
   },
   signin: (req, res) => {
     const { email, password } = req.body;
@@ -16,25 +30,52 @@ module.exports = {
       User.findOne({
         where: {
           email,
-          password,
         },
-      }).then((data) => {
-        if (!data) {
-          res.status(404).send("invalid user");
-        } else {
-          // TODO: 유저 정보, 보유 채널, done여부 리턴, 쿠키에 토큰 넣어주기
-        }
-      });
+      })
+        .then((data) => {
+          if (!data) {
+            res.status(404).send("invalid user");
+          } else {
+            const same = bcrypt.compareSync(password, data.dataValues.password);
+            if (!same) {
+              res.status(404).send("invalid user");
+            } else {
+              // TODO: 유저 정보, 보유 채널, done여부 리턴, 쿠키에 토큰 넣어주기
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   },
   signout: (req, res) => {
-    setCookie(res, req.cookies.jwt, 1);
+    setJwtCookie(res, req.cookies.jwt, 1);
     res.status(205).send("Logged out successfully");
   },
   signup: (req, res) => {
-    const { email, password, user_id } = req.body;
-    if (!email || !password || !user_id) {
+    console.log(req.body);
+    const { email, password, users_id } = req.body;
+
+    if (!email || !password || !users_id) {
       res.status(422).send("insufficient parameters supplied");
+    } else {
+      const hashedPassword = bcrypt.hashSync(password, saltRounds);
+      User.create({
+        email: email,
+        users_id: users_id,
+        password: hashedPassword,
+        sns: "local",
+      })
+        .then((result) => {
+          const token = generateAccessToken(result);
+          setJwtCookie(res, token);
+          res.status(201).json({ users_id: result.users_id });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(409).send("already email or users_id exists");
+        });
     }
   },
 };

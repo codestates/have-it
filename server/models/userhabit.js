@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         type: Sequelize.INTEGER,
       },
       goal: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING,
         unique: true,
         allowNull: false,
       },
@@ -45,6 +45,14 @@ module.exports = (sequelize, DataTypes) => {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: 0,
+      },
+      users_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      habits_id: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
     },
     {

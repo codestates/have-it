@@ -6,7 +6,7 @@ const { signin, signout, signup, modifyUserInfo, removeUserInfo } = users;
 router.post("/signin", signin);
 router.get("/signout", signout);
 router.post("/signup", signup);
-router.put("/modification", modifyUserInfo);
-router.delete("/modification", removeUserInfo);
+router.put("/:users_id", modifyUserInfo);
+router.delete("/:users_id", removeUserInfo);
 
 module.exports = router;

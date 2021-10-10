@@ -3,14 +3,10 @@ const { sign, verify } = require("jsonwebtoken");
 
 module.exports = {
   generateAccessToken: (data) => {
+    delete data.dataValues.password;
     return sign(data.dataValues, jwt.secretKey, {
       algorithm: "HS256",
-      expiresIn: "3h",
-    });
-  },
-  sendAccessToken: (res, accessToken) => {
-    res.cookie("jwt", accessToken, {
-      httpOnly: true,
+      expiresIn: "2h",
     });
   },
   isAuthorized: (req) => {
@@ -20,7 +16,7 @@ module.exports = {
       return null;
     }
   },
-  setCookie: (res, token, clear = 0) => {
+  setJwtCookie: (res, token, clear = 0) => {
     if (clear) {
       res.clearCookie("jwt", token, {
         httpOnly: true,

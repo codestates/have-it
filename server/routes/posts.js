@@ -5,7 +5,7 @@ const { findPost, writePost, modifyPost, removePost } = posts;
 
 router.get("/:habits_id", findPost);
 router.post("/:habits_id", writePost);
-router.put("/:post_id", modifyPost);
-router.delete("/:post_id", removePost);
+router.put("/:posts_id", modifyPost);
+router.delete("/:posts_id", removePost);
 
 module.exports = router;
