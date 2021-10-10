@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { authModalOnAction } from "../store/actions";
+import { authModalOnAction, habitJoinModalOnAction } from "../store/actions";
 
 const CardContainer = styled.div`
   position: absolute;
@@ -44,23 +44,33 @@ const Users = styled.div`
   width: fit-content;
 `;
 
-const Profile = styled.div`
-  position: relative;
+// const ProfileBlank = styled.div`
+//   position: relative;
+//   width: 2rem;
+//   height: 2rem;
+//   border-radius: 1rem;
+//   margin-right: -0.25rem;
+//   color: var(--color-midgray);
+//   background-color: var(--color-white);
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   font-size: 1.4rem;
+//   filter: drop-shadow(0 0 6px var(--color-shadow));
+
+//   ::before {
+//     margin-top: 0.2rem;
+//   }
+// `;
+
+const ProfileImage = styled.div`
   width: 2rem;
   height: 2rem;
   border-radius: 1rem;
   margin-right: -0.25rem;
-  color: var(--color-midgray);
-  background-color: var(--color-white);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.4rem;
+  z-index: 1;
+  background-image: url(${(props) => props.profileUrl});
   filter: drop-shadow(0 0 6px var(--color-shadow));
-
-  ::before {
-    margin-top: 0.2rem;
-  }
 `;
 
 const More = styled.div`
@@ -96,20 +106,29 @@ const Card = ({ info }) => {
   };
 
   const handleHabitJoinModalOn = () => {
-    dispatch(authModalOnAction);
+    dispatch(habitJoinModalOnAction);
   };
 
   return (
-    <CardContainer onClick={() => (isLogin ? handleHabitJoinModalOn() : handleSignInModalOn())}>
+    <CardContainer onClick={isLogin ? handleHabitJoinModalOn : handleSignInModalOn}>
       <Icon>{info.icon}</Icon>
       <Title>{info.title}</Title>
       <Info>
         <Users>
-          <More className="icon-dot-3" />
-          <Profile className="icon-user" />
-          <Profile className="icon-user" />
-          <Profile className="icon-user" />
-          <Profile className="icon-user" />
+          {info.users.length &&
+            (info.count === info.users.length && info.count <= 5 ? (
+              info.users.reverse().map((url) => <ProfileImage profileUrl={url} />)
+            ) : (
+              <>
+                <More className="icon-dot-3" />
+                {info.users
+                  .slice(0, 4)
+                  .reverse()
+                  .map((url) => (
+                    <ProfileImage profileUrl={url} />
+                  ))}
+              </>
+            ))}
         </Users>
         <Count>{info.count}명 참여중</Count>
       </Info>
@@ -118,7 +137,14 @@ const Card = ({ info }) => {
 };
 
 Card.propTypes = {
-  info: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  info: PropTypes.shape({
+    id: PropTypes.number,
+    title: PropTypes.string,
+    icon: PropTypes.string,
+    color: PropTypes.string,
+    count: PropTypes.number,
+    users: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
 };
 
 export default Card;
