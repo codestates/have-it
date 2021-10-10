@@ -1,6 +1,7 @@
 module.exports = {
-  isLoggedIn: require("./isLoggedIn"),
+  isAuthorized: require("./tokenFunctions").isAuthorized,
   users: require("./users"),
   habits: require("./habits"),
   posts: require("./posts"),
+  auth: require("./auth"),
 };
