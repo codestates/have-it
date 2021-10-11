@@ -32,6 +32,7 @@ const CategoryList = memo(({ handleCategoryClick, selectColor, isAtHome }) => {
   useEffect(() => {
     const getCategoriesDataAndSet = async () => {
       const { data } = await categoriesApi.getCategories();
+      console.log(data);
       setCategories(data.categories);
     };
     getCategoriesDataAndSet();
