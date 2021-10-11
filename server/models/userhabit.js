@@ -4,8 +4,8 @@ module.exports = (sequelize, DataTypes) => {
   class Userhabit extends Model {
     static associate(models) {
       models.Userhabit.hasMany(models.Post, {
-        foreignKey: { name: "userhabit_id", allowNull: false },
-        targetKey: "userhabit_id",
+        foreignKey: { name: "userhabits_id", allowNull: false },
+        targetKey: "userhabits_id",
       });
       models.Userhabit.belongsTo(models.User, {
         foreignKey: "users_id",
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Userhabit.init(
     {
-      userhabit_id: {
+      userhabits_id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.INTEGER,
