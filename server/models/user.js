@@ -4,15 +4,16 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       models.User.hasMany(models.Habit, {
-        foreignKey: "creator_id",
+        foreignKey: { name: "creator_id", allowNull: false, onDelete: "CASCADE" },
         sourceKey: "users_id",
+        onDelete: "CASCADE",
       });
       models.User.hasMany(models.Post, {
-        foreignKey: "users_id",
+        foreignKey: { name: "users_id", allowNull: false },
         sourceKey: "users_id",
       });
       models.User.hasMany(models.Userhabit, {
-        foreignKey: "users_id",
+        foreignKey: { name: "users_id", allowNull: false },
         sourceKey: "users_id",
       });
     }

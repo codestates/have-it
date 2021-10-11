@@ -4,16 +4,18 @@ module.exports = (sequelize, DataTypes) => {
   class Userhabit extends Model {
     static associate(models) {
       models.Userhabit.hasMany(models.Post, {
-        foreignKey: "userhabit_id",
+        foreignKey: { name: "userhabit_id", allowNull: false },
         targetKey: "userhabit_id",
       });
       models.Userhabit.belongsTo(models.User, {
         foreignKey: "users_id",
         targetKey: "users_id",
+        onDelete: "CASCADE",
       });
       models.Userhabit.belongsTo(models.Habit, {
         foreignKey: "habits_id",
         targetKey: "habits_id",
+        onDelete: "CASCADE",
       });
     }
   }
@@ -33,11 +35,23 @@ module.exports = (sequelize, DataTypes) => {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      start_day: {
+      actual_amount: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      target_amount: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      achievement: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      start_date: {
         type: Sequelize.DATE,
         allowNull: false,
       },
-      end_day: {
+      end_date: {
         type: Sequelize.DATE,
         allowNull: false,
       },
@@ -45,14 +59,6 @@ module.exports = (sequelize, DataTypes) => {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: 0,
-      },
-      users_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      habits_id: {
-        type: Sequelize.STRING,
-        allowNull: false,
       },
     },
     {

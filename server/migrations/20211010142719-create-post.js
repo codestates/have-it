@@ -4,6 +4,7 @@ module.exports = {
     await queryInterface.createTable("posts", {
       posts_id: {
         allowNull: false,
+        autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
@@ -18,6 +19,7 @@ module.exports = {
       },
       users_id: {
         type: Sequelize.STRING,
+        onDelete: "CASCADE",
         references: {
           model: {
             tableName: "users",
@@ -29,6 +31,7 @@ module.exports = {
       },
       habits_id: {
         type: Sequelize.INTEGER,
+        onDelete: "CASCADE",
         references: {
           model: {
             tableName: "habits",
@@ -40,6 +43,7 @@ module.exports = {
       },
       userhabit_id: {
         type: Sequelize.INTEGER,
+        onDelete: "CASCADE",
         references: {
           model: {
             tableName: "userhabits",
@@ -51,10 +55,12 @@ module.exports = {
       },
       created_at: {
         type: Sequelize.DATE,
+        allowNull: false,
         defaultValue: Sequelize.NOW,
       },
       updated_at: {
         type: Sequelize.DATE,
+        allowNull: false,
         defaultValue: Sequelize.NOW,
       },
     });
