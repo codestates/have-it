@@ -31,10 +31,13 @@ const ProfileView = styled.div`
     margin-top: 2px;
     border-radius: 6px;
     resize: none;
-    padding: 0.5rem;
+    padding: 0.5rem 0.75rem;
     font-size: 1rem;
     color: var(--color-black);
     line-spacing: 150%;
+    ::placeholder {
+      color: var(--color-black);
+    }
   }
   textarea {
     height: 6rem;
@@ -182,11 +185,14 @@ const MyPage = () => {
           <Container>
             <ProfileEditUsername>
               <div>Name</div>
-              <input type="text" />
+              <input type="text" placeholder="Leezy_kim" />
             </ProfileEditUsername>
             <ProfileEditUserBio>
               <div>Bio</div>
-              <textarea />
+              <textarea
+                placeholder={`🐢하루하루 꾸준히😌
+🔥Nerver Say Never🔥`}
+              />
             </ProfileEditUserBio>
             <ButtonContainer>
               <CancelButton onClick={() => setIsEditMode(false)}>취소</CancelButton>
