@@ -3,7 +3,7 @@ import styled from "styled-components";
 import "../styles/fontello/css/fontello.css";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { authModalOnAction, signInAction, signOutAction } from "../store/actions";
+import { signInModalOnAction, signUpModalOnAction, signOutAction } from "../store/actions";
 
 const HeaderContatiner = styled.div`
   display: flex;
@@ -60,7 +60,7 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const handleSignIn = () => {
-    dispatch(signInAction);
+    dispatch(signInModalOnAction);
   };
 
   const handleSignOut = () => {
@@ -68,7 +68,7 @@ const Header = () => {
   };
 
   const handleSignUp = () => {
-    dispatch(authModalOnAction);
+    dispatch(signUpModalOnAction);
   };
 
   return (

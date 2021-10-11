@@ -11,7 +11,7 @@ import Habit from "./pages/Habit";
 import Modal from "./components/Modal";
 import HabitCreate from "./components/HabitCreate";
 import HabitJoin from "./components/HabitJoin";
-import Login from "./components/LoginOrSignup";
+import Signing from "./components/Signing";
 
 const FlexColumnContainer = styled.div`
   display: flex;
@@ -23,11 +23,11 @@ const FlexContainer = styled.div`
 `;
 
 const App = () => {
-  const { isAuthModal, isHabitCreateModal, isHabitJoinModal } = useSelector(
+  const { isSignInModal, isSignUpModal, isHabitCreateModal, isHabitJoinModal } = useSelector(
     ({ modalReducer }) => modalReducer
   );
 
-  const isModal = isAuthModal || isHabitCreateModal || isHabitJoinModal;
+  const isModal = isSignInModal || isSignUpModal || isHabitCreateModal || isHabitJoinModal;
 
   return (
     <BrowserRouter>
@@ -46,7 +46,8 @@ const App = () => {
       </FlexContainer>
       {isModal && (
         <Modal>
-          {isAuthModal && <Login />}
+          {isSignInModal && <Signing defaultType="로그인" />}
+          {isSignUpModal && <Signing defaultType="회원가입" />}
           {isHabitCreateModal && <HabitCreate />}
           {isHabitJoinModal && <HabitJoin />}
         </Modal>

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import "../styles/fontello/css/fontello.css";
 import { useDispatch, useSelector } from "react-redux";
-import { authModalOnAction, habitCreateModalOnAction } from "../store/actions";
+import { signInModalOnAction, habitCreateModalOnAction } from "../store/actions";
 
 const NavContainer = styled.div`
   display: flex;
@@ -104,7 +104,7 @@ const Nav = () => {
   ];
 
   const handleSignIn = () => {
-    dispatch(authModalOnAction);
+    dispatch(signInModalOnAction);
   };
 
   const handleCreatehabit = () => {
