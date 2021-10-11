@@ -41,7 +41,7 @@ module.exports = {
         },
         allowNull: false,
       },
-      userhabit_id: {
+      userhabits_id: {
         type: Sequelize.INTEGER,
         onDelete: "CASCADE",
         references: {
@@ -49,7 +49,7 @@ module.exports = {
             tableName: "userhabits",
             schema: "",
           },
-          key: "userhabit_id",
+          key: "userhabits_id",
         },
         allowNull: false,
       },

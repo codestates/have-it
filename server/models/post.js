@@ -14,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "CASCADE",
       });
       models.Post.belongsTo(models.Userhabit, {
-        foreignKey: "userhabit_id",
-        targetKey: "userhabit_id",
+        foreignKey: "userhabits_id",
+        targetKey: "userhabits_id",
         onDelete: "CASCADE",
       });
     }
