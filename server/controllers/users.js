@@ -2,9 +2,10 @@ const bcrypt = require("bcrypt");
 const { generateAccessToken, setJwtCookie, isAuthorized } = require("./tokenFunctions");
 const { saltRounds } = require("../config");
 const { User } = require("../models");
+
 module.exports = {
   modifyUserInfo: (req, res) => {
-    res.status(200).send("users modify");
+    //TODO: 폼데이터 처리 확인
   },
   removeUserInfo: (req, res) => {
     const { users_id } = req.params;
@@ -15,6 +16,7 @@ module.exports = {
       if (accessTokenData.users_id !== users_id) {
         res.status(403).send("don't have permission.");
       } else {
+        //TODO: 데이터베이스에서 유저정보들 삭제하기
         setJwtCookie(res, req.cookies.jwt, 1);
         res.status(200).json({
           email: accessTokenData.email,
