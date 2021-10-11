@@ -1,4 +1,5 @@
 const dotenv = require("dotenv");
+
 dotenv.config();
 
 function required(key, defaultValue = undefined) {
@@ -12,7 +13,7 @@ function required(key, defaultValue = undefined) {
 module.exports = {
   jwt: {
     secretKey: required("ACCESS_SECRET"),
-    // expiresInSec: parseInt(required("JWT_EXPIRES_SEC", 86400)),
+    expiresInSec: parseInt(required("JWT_EXPIRES_SEC", 7200), 10),
   },
   saltRounds: parseInt(required("BCRYPT_SALT_ROUNDS", 12), 10),
   port: parseInt(required("PORT", 8080), 10),
