@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
+import { signInAction, modalOffAction } from "../store/actions";
 
 const Form = styled.form`
-  width: 17.5rem;
+  width: 18.75rem;
 
   * {
     width: 100%;
@@ -35,7 +37,7 @@ const Title = styled.h1`
 `;
 
 const Input = styled.input`
-  border: 1px solid var(--color-midgray);
+  border: 1px solid ${(props) => (props.message ? props.color : "var(--color-midgray)")};
   height: 2.5rem;
   padding: 0 0.5rem;
   font-size: 0.875rem;
@@ -43,6 +45,11 @@ const Input = styled.input`
   ::placeholder {
     color: var(--color-midgray);
   }
+`;
+
+const AlertMessage = styled.div`
+  font-size: 0.8rem;
+  color: ${(props) => props.color};
 `;
 
 const Button = styled.button`
@@ -57,13 +64,15 @@ const LoginButton = styled(Button)`
   color: var(--color-white);
   margin: 0.5rem 0 1.5rem;
 
-  :disabled {
-    background-color: var(--color-darkblue);
-  }
-
   :hover {
     background-color: var(--color-mainblue);
-    opacity: 0.95;
+    opacity: 0.9;
+  }
+
+  :disabled {
+    color: var(--color-lightgray);
+    background-color: var(--color-darkblue);
+    opacity: 0.8;
   }
 `;
 
@@ -79,7 +88,7 @@ const ToSwitchText = styled.div`
     color: var(--color-gray);
   }
 
-  #toSwitch {
+  .toSwitch {
     cursor: pointer;
     :hover {
       text-decoration: underline;
@@ -122,14 +131,90 @@ const SocialLoginButton = styled(Button)`
 const Signing = ({ defaultType }) => {
   const [type, setType] = useState(defaultType);
   const [inputValue, setInputValue] = useState({ username: "", email: "", password: "" });
-  // const [usernameMessage, setUsernameMessage] = useState(null);
-  // const [emailMessage, setEmailMessage] = useState(null);
-  // const [passwordMessage, setPasswordMessage] = useState(null);
+  const [usernameValid, setUsernameValid] = useState(false);
+  const [emailValid, setEmailValid] = useState(false);
+  const [passwordValid, setPasswordValid] = useState(false);
+  const [usernameMessage, setUsernameMessage] = useState(null);
+  const [emailMessage, setEmailMessage] = useState(null);
+  const [passwordMessage, setPasswordMessage] = useState(null);
+  const [hasSocialHistory, setHasSocialHistory] = useState(false);
+  const [alertColor, setAlertColor] = useState("var(--color-red)");
+  const [isDisabled, setIsDisabled] = useState(true);
+
+  const dispatch = useDispatch();
+
+  const validator = {
+    // [유효성 검증 함수]: 영어 또는 숫자만 가능 && 중복 불가능
+    // TODO: 중복 여부 체크 로직 추가
+    username: (username) => {
+      // TODO: 로직 변경 (최소 글자수 & 특수문자 포함 여부)
+      const usernameResult = /^[A-Za-z][A-Za-z0-9]*$/.test(username);
+      if (username === "") {
+        setUsernameMessage("닉네임을 입력하세요.");
+        setUsernameValid(false);
+      } else if (!usernameResult) {
+        setUsernameMessage("사용할 수 없는 닉네임입니다.");
+        setUsernameValid(false);
+      } else {
+        setUsernameMessage(null);
+        setUsernameValid(true);
+      }
+    },
+    // [유효성 검증 함수]: 유효한 이메일 형식만 가능 && 중복 불가능
+    email: (email) => {
+      const emailResult =
+        /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i.test(
+          email
+        );
+      // TODO: 중복 여부 체크 로직 추가
+      const emailHistory = false;
+      const emailSocialHistory = "네이버";
+
+      if (email === "") {
+        setEmailMessage("이메일을 입력하세요.");
+        setEmailValid(false);
+        setHasSocialHistory(false);
+      } else if (!emailResult) {
+        setEmailMessage("유효하지 않은 이메일입니다.");
+        setEmailValid(false);
+        setHasSocialHistory(false);
+      } else if (emailHistory) {
+        setEmailMessage("이미 가입된 이메일입니다.");
+        setEmailValid(false);
+        setHasSocialHistory(false);
+      } else if (emailSocialHistory) {
+        setEmailMessage(`${emailSocialHistory}로 로그인한 이력이 존재합니다.`);
+        setEmailValid(true);
+        setHasSocialHistory(true);
+      } else {
+        setEmailMessage(null);
+        setEmailValid(true);
+        setHasSocialHistory(false);
+      }
+    },
+    // [유효성 검증 함수]: 최소 8자 이상하면서, 알파벳과 숫자 및 특수문자(@$!%*#?&)는 하나 이상 포함
+    password: (password) => {
+      const passwordResult = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(
+        password
+      );
+      if (password === "") {
+        setPasswordMessage("비밀번호를 입력하세요.");
+        setPasswordValid(false);
+      } else if (type === "회원가입" && !passwordResult) {
+        // TODO: 비밀번호 조건 표시
+        setPasswordMessage("사용할 수 없는 비밀번호입니다.");
+        setPasswordValid(false);
+      } else {
+        setPasswordMessage(null);
+        setPasswordValid(true);
+      }
+    },
+  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setInputValue((prevState) => ({ ...prevState, [name]: value }));
-    // TODO: validation
+    validator[name](value);
   };
 
   const handleSwitchClick = () => {
@@ -144,6 +229,54 @@ const Signing = ({ defaultType }) => {
     console.log("비밀번호 찾기");
   };
 
+  const handleSignInClick = () => {
+    // TODO: 로그인 요청
+    console.log("로그인 완료");
+    // TODO: 받아온 정보 state에 업데이트
+    dispatch(modalOffAction);
+    dispatch(signInAction);
+  };
+
+  const handleSocialLogInClick = () => {
+    // TODO: 소셜 로그인 요청
+    console.log("소셜 로그인 완료");
+    // TODO: 받아온 정보 state에 업데이트
+    dispatch(modalOffAction);
+    dispatch(signInAction);
+  };
+
+  useEffect(() => {
+    setInputValue({ username: "", email: "", password: "" });
+    if (type === "회원가입") {
+      setUsernameValid(false);
+    } else if (type === "로그인") {
+      setUsernameValid(true);
+    }
+    setEmailValid(false);
+    setPasswordValid(false);
+    setUsernameMessage(null);
+    setEmailMessage(null);
+    setPasswordMessage(null);
+    setHasSocialHistory(false);
+    setIsDisabled(true);
+  }, [type]);
+
+  useEffect(() => {
+    if (usernameValid && emailValid && passwordValid) {
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+    }
+  }, [usernameValid, emailValid, passwordValid]);
+
+  useEffect(() => {
+    if (hasSocialHistory) {
+      setAlertColor("var(--color-lightblue)");
+    } else {
+      setAlertColor("var(--color-red)");
+    }
+  }, [usernameMessage, emailMessage, passwordMessage, hasSocialHistory]);
+
   return (
     <Form>
       <InputContainer>
@@ -157,8 +290,14 @@ const Signing = ({ defaultType }) => {
               name="username"
               value={inputValue.username}
               onChange={handleInputChange}
+              message={usernameMessage}
+              color={alertColor}
             />
-            <div>사용할 수 없는 아이디입니다.</div>
+            {usernameMessage && (
+              <AlertMessage className="icon-attention-2" color={alertColor}>
+                {usernameMessage}
+              </AlertMessage>
+            )}
           </>
         )}
         <Input
@@ -167,18 +306,34 @@ const Signing = ({ defaultType }) => {
           name="email"
           value={inputValue.email}
           onChange={handleInputChange}
+          message={emailMessage}
+          color={alertColor}
         />
+        {emailMessage && (
+          <AlertMessage className="icon-attention-2" color={alertColor}>
+            {emailMessage}
+          </AlertMessage>
+        )}
         <Input
           placeholder="password"
           type="password"
           name="password"
           value={inputValue.password}
           onChange={handleInputChange}
+          message={passwordMessage}
+          color={alertColor}
         />
-        <LoginButton>{type}</LoginButton>
+        {passwordMessage && (
+          <AlertMessage className="icon-attention-2" color={alertColor}>
+            {passwordMessage}
+          </AlertMessage>
+        )}
+        <LoginButton disabled={isDisabled} onClick={handleSignInClick}>
+          {type}
+        </LoginButton>
         <ToSwitchText>
           {type === "로그인" && (
-            <button id="toSwitch" type="button" onClick={handleFindPasswordClick}>
+            <button className="toSwitch" type="button" onClick={handleFindPasswordClick}>
               비밀번호를 잊어버리셨나요?
             </button>
           )}
@@ -186,7 +341,7 @@ const Signing = ({ defaultType }) => {
         <ToSwitchText>
           <>
             <span>{type === "로그인" ? "계정이 없으신가요?" : "이미 가입하셨나요?"}</span>
-            <button id="toSwitch" type="button" onClick={handleSwitchClick}>
+            <button className="toSwitch" type="button" onClick={handleSwitchClick}>
               {type === "로그인" ? "회원가입" : "로그인"}
             </button>
           </>
@@ -194,8 +349,12 @@ const Signing = ({ defaultType }) => {
       </InputContainer>
       <SocialContainer>
         <span>OR</span>
-        <SocialLoginButton color="#03C75A">네이버로 로그인하기</SocialLoginButton>
-        <SocialLoginButton color="#00000066">구글로 로그인하기</SocialLoginButton>
+        <SocialLoginButton onClick={handleSocialLogInClick} color="#03C75A">
+          네이버로 로그인하기
+        </SocialLoginButton>
+        <SocialLoginButton onClick={handleSocialLogInClick} color="#00000066">
+          구글로 로그인하기
+        </SocialLoginButton>
       </SocialContainer>
     </Form>
   );
