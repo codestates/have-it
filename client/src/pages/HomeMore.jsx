@@ -25,8 +25,9 @@ const Popup = styled.div`
   margin: 1.5rem 2.5rem 0rem 2.5rem;
 `;
 
-const HidePopup = styled.div`
-  font-size: "16px";
+const HidePopup = styled.button`
+  background: none;
+  font-size: 1rem;
   color: var(--color-mainblue);
 `;
 
