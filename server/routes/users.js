@@ -1,12 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { users } = require("../controllers");
-const { signin, signout, signup, modify, remove } = users;
+const users = require("../controllers/users");
+const { modifyUserInfo, removeUserInfo } = users;
 
-router.post("/signin", signin);
-router.get("/signout", signout);
-router.post("/signup", signup);
-router.put("/modification", modify);
-router.delete("/modification", remove);
+router.put("/:users_id", modifyUserInfo);
+router.delete("/:users_id", removeUserInfo);
 
 module.exports = router;

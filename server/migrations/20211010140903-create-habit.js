@@ -1,28 +1,7 @@
 "use strict";
-const { Model, Sequelize } = require("sequelize");
-const habits = require("../controllers/habits");
-module.exports = (sequelize, DataTypes) => {
-  class Habit extends Model {
-    static associate(models) {
-      models.Habit.hasMany(models.Post, {
-        foreignKey: "habits_id",
-        sourceKey: "habits_id",
-      });
-      models.Habit.belongsTo(models.User, {
-        foreignKey: "creator_id",
-        targetKey: "users_id",
-      });
-      models.Habit.hasMany(models.Userhabit, {
-        foreignKey: "habits_id",
-        sourceKey: "habits_id",
-      });
-    }
-    toJSON() {
-      return { ...this.get() };
-    }
-  }
-  Habit.init(
-    {
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable("habits", {
       habits_id: {
         allowNull: false,
         primaryKey: true,
@@ -63,17 +42,18 @@ module.exports = (sequelize, DataTypes) => {
       },
       creator_id: {
         type: Sequelize.STRING,
+        references: {
+          model: {
+            tableName: "users",
+            schema: "",
+          },
+          key: "users_id",
+        },
         allowNull: false,
       },
-    },
-    {
-      sequelize,
-      modelName: "Habit",
-      tableName: "habits",
-      timestamps: false,
-      underscored: true,
-      charset: "utf8",
-    }
-  );
-  return Habit;
+    });
+  },
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable("habits");
+  },
 };

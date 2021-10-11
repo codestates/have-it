@@ -1,14 +1,14 @@
 module.exports = {
-  create: (req, res) => {
+  writePost: (req, res) => {
     res.status(200).send("posts create");
   },
-  find: (req, res) => {
+  findPost: (req, res) => {
     res.status(200).send("posts find");
   },
-  modify: (req, res) => {
+  modifyPost: (req, res) => {
     res.status(200).send("posts modify");
   },
-  remove: (req, res) => {
+  removePost: (req, res) => {
     res.status(200).send("posts remove");
   },
 };

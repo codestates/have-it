@@ -25,13 +25,25 @@ module.exports = (sequelize, DataTypes) => {
         type: Sequelize.INTEGER,
       },
       content: {
-        type: Sequelize.STRING(40),
+        type: Sequelize.STRING,
         unique: true,
         allowNull: false,
       },
       image: {
         type: Sequelize.STRING,
         allowNull: true,
+      },
+      users_id: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      habits_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      userhabit_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
     },
     {

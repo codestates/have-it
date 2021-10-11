@@ -22,23 +22,23 @@ module.exports = (sequelize, DataTypes) => {
       users_id: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.STRING(15),
+        type: Sequelize.STRING,
       },
       email: {
-        type: Sequelize.STRING(40),
+        type: Sequelize.STRING,
         unique: true,
         allowNull: false,
       },
       password: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING,
         allowNull: true,
       },
       nickname: {
-        type: Sequelize.STRING(15),
+        type: Sequelize.STRING,
         allowNull: true,
       },
       bio: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING,
         allowNull: true,
       },
       image: {
@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       sns: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING,
         allowNull: true,
       },
     },
