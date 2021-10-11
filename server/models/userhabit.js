@@ -23,12 +23,12 @@ module.exports = (sequelize, DataTypes) => {
     {
       userhabits_id: {
         allowNull: false,
+        autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
       goal: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false,
       },
       habit_day: {
@@ -37,22 +37,27 @@ module.exports = (sequelize, DataTypes) => {
       },
       actual_amount: {
         type: Sequelize.INTEGER,
+        defaultValue: 0,
         allowNull: false,
       },
       target_amount: {
         type: Sequelize.INTEGER,
+        defaultValue: 0,
         allowNull: false,
       },
       achievement: {
         type: Sequelize.INTEGER,
+        defaultValue: 0,
         allowNull: false,
       },
       start_date: {
         type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW, //TODO: 임시 저장
         allowNull: false,
       },
       end_date: {
         type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW, //TODO: 임시 저장
         allowNull: false,
       },
       done: {
@@ -68,6 +73,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
       underscored: true,
       charset: "utf8",
+      collate: "utf8_general_ci",
     }
   );
   return Userhabit;

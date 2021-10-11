@@ -45,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false,
       underscored: true,
       charset: "utf8",
+      collate: "utf8_general_ci",
     }
   );
   return Category;

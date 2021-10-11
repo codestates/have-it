@@ -57,7 +57,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       created_at: {
         type: Sequelize.DATE,
-        allowNull: false,
         defaultValue: Sequelize.NOW,
       },
     },
@@ -68,6 +67,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false,
       underscored: true,
       charset: "utf8",
+      collate: "utf8_general_ci",
     }
   );
   return Habit;

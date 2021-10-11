@@ -17,6 +17,7 @@ module.exports = {
       },
       nickname: {
         type: Sequelize.STRING,
+        unique: true,
         allowNull: true,
       },
       bio: {

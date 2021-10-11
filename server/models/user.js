@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       nickname: {
         type: Sequelize.STRING,
+        unique: true,
         allowNull: true,
       },
       bio: {
@@ -58,6 +59,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
       underscored: true,
       charset: "utf8",
+      collate: "utf8_general_ci",
     }
   );
   return User;

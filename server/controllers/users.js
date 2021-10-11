@@ -1,4 +1,5 @@
 const { setJwtCookie, isAuthorized } = require("./tokenFunctions");
+const { User } = require("../models");
 
 module.exports = {
   modifyUserInfo: (req, res) => {
@@ -13,10 +14,14 @@ module.exports = {
       if (accessTokenData.users_id !== users_id) {
         res.status(403).send("don't have permission.");
       } else {
-        //TODO: 데이터베이스에서 유저정보들 삭제하기
-        setJwtCookie(res, req.cookies.jwt, 1);
-        res.status(200).json({
-          email: accessTokenData.email,
+        User.destroy({
+          users_id: accessTokenData.users_id,
+        }).then((result) => {
+          setJwtCookie(res, req.cookies.jwt, 1);
+          res.status(200).json({
+            users_id: accessTokenData.users_id,
+            email: accessTokenData.email,
+          });
         });
       }
     }
