@@ -3,13 +3,12 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Cards from "../components/Cards";
-
 import SortButton from "../components/SortButton";
 import { hidePopupAction } from "../store/actions";
 
 const Main = styled.div`
   overflow: scroll;
-  height: calc(100vh - 96px);
+  max-height: calc(100vh - 6rem);
 `;
 
 const Popup = styled.div`
@@ -18,25 +17,25 @@ const Popup = styled.div`
   justify-content: space-between;
   background-color: var(--color-lightblue--02);
   border-radius: 10px;
-  width: auto;
-  height: 48px;
-  margin: 5px 40px;
+  min-height: 3rem;
+  margin: 0.5rem 2.5rem;
   padding: 0rem 1rem;
   margin: 1.5rem 2.5rem 0rem 2.5rem;
 `;
 
-const HidePopup = styled.div`
-  font-size: "16px";
+const HidePopup = styled.button`
+  background: none;
+  font-size: 1rem;
   color: var(--color-mainblue);
 `;
 
 const Container = styled.div`
-  width: calc(100vw - 80px);
-  height: 40px;
+  width: calc(100vw - 5rem);
+  height: 2.5rem;
 `;
 
 const MoreCards = styled(Cards)`
-  margin: 80px;
+  margin: 5rem;
 `;
 
 const HomeMore = () => {

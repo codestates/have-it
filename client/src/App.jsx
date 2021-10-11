@@ -37,7 +37,6 @@ const App = () => {
           <Header />
           <Switch>
             <Route path="/" exact component={Home} />
-            <Route path="/more" component={HomeMore} />
             <Route path="/more/:id" component={HomeMore} />
             <Route path="/mypage" component={MyPage} />
             <Route path="/habit/:id" component={Habit} />
