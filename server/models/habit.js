@@ -1,24 +1,26 @@
 "use strict";
 const { Model, Sequelize } = require("sequelize");
-const habits = require("../controllers/habits");
 module.exports = (sequelize, DataTypes) => {
   class Habit extends Model {
     static associate(models) {
       models.Habit.hasMany(models.Post, {
-        foreignKey: "habits_id",
+        foreignKey: { name: "habits_id", allowNull: false },
         sourceKey: "habits_id",
       });
       models.Habit.belongsTo(models.User, {
-        foreignKey: "creator_id",
+        foreignKey: { name: "creator_id", allowNull: false },
         targetKey: "users_id",
+        onDelete: "CASCADE",
       });
       models.Habit.hasMany(models.Userhabit, {
-        foreignKey: "habits_id",
+        foreignKey: { name: "habits_id", allowNull: false },
         sourceKey: "habits_id",
       });
-    }
-    toJSON() {
-      return { ...this.get() };
+      models.Habit.belongsTo(models.Category, {
+        foreignKey: "categories_id",
+        targetKey: "categories_id",
+        onDelete: "CASCADE",
+      });
     }
   }
   Habit.init(
@@ -33,10 +35,6 @@ module.exports = (sequelize, DataTypes) => {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
-      category: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       title: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -47,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       image: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       emoji_id: {
         type: Sequelize.STRING,
@@ -59,11 +57,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       created_at: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
-      },
-      creator_id: {
-        type: Sequelize.STRING,
         allowNull: false,
+        defaultValue: Sequelize.NOW,
       },
     },
     {

@@ -12,9 +12,19 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
-      category: {
-        type: Sequelize.STRING,
+      categories_id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
+        onDelete: "CASCADE",
+        references: {
+          onDelete: "CASCADE",
+          model: {
+            tableName: "categories",
+            schema: "",
+            onDelete: "CASCADE",
+          },
+          key: "categories_id",
+        },
       },
       title: {
         type: Sequelize.STRING,
@@ -26,7 +36,7 @@ module.exports = {
       },
       image: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       emoji_id: {
         type: Sequelize.STRING,
@@ -38,10 +48,12 @@ module.exports = {
       },
       created_at: {
         type: Sequelize.DATE,
+        allowNull: false,
         defaultValue: Sequelize.NOW,
       },
       creator_id: {
         type: Sequelize.STRING,
+        onDelete: "CASCADE",
         references: {
           model: {
             tableName: "users",

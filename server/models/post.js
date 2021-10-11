@@ -6,14 +6,17 @@ module.exports = (sequelize, DataTypes) => {
       models.Post.belongsTo(models.User, {
         foreignKey: "users_id",
         targetKey: "users_id",
+        onDelete: "CASCADE",
       });
       models.Post.belongsTo(models.Habit, {
         foreignKey: "habits_id",
         targetKey: "habits_id",
+        onDelete: "CASCADE",
       });
       models.Post.belongsTo(models.Userhabit, {
         foreignKey: "userhabit_id",
         targetKey: "userhabit_id",
+        onDelete: "CASCADE",
       });
     }
   }
@@ -22,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       posts_id: {
         allowNull: false,
         primaryKey: true,
+        autoIncrement: true,
         type: Sequelize.INTEGER,
       },
       content: {
@@ -33,18 +37,18 @@ module.exports = (sequelize, DataTypes) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      users_id: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      habits_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      userhabit_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
+      // users_id: {
+      //   type: Sequelize.STRING,
+      //   allowNull: false,
+      // },
+      // habits_id: {
+      //   type: Sequelize.INTEGER,
+      //   allowNull: false,
+      // },
+      // userhabit_id: {
+      //   type: Sequelize.INTEGER,
+      //   allowNull: false,
+      // },
     },
     {
       sequelize,
