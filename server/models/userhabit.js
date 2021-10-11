@@ -60,14 +60,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 0,
       },
-      // users_id: {
-      //   type: Sequelize.INTEGER,
-      //   allowNull: false,
-      // },
-      // habits_id: {
-      //   type: Sequelize.STRING,
-      //   allowNull: false,
-      // },
     },
     {
       sequelize,

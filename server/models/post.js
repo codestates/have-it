@@ -37,18 +37,6 @@ module.exports = (sequelize, DataTypes) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      // users_id: {
-      //   type: Sequelize.STRING,
-      //   allowNull: false,
-      // },
-      // habits_id: {
-      //   type: Sequelize.INTEGER,
-      //   allowNull: false,
-      // },
-      // userhabit_id: {
-      //   type: Sequelize.INTEGER,
-      //   allowNull: false,
-      // },
     },
     {
       sequelize,
