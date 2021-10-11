@@ -1,71 +1,110 @@
 const bcrypt = require("bcrypt");
-const { generateAccessToken, setJwtCookie, isAuthorized } = require("./tokenFunctions");
+const { v4: uuid } = require("uuid");
 const { saltRounds } = require("../config");
 const { User } = require("../models");
+const { generateAccessToken, setCookie, clearCookie } = require("./token");
 
 module.exports = {
-  isAuth: (req, res) => {
-    const accessToken = isAuthorized(req);
-    if (!accessToken) {
-      res.status(401).send("invalid token");
-    } else {
-      res.status(200).send("valid token");
+  checkNickname: async (req, res) => {
+    const { nickname } = req.params;
+    const foundUser = await User.findOne({ where: { nickname } });
+    if (foundUser) {
+      return res.status(409).json({ message: `${nickname} already exists` });
     }
+    return res.status(200).json({ message: "Valid nickname" });
   },
-  signin: (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      res.status(422).send("insufficient parameters supplied");
-    } else {
-      User.findOne({
-        where: {
-          email,
-        },
-      })
-        .then((data) => {
-          if (!data) {
-            res.status(404).send("invalid user");
-          } else {
-            const same = bcrypt.compareSync(password, data.dataValues.password);
-            if (!same) {
-              res.status(404).send("invalid user");
-            } else {
-              // TODO: 유저 정보, 보유 채널, done여부 리턴, 쿠키에 토큰 넣어주기
-            }
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  },
-  signout: (req, res) => {
-    setJwtCookie(res, req.cookies.jwt, 1);
-    res.status(205).send("Logged out successfully");
-  },
-  signup: (req, res) => {
-    console.log(req.body);
-    const { email, password, users_id } = req.body;
 
-    if (!email || !password || !users_id) {
-      res.status(422).send("insufficient parameters supplied");
-    } else {
-      const hashedPassword = bcrypt.hashSync(password, saltRounds);
-      User.create({
-        email: email,
-        users_id: users_id,
-        password: hashedPassword,
-        sns: "local",
-      })
-        .then((result) => {
-          const token = generateAccessToken(result);
-          setJwtCookie(res, token);
-          res.status(201).json({ users_id: result.users_id });
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(409).send("already email or users_id exists");
-        });
+  checkEmail: async (req, res) => {
+    const { email } = req.params;
+    const foundUser = await User.findOne({ where: { email } });
+    if (foundUser) {
+      const { sns } = foundUser.dataValues;
+      return res.status(409).json({ message: `${email} already exists`, sns });
     }
+    return res.status(200).json({ message: "Valid email" });
+  },
+
+  me: async (req, res) => {
+    const foundUser = await User.findOne({
+      where: { users_id: req.userId },
+      attributes: { exclude: ["password"] },
+    });
+
+    if (!foundUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // TODO: userhabits와 habits를 join한 결과를 응답
+
+    return res.status(200).json({ user: foundUser.dataValues });
+  },
+
+  signin: async (req, res) => {
+    const { email, password } = req.body;
+
+    const foundUserByEmail = await User.findOne({ where: { email } });
+    if (!foundUserByEmail) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const { sns } = foundUserByEmail.dataValues;
+    if (sns !== "local") {
+      return res.status(409).json({ message: `${email} already exists`, sns });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, foundUserByEmail.dataValues.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const token = generateAccessToken(foundUserByEmail.dataValues.users_id);
+
+    setCookie(res, token);
+
+    delete foundUserByEmail.dataValues.password;
+
+    // TODO: userhabits와 habits를 join한 결과를 응답
+
+    return res.status(200).json({ user: foundUserByEmail.dataValues });
+  },
+
+  signout: (req, res) => {
+    const { jwt } = req.cookies;
+    clearCookie(res, jwt);
+    res.status(205).json({ message: "Logged out successfully" });
+  },
+
+  signup: async (req, res) => {
+    const { nickname, email, password } = req.body;
+
+    const foundUserByNickname = await User.findOne({ where: { nickname } });
+    if (foundUserByNickname) {
+      return res.status(409).json({ message: `${nickname} already exists` });
+    }
+
+    const foundUserByEmail = await User.findOne({ where: { email } });
+    if (foundUserByEmail) {
+      const { sns } = foundUserByEmail.dataValues;
+      return res.status(409).json({ message: `${email} already exists`, sns });
+    }
+
+    const hashed = await bcrypt.hash(password, saltRounds);
+
+    const createdUser = await User.create({
+      users_id: uuid(),
+      nickname,
+      email,
+      password: hashed,
+      sns: "local",
+    });
+    const foundUser = await User.findOne({
+      where: { users_id: createdUser.dataValues.users_id },
+      attributes: { exclude: ["password", "bio", "image", "sns", "createdAt", "updatedAt"] },
+    });
+    const token = generateAccessToken(foundUser.dataValues.users_id);
+
+    setCookie(res, token);
+
+    return res.status(201).json({ user: foundUser.dataValues });
   },
 };
