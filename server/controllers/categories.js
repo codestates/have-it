@@ -1,26 +1,29 @@
+const { Category } = require("../models");
+
 module.exports = {
-  getCategories: (req, res) => {
-    // TODO: DB와 연결
-    const categories = [
-      { id: 1, title: "💪🏻 운동", en_title: "exercise" },
-      { id: 2, title: "📚 독서", en_title: "book" },
-      { id: 3, title: "✏️ 공부", en_title: "study" },
-      { id: 4, title: "💖 마음", en_title: "mind" },
-      { id: 5, title: "⏰ 생활 습관", en_title: "routine" },
-    ];
-    res.json({ categories });
+  getCategories: async (req, res) => {
+    try {
+      const foundCategories = await Category.findAll();
+      const refinedCategories = foundCategories.map(
+        ({ dataValues: { categories_id, title, en_title } }) => ({
+          id: categories_id,
+          title,
+          enTitle: en_title,
+        })
+      );
+      return res.status(200).json({ categories: refinedCategories });
+    } catch (err) {
+      return res.status(500).json({ message: `Error occured in database: ${err}` });
+    }
   },
-  getCategoryByEnTitle: (req, res) => {
+  getCategoryByEnTitle: async (req, res) => {
     const { enTitle } = req.params;
-    // TODO: DB와 연결
-    const categories = [
-      { id: 1, title: "💪🏻 운동", en_title: "exercise" },
-      { id: 2, title: "📚 독서", en_title: "book" },
-      { id: 3, title: "✏️ 공부", en_title: "study" },
-      { id: 4, title: "💖 마음", en_title: "mind" },
-      { id: 5, title: "⏰ 생활 습관", en_title: "routine" },
-    ];
-    const foundCategory = categories.find((category) => category.en_title === enTitle);
-    res.json({ id: foundCategory.id, title: foundCategory.title });
+    try {
+      const foundCategory = await Category.findOne({ where: { en_title: enTitle } });
+      const { categories_id: id, title } = foundCategory.dataValues;
+      return res.status(200).json({ category: { id, title, enTitle } });
+    } catch (err) {
+      return res.status(500).json({ message: `Error occured in database: ${err}` });
+    }
   },
 };
