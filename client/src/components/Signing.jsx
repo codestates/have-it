@@ -138,7 +138,9 @@ const Signing = ({ defaultType }) => {
   const [emailMessage, setEmailMessage] = useState(null);
   const [passwordMessage, setPasswordMessage] = useState(null);
   const [hasSocialHistory, setHasSocialHistory] = useState(false);
-  const [alertColor, setAlertColor] = useState("var(--color-red)");
+  const [usernameColor, setUsernameColor] = useState("var(--color-midgray)");
+  const [emailColor, setEmailColor] = useState("var(--color-midgray)");
+  const [passwordColor, setPasswordColor] = useState("var(--color-midgray)");
   const [isDisabled, setIsDisabled] = useState(true);
 
   const dispatch = useDispatch();
@@ -270,10 +272,24 @@ const Signing = ({ defaultType }) => {
   }, [usernameValid, emailValid, passwordValid]);
 
   useEffect(() => {
-    if (hasSocialHistory) {
-      setAlertColor("var(--color-lightblue)");
+    if (usernameMessage) {
+      setUsernameColor("var(--color-red)");
     } else {
-      setAlertColor("var(--color-red)");
+      setUsernameColor("var(--color-midgray)");
+    }
+    if (emailMessage) {
+      if (hasSocialHistory) {
+        setEmailColor("var(--color-mainblue)");
+      } else {
+        setEmailColor("var(--color-red)");
+      }
+    } else {
+      setEmailColor("var(--color-midgray)");
+    }
+    if (passwordMessage) {
+      setPasswordColor("var(--color-red)");
+    } else {
+      setPasswordColor("var(--color-midgray)");
     }
   }, [usernameMessage, emailMessage, passwordMessage, hasSocialHistory]);
 
@@ -291,10 +307,10 @@ const Signing = ({ defaultType }) => {
               value={inputValue.username}
               onChange={handleInputChange}
               message={usernameMessage}
-              color={alertColor}
+              color={usernameColor}
             />
             {usernameMessage && (
-              <AlertMessage className="icon-attention-2" color={alertColor}>
+              <AlertMessage className="icon-attention-2" color={usernameColor}>
                 {usernameMessage}
               </AlertMessage>
             )}
@@ -307,10 +323,10 @@ const Signing = ({ defaultType }) => {
           value={inputValue.email}
           onChange={handleInputChange}
           message={emailMessage}
-          color={alertColor}
+          color={emailColor}
         />
         {emailMessage && (
-          <AlertMessage className="icon-attention-2" color={alertColor}>
+          <AlertMessage className="icon-attention-2" color={emailColor}>
             {emailMessage}
           </AlertMessage>
         )}
@@ -321,10 +337,10 @@ const Signing = ({ defaultType }) => {
           value={inputValue.password}
           onChange={handleInputChange}
           message={passwordMessage}
-          color={alertColor}
+          color={passwordColor}
         />
         {passwordMessage && (
-          <AlertMessage className="icon-attention-2" color={alertColor}>
+          <AlertMessage className="icon-attention-2" color={passwordColor}>
             {passwordMessage}
           </AlertMessage>
         )}
