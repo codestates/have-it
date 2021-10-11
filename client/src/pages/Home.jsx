@@ -81,7 +81,7 @@ const Home = () => {
 
       <>
         <Title>지금 뜨는 채널</Title>
-        <Cards />
+        <Cards isAtHome />
         <CategoryListContainer>
           <CategoryList isAtHome handleCategoryClick={handleCategoryClick} />
           <Link to={`/more/${selectCategory.name_en}`}>
@@ -91,7 +91,7 @@ const Home = () => {
             </ViewMore>
           </Link>
         </CategoryListContainer>
-        <Cards />
+        <Cards isAtHome />
       </>
     </Main>
   );

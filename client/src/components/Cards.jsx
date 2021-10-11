@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import Card from "./Card";
 
 const CardList = styled.div`
-  margin: 40px;
+  margin: ${(props) => props.isAtHome && "40px"};
   position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, auto));
@@ -22,7 +23,7 @@ const CardItem = styled.div`
   max-width: 360px;
 `;
 
-const Cards = () => {
+const Cards = ({ isAtHome }) => {
   const dummy = [
     {
       id: 1,
@@ -92,7 +93,7 @@ const Cards = () => {
   ];
 
   return (
-    <CardList>
+    <CardList isAtHome={isAtHome}>
       {dummy.map((el) => (
         <CardItem key={el.id} color={el.color}>
           <Card info={el} />
@@ -100,6 +101,13 @@ const Cards = () => {
       ))}
     </CardList>
   );
+};
+Cards.defaultProps = {
+  isAtHome: true,
+};
+
+Cards.propTypes = {
+  isAtHome: PropTypes.bool,
 };
 
 export default Cards;
