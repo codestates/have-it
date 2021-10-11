@@ -23,11 +23,11 @@ const FlexContainer = styled.div`
 `;
 
 const App = () => {
-  const { isLoginModal, isSignupModal, isHabitCreateModal, isHabitJoinModal } = useSelector(
+  const { isSignInModal, isSignUpModal, isHabitCreateModal, isHabitJoinModal } = useSelector(
     ({ modalReducer }) => modalReducer
   );
 
-  const isModal = isLoginModal || isSignupModal || isHabitCreateModal || isHabitJoinModal;
+  const isModal = isSignInModal || isSignUpModal || isHabitCreateModal || isHabitJoinModal;
 
   return (
     <BrowserRouter>
@@ -47,8 +47,8 @@ const App = () => {
       </FlexContainer>
       {isModal && (
         <Modal>
-          {isLoginModal && <Signing defaultType="로그인" />}
-          {isSignupModal && <Signing defaultType="회원가입" />}
+          {isSignInModal && <Signing defaultType="로그인" />}
+          {isSignUpModal && <Signing defaultType="회원가입" />}
           {isHabitCreateModal && <HabitCreate />}
           {isHabitJoinModal && <HabitJoin />}
         </Modal>
