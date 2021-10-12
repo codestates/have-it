@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const posts = require("../controllers/posts");
-const { findPost, writePost, modifyPost, removePost } = posts;
+const { findPosts, writePost, modifyPost, removePost } = posts;
+const isAuth = require("../middlewares/auth");
 
-router.get("/:habits_id", findPost);
-router.post("/:habits_id", writePost);
-router.put("/:posts_id", modifyPost);
-router.delete("/:posts_id", removePost);
+router.get("/:habits_id", isAuth, findPosts);
+router.post("/:habits_id", isAuth, writePost);
+router.put("/:posts_id", isAuth, modifyPost);
+router.delete("/:posts_id", isAuth, removePost);
 
 module.exports = router;
