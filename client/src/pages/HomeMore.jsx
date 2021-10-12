@@ -1,5 +1,4 @@
 import React from "react";
-import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Cards from "../components/Cards";
@@ -44,9 +43,6 @@ const HomeMore = () => {
   const handlePopupClose = () => {
     dispatch(hidePopupAction);
   };
-
-  const name = useParams();
-  console.log(name);
 
   return (
     <Main>
