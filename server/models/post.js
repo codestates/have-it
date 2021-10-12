@@ -30,7 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       content: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false,
       },
       image: {

@@ -123,4 +123,7 @@ module.exports = {
       DBERROR(res, err);
     }
   },
+  modifyHabit: async (req, res) => {
+    res.status(200).send("아직 구현 중 입니다");
+  },
 };
