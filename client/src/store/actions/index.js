@@ -42,6 +42,7 @@ export const modalOffAction = {
 // Auth
 export const signInAction = {
   type: SIGN_IN,
+  payload: { nickname: null, image: null },
 };
 export const signOutAction = {
   type: SIGN_OUT,

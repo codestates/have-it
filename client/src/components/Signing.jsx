@@ -3,6 +3,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { signInAction, modalOffAction } from "../store/actions";
+import authApi from "../api/auth";
 
 const Form = styled.form`
   width: 18.75rem;
@@ -231,9 +232,15 @@ const Signing = ({ defaultType }) => {
     console.log("비밀번호 찾기");
   };
 
-  const handleSignInClick = () => {
+  const handleSignInClick = (e) => {
     // TODO: 로그인 요청
-    console.log("로그인 완료");
+    e.preventDefault();
+    const data = authApi.signin(inputValue.email, inputValue.password);
+    data.then((res) => {
+      dispatch({ ...signInAction, payload: res.data.user });
+      console.log("로그인 완료");
+    });
+
     // TODO: 받아온 정보 state에 업데이트
     dispatch(modalOffAction);
     dispatch(signInAction);
