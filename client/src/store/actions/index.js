@@ -10,7 +10,7 @@ import {
   SIGN_OUT,
   SHOW_POPUP,
   HIDE_POPUP,
-  GET_HABITS,
+  FIND_HABITS,
 } from "./actionTypes";
 
 // action
@@ -67,6 +67,6 @@ export const habitJoinProceedAction = (habit) => ({
 export const habitJoinCancelAction = {
   type: HABIT_JOIN_CANCEL,
 };
-export const getHabitsAction = {
-  type: GET_HABITS,
+export const findHabitsAction = {
+  type: FIND_HABITS,
 };
