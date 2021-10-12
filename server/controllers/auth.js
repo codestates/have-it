@@ -36,7 +36,7 @@ module.exports = {
 
     // TODO: userhabits와 habits를 join한 결과를 응답
 
-    return res.status(200).json({ user: foundUser.dataValues });
+    return res.status(200).json({ message: "Valid user", user: foundUser.dataValues });
   },
 
   signin: async (req, res) => {
@@ -65,13 +65,13 @@ module.exports = {
 
     // TODO: userhabits와 habits를 join한 결과를 응답
 
-    return res.status(200).json({ user: foundUserByEmail.dataValues });
+    return res.status(200).json({ message: "Signed in", user: foundUserByEmail.dataValues });
   },
 
   signout: (req, res) => {
     const { jwt } = req.cookies;
     clearCookie(res, jwt);
-    res.status(205).json({ message: "Logged out successfully" });
+    res.status(205).json({ message: "Signed out" });
   },
 
   signup: async (req, res) => {
@@ -105,6 +105,6 @@ module.exports = {
 
     setCookie(res, token);
 
-    return res.status(201).json({ user: foundUser.dataValues });
+    return res.status(201).json({ message: "Signed up", user: foundUser.dataValues });
   },
 };
