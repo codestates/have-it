@@ -1,3 +1,4 @@
+require("express-async-errors");
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
@@ -36,8 +37,9 @@ app.use("/users", usersRouter);
 app.use("/categories", categoriesRouter);
 
 app.use((err, req, res, next) => {
-  console.log(err);
-  res.status(400).send("뭔가 착각이 있어요");
+  res
+    .status(err?.response?.status || 500)
+    .json({ message: `${err?.response?.statusText || "Something went wrong"}` });
 });
 
 app.listen(port, async () => {
