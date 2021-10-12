@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
-import { signInAction, modalOffAction, getHabitsAction } from "../store/actions";
+import { signInAction, modalOffAction, findHabitsAction } from "../store/actions";
 import authApi from "../api/auth";
 
 const Form = styled.form`
@@ -239,7 +239,7 @@ const Signing = ({ defaultType }) => {
     data.then((res) => {
       console.log(res);
       dispatch({ ...signInAction, payload: res.data.user });
-      dispatch({ ...getHabitsAction, payload: res.data.user });
+      dispatch({ ...findHabitsAction, payload: res.data.user });
       console.log("로그인 완료");
     });
 

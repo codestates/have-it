@@ -1,4 +1,4 @@
-import { GET_HABITS } from "../actions/actionTypes";
+import { FIND_HABITS } from "../actions/actionTypes";
 
 const initialState = {
   habits_id: null,
@@ -17,7 +17,7 @@ const initialState = {
 const habitsReducer = (prevState = initialState, action) => {
   let state;
   switch (action.type) {
-    case GET_HABITS:
+    case FIND_HABITS:
       state = {
         ...prevState,
       };

@@ -17,4 +17,4 @@ export const HIDE_POPUP = "HIDE_POPUP";
 export const HABIT_JOIN_PROCEED = "HABIT_JOIN_PROCEED";
 export const HABIT_JOIN_CANCEL = "HABIT_JOIN_CANCEL";
 
-export const GET_HABITS = "GET_HABITS";
+export const FIND_HABITS = "FIND_HABITS";
