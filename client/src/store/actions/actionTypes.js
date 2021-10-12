@@ -18,4 +18,3 @@ export const HABIT_JOIN_PROCEED = "HABIT_JOIN_PROCEED";
 export const HABIT_JOIN_CANCEL = "HABIT_JOIN_CANCEL";
 
 export const GET_HABITS = "GET_HABITS";
-
