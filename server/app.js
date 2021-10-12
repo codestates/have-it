@@ -17,7 +17,7 @@ const categoriesRouter = require("./routes/categories");
 
 const app = express();
 
-const corsOption = { origin: allowedOrigin, optionsSuccessStatus: 200 };
+const corsOption = { origin: allowedOrigin, optionsSuccessStatus: 200, credentials: true };
 app.use(cors(corsOption));
 app.use(helmet());
 app.use(morgan("tiny"));
