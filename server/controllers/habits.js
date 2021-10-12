@@ -28,7 +28,7 @@ module.exports = {
     if (category) {
       try {
         const foundCategory = await Category.findOne({ where: { en_title: category } });
-        const habitsList = await foundCategory.getHabits({
+        const habitsList = await foundCategory.findHabits({
           order: [[sortValue, "DESC"]],
           limit: +limit || null,
         });
