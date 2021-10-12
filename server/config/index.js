@@ -27,4 +27,10 @@ module.exports = {
   cors: {
     allowedOrigin: required("CORS_ALLOW_ORIGIN"),
   },
+  oauth: {
+    naverClientId: required("NAVER_CLIENT_ID"),
+    naverClientSecret: required("NAVER_CLIENT_SECRET"),
+    googleClientId: required("GOOGLE_CLIENT_ID"),
+    googleClientSecret: required("GOOGLE_CLIENT_SECRET"),
+  },
 };
