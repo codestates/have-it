@@ -54,7 +54,7 @@ const Home = () => {
   const [selectCategory, setSelectCategory] = useState({
     id: 1,
     title: "💪🏻 운동",
-    en_title: "exercise",
+    enTitle: "exercise",
   });
   const dispatch = useDispatch();
   const handlePopupClose = () => {
@@ -84,7 +84,7 @@ const Home = () => {
         <Cards isAtHome />
         <CategoryListContainer>
           <CategoryList isAtHome handleCategoryClick={handleCategoryClick} />
-          <Link to={`/more/${selectCategory.en_title}`}>
+          <Link to={`/more/${selectCategory.enTitle}`}>
             <ViewMore>
               더보기
               <i className="icon-right-open" style={{ fontSize: "20px", color: "#4D4DFF" }} />

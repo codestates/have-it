@@ -66,8 +66,7 @@ export const habitJoinProceedAction = (habit) => ({
 });
 export const habitJoinCancelAction = {
   type: HABIT_JOIN_CANCEL,
-}
-
+};
 export const getHabitsAction = {
   type: GET_HABITS,
 };
