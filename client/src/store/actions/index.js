@@ -8,6 +8,7 @@ import {
   SIGN_OUT,
   SHOW_POPUP,
   HIDE_POPUP,
+  GET_HABITS,
 } from "./actionTypes";
 
 // action
@@ -54,4 +55,7 @@ export const showPopupAction = {
 };
 export const hidePopupAction = {
   type: HIDE_POPUP,
+};
+export const getHabitsAction = {
+  type: GET_HABITS,
 };
