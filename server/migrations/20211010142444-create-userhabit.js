@@ -34,7 +34,6 @@ module.exports = {
       },
       goal: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false,
       },
       habit_day: {
@@ -43,14 +42,17 @@ module.exports = {
       },
       actual_amount: {
         type: Sequelize.INTEGER,
+        defaultValue: 0,
         allowNull: false,
       },
       target_amount: {
         type: Sequelize.INTEGER,
+        defaultValue: 0,
         allowNull: false,
       },
       achievement: {
         type: Sequelize.INTEGER,
+        defaultValue: 0,
         allowNull: false,
       },
       start_date: {
@@ -68,12 +70,10 @@ module.exports = {
       },
       created_at: {
         type: Sequelize.DATE,
-        allowNull: false,
         defaultValue: Sequelize.NOW,
       },
       updated_at: {
         type: Sequelize.DATE,
-        allowNull: false,
         defaultValue: Sequelize.NOW,
       },
     });
