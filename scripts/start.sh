@@ -10,5 +10,6 @@ export DB_PORT=$(aws ssm get-parameters --region ap-northeast-2 --names DB_PORT 
 export DB_USERNAME=$(aws ssm get-parameters --region ap-northeast-2 --names DB_USERNAME --query Parameters[0].Value | sed 's/"//g')
 export PORT=$(aws ssm get-parameters --region ap-northeast-2 --names PORT --query Parameters[0].Value | sed 's/"//g')
 export CORS_ALLOW_ORIGIN=$(aws ssm get-parameters --region ap-northeast-2 --names CORS_ALLOW_ORIGIN --query Parameters[0].Value | sed 's/"//g')
+export JWT_EXPIRES_SEC=$(aws ssm get-parameters --region ap-northeast-2 --names JWT_EXPIRES_SEC --query Parameters[0].Value | sed 's/"//g')
 
 authbind --deep pm2 start app.js
