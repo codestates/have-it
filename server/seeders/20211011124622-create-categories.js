@@ -39,7 +39,7 @@ module.exports = {
         {
           categories_id: 4,
           title: "💖 마음",
-          en_title: "exercise",
+          en_title: "mind",
           level1image: "1",
           level2image: "1",
           level3image: "1",
@@ -47,7 +47,7 @@ module.exports = {
         {
           categories_id: 5,
           title: "⏰ 생활 습관",
-          en_title: "exercise",
+          en_title: "routine",
           level1image: "1",
           level2image: "1",
           level3image: "1",
