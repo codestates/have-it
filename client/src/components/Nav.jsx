@@ -3,76 +3,85 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import "../styles/fontello/css/fontello.css";
 import { useDispatch, useSelector } from "react-redux";
-import { authModalOnAction, habitCreateModalOnAction } from "../store/actions";
+import { signInModalOnAction, habitCreateModalOnAction } from "../store/actions";
 
 const NavContainer = styled.div`
   display: flex;
+  align-items: start;
   justify-content: center;
-  width: 80px;
-  height: 100%;
+  min-width: 5rem;
+  height: 100vh;
   background-color: var(--color-lightgray);
-  padding: 15px 0px;
 `;
 
 const FlexContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: stretch;
-  width: 48px;
-  height: calc(100vh - 30px);
+  justify-content: start;
+  width: 3rem;
 `;
 
-const LogoContainer = styled.div`
-  width: 48px;
-  height: 48px;
-  border-style: none;
+const Logo = styled(Link)`
+  display: flex;
+  align-items: center;
+  height: 6rem;
+  img {
+    width: 3rem;
+    height: 3rem;
+  }
 `;
 
-const MenuContainer = styled.div`
-  font-size: 12px;
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.5rem 0rem;
 `;
 
-const HabitContainer = styled.div`
+const MenuContainer = styled(Container)`
+  flex-basis: 7rem;
+`;
+
+const HabitContainer = styled(Container)`
+  flex-basis: calc(100vh - 25rem);
+  justify-content: start;
   overflow: scroll;
-  margin-bottom: 100px;
   ::-webkit-scrollbar {
     display: none;
   }
 `;
 
-const HabitCreateContainer = styled.div`
-  position: absolute;
-  bottom: 15px;
-`;
-
-const EmptyContainer = styled.div`
-  display: flex;
-  align-items: center;
-  height: 30px;
-`;
-
-const Button = styled.div`
+const Button = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--color-midgray);
+  background-color: var(--color-midgray--04);
   color: var(--color-white);
   border-radius: 5px;
-  width: 48px;
-  height: 48px;
-  margin: 10px 0px;
+  width: 3rem;
+  height: 3rem;
 `;
 
-const HabitCreateButton = styled(Button)`
-  background-color: var(--color-mainblue);
+const MenuButton = styled(Button)``;
+const HabitButton = styled(Button)`
+  margin-bottom: 1rem;
 `;
 
 const Divider = styled.div`
-  border-top: 3px solid #9ea0b8;
+  border-top: 1px solid #9ea0b8;
   border-radius: 1px;
-  width: 48px;
-  margin: 15px 0px;
+  width: 3rem;
+  height: 1px;
+`;
+
+const HabitCreateContainer = styled(Container)`
+  flex-basis: 3rem;
+`;
+const HabitCreateButton = styled(Button)`
+  font-size: 2rem;
+  background-color: var(--color-mainblue);
 `;
 
 const Nav = () => {
@@ -95,7 +104,7 @@ const Nav = () => {
   ];
 
   const handleSignIn = () => {
-    dispatch(authModalOnAction);
+    dispatch(signInModalOnAction);
   };
 
   const handleCreatehabit = () => {
@@ -106,20 +115,19 @@ const Nav = () => {
     <>
       <NavContainer>
         <FlexContainer>
-          <LogoContainer>
-            <img alt="logo" src={`${process.env.PUBLIC_URL}/assets/android-icon-48x48.png`} />
-          </LogoContainer>
-          <EmptyContainer />
+          <Logo to="/">
+            <img alt="logo" src="../images/logo/logo.svg" />
+          </Logo>
           <MenuContainer>
             <Link to="/">
-              <Button>
+              <MenuButton>
                 <i className="icon-home" style={{ fontSize: "26px", color: "white " }} />
-              </Button>
+              </MenuButton>
             </Link>
             <Link to="/mypage">
-              <Button>
+              <MenuButton>
                 <i className="icon-user" style={{ fontSize: "26px", color: "white " }} />
-              </Button>
+              </MenuButton>
             </Link>
           </MenuContainer>
           <Divider />
@@ -127,12 +135,12 @@ const Nav = () => {
             {isLogin &&
               dummy.map((el) => (
                 <Link key={el.id} to={`/habit/${el.id}`}>
-                  <Button>{el.id}</Button>
+                  <HabitButton>{el.id}</HabitButton>
                 </Link>
               ))}
           </HabitContainer>
+          <Divider />
           <HabitCreateContainer>
-            <Divider />
             {isLogin ? (
               <HabitCreateButton onClick={handleCreatehabit}>+</HabitCreateButton>
             ) : (

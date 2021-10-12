@@ -1,6 +1,7 @@
-import React, { useState, memo } from "react";
+import React, { useState, memo, useEffect } from "react";
 import styled, { css } from "styled-components";
 import PropTypes from "prop-types";
+import categoriesApi from "../api/categories";
 
 const Container = styled.div`
   display: flex;
@@ -25,35 +26,39 @@ const Category = styled.button`
 `;
 
 const CategoryList = memo(({ handleCategoryClick, selectColor, isAtHome }) => {
-  const [selectCategoryId, setSelectCategoryId] = useState(null);
+  const [selectCategoryId, setSelectCategoryId] = useState(isAtHome ? 1 : null);
+  const [categories, setCategories] = useState([]);
 
-  // TODO: categories를 서버에서 받아오기
-  const categories = [
-    { id: 1, name: "💪🏻 운동", name_en: "exercise" },
-    { id: 2, name: "📚 독서", name_en: "book" },
-    { id: 3, name: "✏️ 공부", name_en: "study" },
-    { id: 4, name: "💖 마음", name_en: "mind" },
-    { id: 5, name: "⏰ 생활 습관", name_en: "routine" },
-  ];
+  useEffect(() => {
+    const getCategoriesDataAndSet = async () => {
+      const { data } = await categoriesApi.getCategories();
+      setCategories(data.categories);
+    };
+    getCategoriesDataAndSet();
+  }, []);
 
   return (
-    <Container>
-      {categories.map((category) => (
-        <Category
-          key={category.id}
-          type="button"
-          selected={category.id === selectCategoryId}
-          selectColor={selectColor}
-          onClick={() => {
-            setSelectCategoryId(category.id);
-            handleCategoryClick(category);
-          }}
-          isAtHome={isAtHome}
-        >
-          {category.name}
-        </Category>
-      ))}
-    </Container>
+    <>
+      {categories && categories.length > 0 && (
+        <Container>
+          {categories.map((category) => (
+            <Category
+              key={category.id}
+              type="button"
+              selected={category.id === selectCategoryId}
+              selectColor={selectColor}
+              onClick={() => {
+                setSelectCategoryId(category.id);
+                handleCategoryClick(category);
+              }}
+              isAtHome
+            >
+              {category.title}
+            </Category>
+          ))}
+        </Container>
+      )}
+    </>
   );
 });
 

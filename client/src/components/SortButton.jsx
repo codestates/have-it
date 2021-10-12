@@ -34,7 +34,7 @@ const SortButton = styled.li`
   }
   :nth-of-type(2) {
     border-bottom: ${(props) => props.isClicked && "none"};
-    border-top: ${(props) => props.isClicked && "none"};
+    border-top: ${(props) => !props.isClicked && "none"};
   }
   :nth-of-type(3) {
     border-bottom: ${(props) => props.isClicked && "none"};
@@ -50,21 +50,20 @@ const SortButton = styled.li`
 const Sort = () => {
   const [isClicked, setIsClicked] = useState(false);
   const [select, setSelect] = useState(1);
-  const options = [
+  const [options, setOptions] = useState([
     { id: 0, sortBy: "인기순" },
     { id: 1, sortBy: "인기순" },
     { id: 2, sortBy: "최신순" },
     { id: 3, sortBy: "사용자순" },
-  ];
+  ]);
 
   const handleSelect = (index) => {
     setSelect(index);
     setIsClicked(false);
+    const newOptions = options.slice();
+    newOptions[0].sortBy = options[index].sortBy;
+    setOptions(newOptions);
   };
-
-  // const handleMouseOver = (index) => {
-  //   setSelect(index);
-  // };
 
   const handleClick = () => {
     setIsClicked(true);
@@ -74,12 +73,7 @@ const Sort = () => {
       {isClicked ? (
         options.map((option, index) =>
           index === 0 ? (
-            <SortButton
-              key={option.id}
-              // onMouseOver={() => handleMouseOver(index)}
-              onClick={() => handleSelect(index)}
-              isClicked={isClicked}
-            >
+            <SortButton key={option.id} onClick={() => handleSelect(index)} isClicked={isClicked}>
               {option.sortBy}
               <i className="icon-up-open" style={{ fontSize: "20px", color: "#4D4DFF" }} />
             </SortButton>
@@ -88,17 +82,15 @@ const Sort = () => {
               index === select ? (
                 <SortButton
                   key={option.id}
-                  // onMouseOver={() => handleMouseOver(index)}
                   onClick={() => handleSelect(index)}
                   isClicked={isClicked}
                 >
                   {option.sortBy}
-                  <i className="icon-check" style={{ fontSize: "20px", color: "#4D4DFF" }} />
+                  <i className="icon-check" style={{ fontSize: "17px", color: "#4D4DFF" }} />
                 </SortButton>
               ) : (
                 <SortButton
                   key={option.id}
-                  // onMouseOver={() => handleMouseOver(index)}
                   onClick={() => handleSelect(index)}
                   isClicked={isClicked}
                 >

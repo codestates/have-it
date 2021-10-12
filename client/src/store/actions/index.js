@@ -1,5 +1,6 @@
 import {
-  AUTH_MODAL_ON,
+  SIGNIN_MODAL_ON,
+  SIGNUP_MODAL_ON,
   HABIT_CREATE_MODAL_ON,
   HABIT_JOIN_CANCEL,
   HABIT_JOIN_MODAL_ON,
@@ -9,6 +10,7 @@ import {
   SIGN_OUT,
   SHOW_POPUP,
   HIDE_POPUP,
+  GET_HABITS,
 } from "./actionTypes";
 
 // action
@@ -24,8 +26,11 @@ import {
 // });
 
 // Modal
-export const authModalOnAction = {
-  type: AUTH_MODAL_ON,
+export const signInModalOnAction = {
+  type: SIGNIN_MODAL_ON,
+};
+export const signUpModalOnAction = {
+  type: SIGNUP_MODAL_ON,
 };
 export const habitCreateModalOnAction = {
   type: HABIT_CREATE_MODAL_ON,
@@ -40,6 +45,7 @@ export const modalOffAction = {
 // Auth
 export const signInAction = {
   type: SIGN_IN,
+  payload: { nickname: null, image: null },
 };
 export const signOutAction = {
   type: SIGN_OUT,
@@ -52,6 +58,7 @@ export const showPopupAction = {
 export const hidePopupAction = {
   type: HIDE_POPUP,
 };
+
 // Habit Join
 export const habitJoinProceedAction = (habit) => ({
   type: HABIT_JOIN_PROCEED,
@@ -59,4 +66,8 @@ export const habitJoinProceedAction = (habit) => ({
 });
 export const habitJoinCancelAction = {
   type: HABIT_JOIN_CANCEL,
+}
+
+export const getHabitsAction = {
+  type: GET_HABITS,
 };

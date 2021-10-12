@@ -8,7 +8,7 @@ import { hidePopupAction } from "../store/actions";
 
 const Main = styled.div`
   overflow: scroll;
-  height: calc(100vh - 96px);
+  max-height: calc(100vh - 6rem);
 `;
 
 const Popup = styled.div`
@@ -17,46 +17,45 @@ const Popup = styled.div`
   justify-content: space-between;
   background-color: var(--color-lightblue--02);
   border-radius: 10px;
-  width: auto;
-  height: 48px;
-  margin: 5px 40px;
+  min-height: 3rem;
+  margin: 0.5rem 2.5rem;
   padding: 0rem 1rem;
   margin: 1.5rem 2.5rem 0rem 2.5rem;
 `;
 
 const Title = styled.div`
+  font-weight: var(--fontWeight-bold);
   color: var(--color-black);
-  margin: 32px 40px -20px 40px;
-  font-size: 24px;
+  margin: 2rem 2.5rem -1.25rem 2.5rem;
+  font-size: 1.5rem;
 `;
 
 const CategoryListContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 64px 40px -16px 40px;
+  margin: 4rem 2.5rem -1rem 2.5rem;
 `;
 
 const ViewMore = styled.button`
-  font-size: 20px;
+  font-size: 1.25rem;
   color: var(--color-mainblue);
-  height: 20px;
+  height: 1.25rem;
 `;
 
-const HidePopup = styled.div`
-  font-size: "16px";
+const HidePopup = styled.button`
+  background: none;
+  font-size: 1rem;
   color: var(--color-mainblue);
 `;
-
-// const HomeCategoryList = styled(CategoryList)`
-//   button {
-//     font-size: 100px !important;
-//   }
-// `;
 
 const Home = () => {
   const { isPopup } = useSelector(({ homeReducer }) => homeReducer);
-  const [selectCategory, setSelectCategory] = useState(1);
+  const [selectCategory, setSelectCategory] = useState({
+    id: 1,
+    title: "💪🏻 운동",
+    en_title: "exercise",
+  });
   const dispatch = useDispatch();
   const handlePopupClose = () => {
     dispatch(hidePopupAction);
@@ -82,17 +81,17 @@ const Home = () => {
 
       <>
         <Title>지금 뜨는 채널</Title>
-        <Cards />
+        <Cards isAtHome />
         <CategoryListContainer>
           <CategoryList isAtHome handleCategoryClick={handleCategoryClick} />
-          <Link to={selectCategory.name_en ? `/more/${selectCategory.name_en}` : "/more"}>
+          <Link to={`/more/${selectCategory.en_title}`}>
             <ViewMore>
               더보기
               <i className="icon-right-open" style={{ fontSize: "20px", color: "#4D4DFF" }} />
             </ViewMore>
           </Link>
         </CategoryListContainer>
-        <Cards />
+        <Cards isAtHome />
       </>
     </Main>
   );

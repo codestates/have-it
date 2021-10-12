@@ -4,15 +4,16 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       models.User.hasMany(models.Habit, {
-        foreignKey: "creator_id",
+        foreignKey: { name: "creator_id", allowNull: false, onDelete: "CASCADE" },
         sourceKey: "users_id",
+        onDelete: "CASCADE",
       });
       models.User.hasMany(models.Post, {
-        foreignKey: "users_id",
+        foreignKey: { name: "users_id", allowNull: false },
         sourceKey: "users_id",
       });
       models.User.hasMany(models.Userhabit, {
-        foreignKey: "users_id",
+        foreignKey: { name: "users_id", allowNull: false },
         sourceKey: "users_id",
       });
     }
@@ -22,23 +23,24 @@ module.exports = (sequelize, DataTypes) => {
       users_id: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.STRING(15),
+        type: Sequelize.STRING,
       },
       email: {
-        type: Sequelize.STRING(40),
+        type: Sequelize.STRING,
         unique: true,
         allowNull: false,
       },
       password: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING,
         allowNull: true,
       },
       nickname: {
-        type: Sequelize.STRING(15),
+        type: Sequelize.STRING,
+        unique: true,
         allowNull: true,
       },
       bio: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING,
         allowNull: true,
       },
       image: {
@@ -46,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       sns: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING,
         allowNull: true,
       },
     },
@@ -57,6 +59,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
       underscored: true,
       charset: "utf8",
+      collate: "utf8_general_ci",
     }
   );
   return User;

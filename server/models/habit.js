@@ -1,20 +1,25 @@
 "use strict";
 const { Model, Sequelize } = require("sequelize");
-const habits = require("../controllers/habits");
 module.exports = (sequelize, DataTypes) => {
   class Habit extends Model {
     static associate(models) {
       models.Habit.hasMany(models.Post, {
-        foreignKey: "habits_id",
+        foreignKey: { name: "habits_id", allowNull: false },
         sourceKey: "habits_id",
       });
       models.Habit.belongsTo(models.User, {
-        foreignKey: "creator_id",
+        foreignKey: { name: "creator_id", allowNull: false },
         targetKey: "users_id",
+        onDelete: "CASCADE",
       });
       models.Habit.hasMany(models.Userhabit, {
-        foreignKey: "habits_id",
+        foreignKey: { name: "habits_id", allowNull: false },
         sourceKey: "habits_id",
+      });
+      models.Habit.belongsTo(models.Category, {
+        foreignKey: "categories_id",
+        targetKey: "categories_id",
+        onDelete: "CASCADE",
       });
     }
   }
@@ -30,28 +35,24 @@ module.exports = (sequelize, DataTypes) => {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
-      category: {
-        type: Sequelize.STRING(15),
-        allowNull: false,
-      },
       title: {
-        type: Sequelize.STRING(30),
+        type: Sequelize.STRING,
         allowNull: false,
       },
       description: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING,
         allowNull: false,
       },
       image: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       emoji_id: {
-        type: Sequelize.STRING(20),
+        type: Sequelize.STRING,
         allowNull: false,
       },
       color: {
-        type: Sequelize.STRING(20),
+        type: Sequelize.STRING,
         allowNull: false,
       },
       created_at: {
@@ -66,6 +67,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false,
       underscored: true,
       charset: "utf8",
+      collate: "utf8_general_ci",
     }
   );
   return Habit;

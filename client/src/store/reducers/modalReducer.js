@@ -1,12 +1,14 @@
 import {
-  AUTH_MODAL_ON,
+  SIGNIN_MODAL_ON,
+  SIGNUP_MODAL_ON,
   HABIT_CREATE_MODAL_ON,
   HABIT_JOIN_MODAL_ON,
   MODAL_OFF,
 } from "../actions/actionTypes";
 
 const initialState = {
-  isAuthModal: false,
+  isSignInModal: false,
+  isSignUpModal: false,
   isHabitCreateModal: false,
   isHabitJoinModal: false,
 };
@@ -14,8 +16,11 @@ const initialState = {
 const modalReducer = (prevState = initialState, action) => {
   let state;
   switch (action.type) {
-    case AUTH_MODAL_ON:
-      state = { ...prevState, isAuthModal: true };
+    case SIGNIN_MODAL_ON:
+      state = { ...prevState, isSignInModal: true };
+      break;
+    case SIGNUP_MODAL_ON:
+      state = { ...prevState, isSignUpModal: true };
       break;
     case HABIT_CREATE_MODAL_ON:
       state = { ...prevState, isHabitCreateModal: true };

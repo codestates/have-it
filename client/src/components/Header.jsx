@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import "../styles/fontello/css/fontello.css";
-import { useHistory } from "react-router-dom";
+import { Switch, Route, useHistory, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { authModalOnAction, signInAction, signOutAction } from "../store/actions";
+import { signInModalOnAction, signUpModalOnAction, signOutAction } from "../store/actions";
+import categoriesApi from "../api/categories";
+import authApi from "../api/auth";
 
 const HeaderContatiner = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: calc(100vw - 80px);
-  height: 96px;
+  width: calc(100vw - 5rem);
+  height: 6rem;
   background-color: var(--color-white);
   padding: 0px 40px 0px 40px;
   border-bottom: 1px solid var(--color-midgray);
@@ -19,80 +21,104 @@ const HeaderContatiner = styled.div`
 const PageInfoContainer = styled.div`
   font-family: Interop-Bold;
   flex-grow: 10;
-  font-size: 32px;
+  font-size: 2rem;
 `;
 
 const VerticalBar = styled.div`
   background-color: var(--color-midgray);
   width: 1px;
-  height: 16px;
+  height: 1rem;
+  margin: 0rem 1rem;
+`;
+
+const ProfileImage = styled.img`
+  width: 3rem;
+  height: 3rem;
 `;
 
 const ProfileContainer = styled.div`
   font-family: Interop-Bold;
-  font-size: 20px;
-  margin: 0px 8px;
+  font-size: 1.25rem;
+  margin: 0rem 1rem 0rem 1rem;
 `;
 
 const AuthContainer = styled.button`
   font-family: Interop-Medium;
   color: var(--color-gray);
-  font-size: 16px;
-  margin: 0px 8px;
+  font-size: 1rem;
+  margin: 0rem 0.5rem;
 `;
 
 const GoHomeContainer = styled.div`
-  margin-left: -30px;
+  margin-left: -2rem;
 `;
 
 const I = styled.i`
   margin: 0;
 `;
 
-const Header = () => {
-  const { isLogin } = useSelector(({ authReducer }) => authReducer);
+const CategoryTitle = () => {
   const history = useHistory();
-  const location = history.location.pathname;
   const handleBackwardClick = () => {
     history.push("/");
   };
+  const { urlTitle } = useParams();
+  const [headerTitle, setHeaderTitle] = useState("");
+  useEffect(() => {
+    const getCategroyList = async (title) => {
+      const res = await categoriesApi.getCategoryByEnTitle(title);
+      setHeaderTitle(res.data.category.title);
+    };
+    getCategroyList(urlTitle);
+  }, [urlTitle]);
 
+  return (
+    <>
+      <GoHomeContainer onClick={handleBackwardClick}>
+        <I className="icon-left-open-mini" style={{ fontSize: "50px" }} />
+      </GoHomeContainer>
+      <PageInfoContainer>{headerTitle}</PageInfoContainer>
+    </>
+  );
+};
+
+const Header = () => {
+  const { isLogin, nickname, image } = useSelector(({ authReducer }) => authReducer);
   const dispatch = useDispatch();
 
   const handleSignIn = () => {
-    dispatch(signInAction);
+    dispatch(signInModalOnAction);
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await authApi.signout();
     dispatch(signOutAction);
   };
 
   const handleSignUp = () => {
-    dispatch(authModalOnAction);
+    dispatch(signUpModalOnAction);
   };
 
   return (
     <>
       <HeaderContatiner>
+        <Switch>
+          <Route exact path="/" render={() => <PageInfoContainer>오늘의 해빗</PageInfoContainer>} />
+          <Route path="/more/:urlTitle" render={() => <CategoryTitle />} />
+          <Route path="/mypage" render={() => <PageInfoContainer>마이 페이지</PageInfoContainer>} />
+          <Route
+            path="/habit/:id"
+            render={() => <PageInfoContainer>습관 제목 수정필요 ‼️</PageInfoContainer>}
+          />
+        </Switch>
         {isLogin ? (
           <>
-            {location === "/" ? (
-              <PageInfoContainer>오늘의 해빗</PageInfoContainer>
-            ) : (
-              <>
-                <GoHomeContainer onClick={handleBackwardClick}>
-                  <I className="icon-left-open-mini" style={{ fontSize: "50px" }} />
-                </GoHomeContainer>
-                <PageInfoContainer>💪🏻 운동 해빗</PageInfoContainer>
-              </>
-            )}
-            <i className="icon-user" style={{ fontSize: "30px" }} />
-            <ProfileContainer>Leezy_kim</ProfileContainer>
+            <ProfileImage src={image || "../images/profile/pf_1.svg"} />
+            <ProfileContainer>{nickname}</ProfileContainer>
             <AuthContainer onClick={handleSignOut}>로그아웃</AuthContainer>
           </>
         ) : (
           <>
-            <PageInfoContainer>오늘의 해빗</PageInfoContainer>
             <i className="icon-user" style={{ fontSize: "30px" }} />
             <AuthContainer onClick={handleSignIn}>로그인</AuthContainer>
             <VerticalBar />
