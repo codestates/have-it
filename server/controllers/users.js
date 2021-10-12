@@ -1,4 +1,3 @@
-const { setJwtCookie, isAuthorized } = require("./tokenFunctions");
 const { User } = require("../models");
 
 module.exports = {
