@@ -21,7 +21,7 @@ router.post("/signin", signin);
 router.get("/signout", signout);
 router.post("/signup", signup);
 router.get("/me", isAuth, me);
-router.post("/naver/callback", getNaver);
-router.post("/google/callback", getGoogle);
+router.post("/naver", getNaver);
+router.post("/google", getGoogle);
 
 module.exports = router;
