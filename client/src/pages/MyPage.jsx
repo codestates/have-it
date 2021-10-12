@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import axios from "axios";
 import Cards from "../components/Cards";
 
 const MyPageView = styled.div`
@@ -164,6 +165,35 @@ const MyHabit = styled.div`
 
 const MyPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
+
+  const getNaverAccessToken = async (authorizationCode) => {
+    const res = await axios({
+      method: "POST",
+      url: "http://localhost:8080/auth/naver/callback",
+      data: {
+        authorizationCode,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (res.status === 200) {
+      // 이미 네이버로 로그인했던 적 있는 사람
+      // TODO: auth reducer 업데이트
+    }
+    if (res.status === 201) {
+      // 네이버로 이제 가입하는 사람
+      // TODO: auth reducer 업데이트
+    }
+  };
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const authorizationCode = url.searchParams.get("code");
+    if (authorizationCode) {
+      getNaverAccessToken(authorizationCode);
+    }
+  }, []);
 
   return (
     <MyPageView>

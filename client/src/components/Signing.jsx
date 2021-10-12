@@ -248,7 +248,18 @@ const Signing = ({ defaultType }) => {
     dispatch(signInAction);
   };
 
-  const handleSocialLogInClick = () => {
+  const handleNaverLogInClick = () => {
+    window.location.assign(
+      "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=gU3sc0sPkwozCUCshHU9&redirect_uri=http://localhost:3000/mypage&state=naver"
+    );
+    // // TODO: 소셜 로그인 요청
+    // console.log("소셜 로그인 완료");
+    // // TODO: 받아온 정보 state에 업데이트
+    // dispatch(modalOffAction);
+    // dispatch(signInAction);
+  };
+
+  const handleGoogleLogInClick = () => {
     // TODO: 소셜 로그인 요청
     console.log("소셜 로그인 완료");
     // TODO: 받아온 정보 state에 업데이트
@@ -374,10 +385,10 @@ const Signing = ({ defaultType }) => {
       </InputContainer>
       <SocialContainer>
         <span>OR</span>
-        <SocialLoginButton onClick={handleSocialLogInClick} color="#03C75A">
+        <SocialLoginButton onClick={handleNaverLogInClick} color="#03C75A">
           네이버로 로그인하기
         </SocialLoginButton>
-        <SocialLoginButton onClick={handleSocialLogInClick} color="#00000066">
+        <SocialLoginButton onClick={handleGoogleLogInClick} color="#00000066">
           구글로 로그인하기
         </SocialLoginButton>
       </SocialContainer>
