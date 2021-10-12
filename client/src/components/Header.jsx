@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import "../styles/fontello/css/fontello.css";
 import { Switch, Route, useHistory, useParams } from "react-router-dom";
-
 import { useDispatch, useSelector } from "react-redux";
 import { signInModalOnAction, signUpModalOnAction, signOutAction } from "../store/actions";
 import categoriesApi from "../api/categories";
+import authApi from "../api/auth";
 
 const HeaderContatiner = styled.div`
   display: flex;
@@ -67,7 +67,7 @@ const CategoryTitle = () => {
   useEffect(() => {
     const getCategroyList = async (title) => {
       const res = await categoriesApi.getCategoryByEnTitle(title);
-      setHeaderTitle(res.data.title);
+      setHeaderTitle(res.data.category.title);
     };
     getCategroyList(urlTitle);
   }, [urlTitle]);
@@ -83,14 +83,15 @@ const CategoryTitle = () => {
 };
 
 const Header = () => {
-  const { isLogin } = useSelector(({ authReducer }) => authReducer);
+  const { isLogin, nickname, image } = useSelector(({ authReducer }) => authReducer);
   const dispatch = useDispatch();
 
   const handleSignIn = () => {
     dispatch(signInModalOnAction);
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await authApi.signout();
     dispatch(signOutAction);
   };
 
@@ -113,8 +114,8 @@ const Header = () => {
         {isLogin ? (
           <>
             {" "}
-            <ProfileImage src="../images/profile/pf_1.svg" />
-            <ProfileContainer>Leezy_kim</ProfileContainer>
+            <ProfileImage src={image || "../images/profile/pf_1.svg"} />
+            <ProfileContainer>{nickname}</ProfileContainer>
             <AuthContainer onClick={handleSignOut}>로그아웃</AuthContainer>
           </>
         ) : (

@@ -13,7 +13,6 @@ const homeReducer = (prevState = initialState, action) => {
     case HIDE_POPUP:
       state = { ...prevState, isPopup: false };
       break;
-
     default:
       state = { ...prevState };
   }
