@@ -113,7 +113,6 @@ const Header = () => {
         </Switch>
         {isLogin ? (
           <>
-            {" "}
             <ProfileImage src={image || "../images/profile/pf_1.svg"} />
             <ProfileContainer>{nickname}</ProfileContainer>
             <AuthContainer onClick={handleSignOut}>로그아웃</AuthContainer>
