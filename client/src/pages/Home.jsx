@@ -53,8 +53,8 @@ const Home = () => {
   const { isPopup } = useSelector(({ homeReducer }) => homeReducer);
   const [selectCategory, setSelectCategory] = useState({
     id: 1,
-    name: "💪🏻 운동",
-    name_en: "exercise",
+    title: "💪🏻 운동",
+    en_title: "exercise",
   });
   const dispatch = useDispatch();
   const handlePopupClose = () => {
@@ -84,7 +84,7 @@ const Home = () => {
         <Cards isAtHome />
         <CategoryListContainer>
           <CategoryList isAtHome handleCategoryClick={handleCategoryClick} />
-          <Link to={`/more/${selectCategory.name_en}`}>
+          <Link to={`/more/${selectCategory.en_title}`}>
             <ViewMore>
               더보기
               <i className="icon-right-open" style={{ fontSize: "20px", color: "#4D4DFF" }} />
