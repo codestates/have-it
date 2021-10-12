@@ -1,7 +1,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     /**
-     * password: 1234123$$
+     * password: 12341234$$
      */
     await queryInterface.bulkInsert(
       "users",
