@@ -1,17 +1,17 @@
 import { FIND_HABITS } from "../actions/actionTypes";
 
 const initialState = {
-  habits_id: null,
-  user_count: null,
+  habitsId: null,
+  userCount: null,
   title: null,
   description: null,
   image: null,
-  emoji_id: null,
+  emojiId: null,
   color: null,
-  created_at: null,
-  categories_id: null,
-  creator_id: null,
-  top_user: null,
+  createdAt: null,
+  categoriesId: null,
+  creatorId: null,
+  topUser: null,
 };
 
 const habitsReducer = (prevState = initialState, action) => {
