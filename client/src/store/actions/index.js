@@ -43,10 +43,10 @@ export const modalOffAction = {
 };
 
 // Auth
-export const signInAction = {
+export const signInAction = (data) => ({
   type: SIGN_IN,
-  payload: { nickname: null, image: null },
-};
+  payload: { ...data },
+});
 export const signOutAction = {
   type: SIGN_OUT,
 };

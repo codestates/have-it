@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Progress } from "react-sweet-progress";
-import PostList from "../components/PostList";
 import "react-sweet-progress/lib/style.css";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
+import authApi from "../api/auth";
+import { signInAction, signOutAction } from "../store/actions";
 
 const HabitContainer = styled.div`
   width: 100%;
@@ -186,6 +189,22 @@ const Feed = styled.div`
 `;
 
 const Habit = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    const checkValidUser = async () => {
+      const res = await authApi.me();
+      if (res.status === 200) {
+        dispatch(signInAction(res.data.data));
+      } else if (res.status === 202) {
+        dispatch(signOutAction);
+        history.push("/");
+      }
+    };
+    checkValidUser();
+  }, [dispatch, history]);
+
   const habit = {
     image:
       "https://media.istockphoto.com/photos/female-hand-giving-thumbs-up-picture-id627216922?k=20&m=627216922&s=612x612&w=0&h=CzSWk_kGugXM7oWDOyxPv_yvBsWxykXZ1LwN9oS33rI=",
@@ -246,9 +265,7 @@ const Habit = () => {
         </UserGoalInfo>
       </InfoContainer>
       <Divider />
-      <Feed>
-        <PostList />
-      </Feed>
+      <Feed />
     </HabitContainer>
   );
 };

@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import Cards from "../components/Cards";
 import CategoryList from "../components/CategoryList";
-import { hidePopupAction } from "../store/actions";
+import { signInAction, signOutAction, hidePopupAction } from "../store/actions";
+import authApi from "../api/auth";
 
 const Main = styled.div`
   overflow: scroll;
@@ -50,13 +51,28 @@ const HidePopup = styled.button`
 `;
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
   const { isPopup } = useSelector(({ homeReducer }) => homeReducer);
   const [selectCategory, setSelectCategory] = useState({
     id: 1,
     title: "💪🏻 운동",
     enTitle: "exercise",
   });
-  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const checkValidUser = async () => {
+      const res = await authApi.me();
+      if (res.status === 200) {
+        dispatch(signInAction(res.data.data));
+      } else if (res.status === 202) {
+        dispatch(signOutAction);
+        history.push("/");
+      }
+    };
+    checkValidUser();
+  }, [dispatch, history]);
+
   const handlePopupClose = () => {
     dispatch(hidePopupAction);
   };

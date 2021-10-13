@@ -2,14 +2,12 @@ import { SIGN_IN, SIGN_OUT } from "../actions/actionTypes";
 
 const initialState = {
   isLogin: false,
-  users_id: null,
+  usersId: null,
   email: null,
   nickname: null,
   bio: null,
   image: null,
-  sns: null,
-  createdAt: null,
-  updatedAt: null,
+  habits: [],
 };
 
 const authReducer = (prevState = initialState, action) => {
@@ -20,18 +18,11 @@ const authReducer = (prevState = initialState, action) => {
       state = {
         ...prevState,
         isLogin: true,
-        // users_id: action.payload.users_id,
-        email: action.payload.email,
-        nickname: action.payload.nickname,
-        bio: action.payload.bio,
-        image: action.payload.image,
-        sns: action.payload.sns,
-        // createdAt: action.payload.createdAt,
-        // updatedAt: action.payload.updatedAt,
+        ...action.payload,
       };
       break;
     case SIGN_OUT:
-      state = { ...prevState, isLogin: false };
+      state = { ...initialState };
       break;
     default:
       state = { ...prevState };

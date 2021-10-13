@@ -225,11 +225,12 @@ const Signing = ({ defaultType }) => {
       const nickRes = await authApi.checkNickname(value);
       if (nickRes.status === 202) {
         setUsernameMessage("이미 사용 중인 닉네임입니다.");
+        setUsernameValid(false);
       }
     } else if (name === "email") {
       const emailRes = await authApi.checkEmail(value);
       if (emailRes.status === 202) {
-        const { sns } = emailRes.data;
+        const { sns } = emailRes.data.data;
         let place;
         switch (sns) {
           case "naver":
@@ -244,6 +245,7 @@ const Signing = ({ defaultType }) => {
         }
         if (sns === "local" && type === "로그인") return;
         setEmailMessage(`${place}로 로그인한 이력이 존재합니다.`);
+        setEmailValid(false);
       }
     }
   };
@@ -261,24 +263,29 @@ const Signing = ({ defaultType }) => {
   };
 
   const handleSignInClick = async (e) => {
-    // TODO: 로그인 요청
     e.preventDefault();
-    const res = await authApi.signin(inputValue.email, inputValue.password);
+    if (type === "로그인") {
+      // TODO: 로그인 요청
+      const res = await authApi.signin(inputValue.email, inputValue.password);
 
-    if (res.status === 202) {
-      setPasswordMessage(res.data.message);
+      if (res.status === 202) {
+        setPasswordMessage(res.data.message);
+      }
+      if (res.status === 200) {
+        dispatch(signInAction(res.data.data));
+        dispatch(modalOffAction);
+      }
+    } else if (type === "회원가입") {
+      const res = await authApi.signup(inputValue.username, inputValue.email, inputValue.password);
+
+      if (res.status === 202) {
+        setPasswordMessage(res.data.message);
+      }
+      if (res.status === 201) {
+        dispatch(signInAction(res.data.data));
+        dispatch(modalOffAction);
+      }
     }
-
-    //  data.then((res) => {
-    //   console.log(res);
-    //   dispatch({ ...signInAction, payload: res.data.user });
-    //   dispatch({ ...findHabitsAction, payload: res.data.user });
-    //   console.log("로그인 완료");
-    // });
-
-    // // TODO: 받아온 정보 state에 업데이트
-    // dispatch(modalOffAction);
-    // dispatch(signInAction);
   };
 
   const handleNaverLogInClick = () => {
