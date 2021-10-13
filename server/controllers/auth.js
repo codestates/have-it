@@ -13,7 +13,7 @@ const getUniqueNickname = async (nick, num = 1) => {
   const foundUserByNickname = await User.findOne({ where: { nickname: nick } });
   if (foundUserByNickname) {
     if (num !== 1) {
-      tempNick = tempNick.slice(0, -2);
+      [tempNick] = tempNick.split("_");
     }
     tempNick = `${tempNick}_${num}`;
     return getUniqueNickname(tempNick, num + 1);
