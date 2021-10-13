@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Progress } from "react-sweet-progress";
-import PostList from "../components/PostList";
 import "react-sweet-progress/lib/style.css";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
+import authApi from "../api/auth";
+import { signInAction, signOutAction } from "../store/actions";
 
 const HabitContainer = styled.div`
   width: 100%;
@@ -162,6 +165,7 @@ const ProgressBar = styled(Progress)`
   > div {
     height: calc(100% - 0.2rem);
     :first-of-type {
+      overflow: hidden;
       margin-top: 0.125rem;
       background-color: var(--color-lightblue);
     }
@@ -186,6 +190,22 @@ const Feed = styled.div`
 `;
 
 const Habit = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    const checkValidUser = async () => {
+      const res = await authApi.me();
+      if (res.status === 200) {
+        dispatch(signInAction(res.data.data));
+      } else if (res.status === 202) {
+        dispatch(signOutAction);
+        history.push("/");
+      }
+    };
+    checkValidUser();
+  }, [dispatch, history]);
+
   const habit = {
     image:
       "https://media.istockphoto.com/photos/female-hand-giving-thumbs-up-picture-id627216922?k=20&m=627216922&s=612x612&w=0&h=CzSWk_kGugXM7oWDOyxPv_yvBsWxykXZ1LwN9oS33rI=",
@@ -201,7 +221,7 @@ const Habit = () => {
   const user = { id: 2, username: "leezy_kim" };
   const userHabit = {
     goal: "💎 자기 전 하루를 돌아보며 칭찬 일기 쓰기 💎",
-    actual_amount_percent: 0.725,
+    actual_amount_percent: 0.01,
     target_amount_percent: 0.888,
   };
 
@@ -233,7 +253,7 @@ const Habit = () => {
           <GoalContentContainer>
             <GoalSubtitle>하루 목표</GoalSubtitle>
             <GoalContent>{userHabit.goal}</GoalContent>
-            <GoalSubtitle>달성율</GoalSubtitle>
+            <GoalSubtitle>달성율 {userHabit.actual_amount_percent * 100}%</GoalSubtitle>
             <ProgressBar
               percent={userHabit.actual_amount_percent * 100}
               theme={{
@@ -246,9 +266,7 @@ const Habit = () => {
         </UserGoalInfo>
       </InfoContainer>
       <Divider />
-      <Feed>
-        <PostList />
-      </Feed>
+      <Feed />
     </HabitContainer>
   );
 };

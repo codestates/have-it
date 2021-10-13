@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import uuid from "react-uuid";
+import PropTypes from "prop-types";
+import axios from "axios";
 
 const PostContainer = styled.div`
   display: flex;
@@ -11,8 +12,9 @@ const PostContainer = styled.div`
     margin-bottom: 0;
   }
 
-  .contentContainer {
-    background-color: ${(props) => (props.isMine ? "var(--color-lightblue--02)" : "transparent")};
+  .container {
+    background-color: ${(props) =>
+      props.isMine ? "var(--color-lightblue--02)" : "var(--color-lightgray)"};
     border: 1px solid
       ${(props) => (props.isMine ? "var(--color-mainblue)" : "var(--color-midgray)")};
   }
@@ -33,27 +35,111 @@ const ProfileText = styled.div`
 `;
 
 const Nickname = styled.div`
-  font-size: 1.125rem;
+  font-size: 1rem;
   margin-right: 0.5rem;
 `;
 
 const CreatedAt = styled.div`
-  font-size: 1rem;
+  font-size: 0.875rem;
   color: var(--color-gray);
 `;
 
 const Content = styled.div`
-  font-size: 1.125rem;
+  font-size: 1rem;
   margin-bottom: 0.5rem;
 `;
 
 const ContentContainer = styled.div`
   margin: 0 1.5rem;
   width: calc(100% - 12rem);
-  border-radius: 20px;
-  padding: 1.25rem;
+  border-radius: 10px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
+`;
+
+const InputForm = styled.form`
+  margin: 0 1.5rem;
+  width: calc(100% - 12rem);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+
+  #photo {
+    display: none;
+  }
+`;
+
+const Input = styled.input`
+  font-size: 1rem;
+  background-color: transparent;
+  margin-bottom: 0.5rem;
+
+  #text::placeholder {
+    color: var(--color-gray);
+  }
+`;
+
+const PreviewImage = styled.div`
+  width: 100%;
+  height: 0;
+  padding-top: ${(props) => (props.url ? "60%" : 0)};
+  /* border: 1px solid var(--color-midgray); */
+  border-radius: 10px;
+  background-image: url(${(props) => props.url});
+  background-size: cover;
+`;
+
+const PostButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 1rem;
+  > * {
+    border-radius: 6px;
+  }
+`;
+
+const AddImage = styled.label`
+  font-size: 1.125rem;
+  width: 2rem;
+  height: 2rem;
+  /* border: 1px solid var(--color-lightblue); */
+  color: var(--color-mainblue);
+  margin-right: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  ::before {
+    width: 100%;
+    top: calc(1rem - 1.125rem / 2);
+    left: calc(1rem - 1.575rem / 2);
+  }
+
+  :hover {
+    background-color: var(--color-lightblue--04);
+  }
+`;
+
+const UploadPost = styled.button`
+  padding: 0.5rem 0.8rem;
+  background-color: var(--color-mainblue);
+  font-family: Interop-SemiBold;
+  font-size: 0.875rem;
+  color: var(--color-white);
+
+  :hover {
+    background-color: var(--color-mainblue);
+    opacity: 0.9;
+  }
+
+  :disabled {
+    color: var(--color-lightgray);
+    background-color: var(--color-darkblue);
+    opacity: 0.8;
+  }
 `;
 
 const PostImage = styled.div`
@@ -66,51 +152,122 @@ const PostImage = styled.div`
   background-size: cover;
 `;
 
-const Post = () => {
+const Post = ({ info, isInput }) => {
+  const inputLimit = 40;
   const nowUserId = 2;
-  const posts = [
-    {
-      postsId: 1,
-      usersId: 1,
-      nickname: "ssumniee",
-      userImage: "../images/profile/pf_6.svg",
-      postImage:
-        "https://static2.jetpens.com/images/a/000/131/131193.jpg?auto=format&ba=middle%2Ccenter&balph=3&blend64=aHR0cDovL3d3dy5qZXRwZW5zLmNvbS9pbWFnZXMvYXNzZXRzL3dhdGVybWFyazIucG5n&bm=difference&bs=inherit&chromasub=444&fm=jpg&h=400&mark64=aHR0cDovL3d3dy5qZXRwZW5zLmNvbS9pbWFnZXMvYXNzZXRzL3dhdGVybWFyazEucG5n&markalign=top%2Cright&markalpha=30&markscale=16&q=90&usm=20&w=600&s=7153d8812812e4ead75b8a4ace86516d",
-      content: "오늘도 칭찬 일기 작성 끝~ 점점 습관이 되는게 느껴진다..!",
-      createdAt: "2021-10-13 10:55:51",
-    },
-    {
-      postsId: 2,
-      usersId: 2,
-      nickname: "leezy_kim",
-      userImage: "../images/profile/pf_8.svg",
-      postImage: "https://scienceoflove.co.kr/wp-content/uploads/2018/05/sol811_illu_02.png",
-      content: "칭찬? 그게 뭔데여 ㅎㅅㅎ",
-      createdAt: "2021-10-13 10:55:51",
-    },
-  ];
+  const [inputText, setInputText] = useState("");
+  const [inputFile, setInputFile] = useState("");
+  const [imgBase64, setImgBase64] = useState("");
+
+  const handleInputChange = (event) => {
+    event.preventDefault();
+    const reader = new FileReader();
+    switch (event.target.name) {
+      case "text":
+        setInputText(event.target.value);
+        break;
+      case "photo":
+        reader.onloadend = () => {
+          const base64 = reader.result;
+          if (base64) {
+            setImgBase64(base64.toString());
+          }
+        };
+        if (event.target.files[0]) {
+          reader.readAsDataURL(event.target.files[0]);
+          setInputFile(event.target.files[0]);
+        }
+        break;
+      default:
+    }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append("text", inputText);
+    formData.append("photo", inputFile);
+
+    axios({
+      method: "post",
+      url: "http://localhost:8080/test",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }).then(() => {
+      setInputText("");
+      setInputFile("");
+      setImgBase64("");
+    });
+  };
 
   return (
-    <>
-      {posts.map((post) => (
-        <PostContainer key={uuid()} isMine={nowUserId === post.usersId}>
-          <ProfileImage url={post.userImage} />
-          <ContentContainer
-            className="contentContainer"
-            key={post.postsId}
-            isMine={nowUserId === post.usersId}
-          >
-            <ProfileText>
-              <Nickname>{post.nickname}</Nickname>
-              <CreatedAt>{post.createdAt}</CreatedAt>
-            </ProfileText>
-            <Content>{post.content}</Content>
-            <PostImage url={post.postImage} />
-          </ContentContainer>
-        </PostContainer>
-      ))}
-    </>
+    <PostContainer isMine={nowUserId === info.usersId}>
+      <ProfileImage url={info.userImage} />
+      {isInput ? (
+        <InputForm
+          className="container"
+          name="inputFile"
+          encType="multipart/form-data"
+          onSubmit={handleSubmit}
+        >
+          <Input
+            id="text"
+            type="text"
+            name="text"
+            placeholder={`오늘 달성하신 습관에 대해 공유해보세요. (최대 ${inputLimit}자)`}
+            value={inputText}
+            onChange={handleInputChange}
+            required
+          />
+          <Input
+            id="photo"
+            type="file"
+            name="photo"
+            accept="image/*,audio/*,video/mp4,video/x-m4v,application/pdf"
+            onChange={handleInputChange}
+          />
+          <PreviewImage url={imgBase64} />
+          {/* <image src={inputFile} /> */}
+          <PostButtonContainer>
+            <AddImage className="icon-picture" htmlFor="photo" />
+            <UploadPost type="submit">공유하기</UploadPost>
+          </PostButtonContainer>
+        </InputForm>
+      ) : (
+        <ContentContainer
+          className="container"
+          key={info.postsId}
+          isMine={nowUserId === info.usersId}
+        >
+          <ProfileText>
+            <Nickname>{info.nickname}</Nickname>
+            <CreatedAt>{info.createdAt}</CreatedAt>
+          </ProfileText>
+          <Content>{info.content}</Content>
+          <PostImage url={info.postImage} />
+        </ContentContainer>
+      )}
+    </PostContainer>
   );
+};
+
+Post.defaultProps = {
+  isInput: false,
+};
+
+Post.propTypes = {
+  info: PropTypes.shape({
+    postsId: PropTypes.number,
+    usersId: PropTypes.number,
+    nickname: PropTypes.string,
+    userImage: PropTypes.string,
+    postImage: PropTypes.string,
+    content: PropTypes.string,
+    createdAt: PropTypes.string,
+  }).isRequired,
+  isInput: PropTypes.bool,
 };
 
 export default Post;
