@@ -5,16 +5,13 @@ module.exports = {
   modifyUserInfo: async (req, res) => {
     const { bio, nickname } = req.body;
     const { users_id } = req.params;
-    if (!users_id) {
-      res.status(400).json({ message: "User not found" });
-      return;
-    }
+
     let location;
     if (req.file) {
       location = req.file.location;
     }
     try {
-      const userInfo = await User.findOne({ users_id });
+      const userInfo = await User.findOne({ where: { users_id } });
       const { image } = userInfo.dataValues;
       if (image && location) {
         DeleteImageinTable(image);

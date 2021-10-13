@@ -40,6 +40,9 @@ app.use("/categories", categoriesRouter);
 app.use("/goal", goalRouter);
 app.use("/badges", badgesRouter);
 
+app.use((req, res) => {
+  res.status(400).json({ message: "Invalid request" });
+});
 app.use((err, req, res, next) => {
   res.status(500).json({ message: `Something went wrong: ${err}` });
 });
