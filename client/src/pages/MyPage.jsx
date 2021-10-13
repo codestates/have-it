@@ -1,7 +1,12 @@
+/* eslint-disable */
+
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import axios from "axios";
+import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import Cards from "../components/Cards";
+import authApi from "../api/auth";
+import { signInAction, signOutAction } from "../store/actions";
 
 const MyPageView = styled.div`
   display: flex;
@@ -228,62 +233,49 @@ const MyHabit = styled.div`
 
 const MyPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-
-  const getNaverLogin = async (authorizationCode) => {
-    const res = await axios({
-      method: "post",
-      url: "http://localhost:8080/auth/naver",
-      data: {
-        authorizationCode,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (res.status === 200) {
-      // 이미 네이버로 로그인했던 적 있는 사람
-      // TODO: auth reducer 업데이트
-    }
-    if (res.status === 201) {
-      // 네이버로 이제 가입하는 사람
-      // TODO: auth reducer 업데이트
-    }
-  };
-
-  const getGoogleLogin = async (authorizationCode) => {
-    const res = await axios({
-      method: "post",
-      url: "http://localhost:8080/auth/google",
-      data: {
-        authorizationCode,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (res.status === 200) {
-      // 이미 구글로 로그인했던 적 있는 사람
-      // TODO: auth reducer 업데이트
-    }
-    if (res.status === 201) {
-      // 구글로 이제 가입하는 사람
-      // TODO: auth reducer 업데이트
-    }
-  };
+  const history = useHistory();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const url = new URL(window.location.href);
-    const authorizationCode = url.searchParams.get("code");
+    const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");
-    if (authorizationCode) {
-      if (state === "naver") {
-        getNaverLogin(authorizationCode);
-      } else {
-        getGoogleLogin(authorizationCode);
+
+    const getNaverLogin = async (authorizationCode) => {
+      const res = await authApi.naver(authorizationCode);
+      if (res.status === 200 || res.status === 201) {
+        dispatch(signInAction(res.data.data));
+        history.push("/mypage");
       }
+    };
+
+    const getGoogleLogin = async (authorizationCode) => {
+      const res = await authApi.google(authorizationCode);
+      if (res.status === 200 || res.status === 201) {
+        dispatch(signInAction(res.data.data));
+        history.push("/mypage");
+      }
+    };
+
+    if (code) {
+      if (state === "naver") {
+        getNaverLogin(code);
+      } else {
+        getGoogleLogin(code);
+      }
+    } else {
+      const checkValidUser = async () => {
+        const res = await authApi.me();
+        if (res.status === 200) {
+          dispatch(signInAction(res.data.data));
+        } else if (res.status === 202) {
+          dispatch(signOutAction);
+          history.push("/");
+        }
+      };
+      checkValidUser();
     }
-  }, []);
+  }, [dispatch]);
 
   const handleFileChange = async (event) => {
     console.log(event.target.files);

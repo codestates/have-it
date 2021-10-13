@@ -30,8 +30,8 @@ module.exports = {
     });
   },
 
-  clearCookie: (res, token) => {
-    res.clearCookie("jwt", token, {
+  clearCookie: (res) => {
+    res.clearCookie("jwt", {
       httpOnly: true,
     });
   },

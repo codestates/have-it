@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
@@ -171,7 +173,7 @@ const Signing = ({ defaultType }) => {
         );
       // TODO: 중복 여부 체크 로직 추가
       const emailHistory = false;
-      const emailSocialHistory = "네이버";
+      // const emailSocialHistory = "네이버";
 
       if (email === "") {
         setEmailMessage("이메일을 입력하세요.");
@@ -185,10 +187,10 @@ const Signing = ({ defaultType }) => {
         setEmailMessage("이미 가입된 이메일입니다.");
         setEmailValid(false);
         setHasSocialHistory(false);
-      } else if (emailSocialHistory) {
-        setEmailMessage(`${emailSocialHistory}로 로그인한 이력이 존재합니다.`);
-        setEmailValid(true);
-        setHasSocialHistory(true);
+        // } else if (emailSocialHistory) {
+        //   setEmailMessage(`${emailSocialHistory}로 로그인한 이력이 존재합니다.`);
+        //   setEmailValid(true);
+        //   setHasSocialHistory(true);
       } else {
         setEmailMessage(null);
         setEmailValid(true);
@@ -214,10 +216,38 @@ const Signing = ({ defaultType }) => {
     },
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = async (event) => {
     const { name, value } = event.target;
     setInputValue((prevState) => ({ ...prevState, [name]: value }));
     validator[name](value);
+
+    if (name === "username") {
+      const nickRes = await authApi.checkNickname(value);
+      if (nickRes.status === 202) {
+        setUsernameMessage("이미 사용 중인 닉네임입니다.");
+        setUsernameValid(false);
+      }
+    } else if (name === "email") {
+      const emailRes = await authApi.checkEmail(value);
+      if (emailRes.status === 202) {
+        const { sns } = emailRes.data.data;
+        let place;
+        switch (sns) {
+          case "naver":
+            place = "네이버";
+            break;
+          case "google":
+            place = "구글";
+            break;
+          default:
+            place = "해빗으";
+            break;
+        }
+        if (sns === "local" && type === "로그인") return;
+        setEmailMessage(`${place}로 로그인한 이력이 존재합니다.`);
+        setEmailValid(false);
+      }
+    }
   };
 
   const handleSwitchClick = () => {
@@ -232,20 +262,30 @@ const Signing = ({ defaultType }) => {
     console.log("비밀번호 찾기");
   };
 
-  const handleSignInClick = (e) => {
-    // TODO: 로그인 요청
+  const handleSignInClick = async (e) => {
     e.preventDefault();
-    const data = authApi.signin(inputValue.email, inputValue.password);
-    data.then((res) => {
-      console.log(res);
-      dispatch({ ...signInAction, payload: res.data.user });
-      dispatch({ ...findHabitsAction, payload: res.data.user });
-      console.log("로그인 완료");
-    });
+    if (type === "로그인") {
+      // TODO: 로그인 요청
+      const res = await authApi.signin(inputValue.email, inputValue.password);
 
-    // TODO: 받아온 정보 state에 업데이트
-    dispatch(modalOffAction);
-    dispatch(signInAction);
+      if (res.status === 202) {
+        setPasswordMessage(res.data.message);
+      }
+      if (res.status === 200) {
+        dispatch(signInAction(res.data.data));
+        dispatch(modalOffAction);
+      }
+    } else if (type === "회원가입") {
+      const res = await authApi.signup(inputValue.username, inputValue.email, inputValue.password);
+
+      if (res.status === 202) {
+        setPasswordMessage(res.data.message);
+      }
+      if (res.status === 201) {
+        dispatch(signInAction(res.data.data));
+        dispatch(modalOffAction);
+      }
+    }
   };
 
   const handleNaverLogInClick = () => {
