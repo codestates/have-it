@@ -1,4 +1,4 @@
-const { Habit, Userhabit, User, Category, Post } = require("../models");
+const { Userhabit } = require("../models");
 const { snakeToCamal, DBERROR } = require("./functions");
 module.exports = {
   modifyUserhabitGoal: async (req, res) => {
@@ -13,7 +13,7 @@ module.exports = {
       const userInfo = snakeToCamal(userhabits.dataValues);
       res.status(200).json({ message: "ok", data: { userInfo } });
     } catch (err) {
-      DBERROR(err);
+      DBERROR(res, err);
     }
   },
 };

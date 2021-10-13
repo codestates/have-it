@@ -32,7 +32,6 @@ module.exports = {
     }
   },
   modifyPost: async (req, res) => {
-    //TODO: req.file 사진 수정도 가능하게 구현
     const { content } = req.body;
     const { posts_id } = req.params;
     const users_id = req.userId;
