@@ -90,7 +90,39 @@ const Button = styled.button`
 
 const ProfileEditButton = styled(Button)``;
 
-const ProfileEditView = styled(ProfileView)``;
+const ProfileEditView = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 22.5rem;
+  height: 100%;
+  border-right: 1px solid var(--color-midgray--04);
+  button {
+    border-radius: 6px;
+    color: var(--color-gray);
+  }
+  input,
+  textarea {
+    width: 15rem;
+    height: 2rem;
+    border: 1px solid var(--color-midgray);
+    font-weight: var(--fontWeight-medium);
+    margin-top: 2px;
+    border-radius: 6px;
+    resize: none;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    color: var(--color-black);
+    line-spacing: 150%;
+    ::placeholder {
+      color: var(--color-black);
+    }
+  }
+  textarea {
+    height: 6rem;
+  }
+`;
 const ProfileEditImage = styled(ProfileImage)``;
 const ProfileEditUsername = styled.div`
   width: 15rem;
