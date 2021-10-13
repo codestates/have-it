@@ -6,6 +6,7 @@ module.exports = {
     password: config.db.password,
     database: config.db.database,
     host: config.db.host,
+    port: config.db.port,
     dialect: "mysql",
   },
   test: {
@@ -13,6 +14,7 @@ module.exports = {
     password: config.db.password,
     database: config.db.database,
     host: config.db.host,
+    port: config.db.port,
     dialect: "mysql",
   },
   production: {
@@ -20,6 +22,7 @@ module.exports = {
     password: config.db.password,
     database: config.db.database,
     host: config.db.host,
+    port: config.db.port,
     dialect: "mysql",
   },
 };

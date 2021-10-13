@@ -37,9 +37,7 @@ app.use("/users", usersRouter);
 app.use("/categories", categoriesRouter);
 
 app.use((err, req, res, next) => {
-  res
-    .status(err?.response?.status || 500)
-    .json({ message: `${err?.response?.statusText || "Something went wrong"}` });
+  res.status(500).json({ message: `Something went wrong: ${err}` });
 });
 
 app.listen(port, async () => {
