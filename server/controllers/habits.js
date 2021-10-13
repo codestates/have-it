@@ -103,13 +103,22 @@ module.exports = {
   findHabitById: async (req, res) => {
     const { habits_id } = req.params;
     try {
+      // const habitInfo = await Habit.findOne({
+      //   where: { habits_id },
+      //   include: {
+      //     model: Post,
+      //     attributes: { exclude: ["updatedAt"] },
+      //   },
+      //   attributes: { exclude: ["created_at"] },
+      // });
       const habitInfo = await Habit.findOne({
         where: { habits_id },
-        include: {
-          model: Post,
-          attributes: { exclude: ["updatedAt"] },
-        },
         attributes: { exclude: ["created_at"] },
+      });
+      console.log(snakeToCamal(habitInfo.dataValues));
+      const postlist = await habitInfo.getPosts({ attributes: { exclude: ["updatedAt"] } });
+      const posts = postlist.map((el) => {
+        return snakeToCamal(el.dataValues);
       });
 
       const userHabitInfo = await Userhabit.findOne({
@@ -120,7 +129,7 @@ module.exports = {
         res.status(200).json({
           message: "ok",
           data: {
-            habits: snakeToCamal(habitInfo.dataValues),
+            habits: { ...snakeToCamal(habitInfo.dataValues), posts },
             userInfo: snakeToCamal(userHabitInfo.dataValues || null),
           },
         });
