@@ -85,6 +85,7 @@ const CategoryTitle = () => {
 const Header = () => {
   const { isLogin, nickname, image } = useSelector(({ authReducer }) => authReducer);
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const handleSignIn = () => {
     dispatch(signInModalOnAction);
@@ -93,6 +94,7 @@ const Header = () => {
   const handleSignOut = async () => {
     await authApi.signout();
     dispatch(signOutAction);
+    history.push("/");
   };
 
   const handleSignUp = () => {

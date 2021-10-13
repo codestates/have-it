@@ -17,6 +17,12 @@ const router = express.Router();
 
 router.get("/nickname/:nickname", checkNickname);
 router.get("/email/:email", checkEmail);
+router.get("/nickname", (req, res) => {
+  res.end();
+});
+router.get("/email", (req, res) => {
+  res.end();
+});
 router.post("/signin", signin);
 router.get("/signout", signout);
 router.post("/signup", signup);
