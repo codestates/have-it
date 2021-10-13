@@ -103,14 +103,6 @@ module.exports = {
   findHabitById: async (req, res) => {
     const { habits_id } = req.params;
     try {
-      // const habitInfo = await Habit.findOne({
-      //   where: { habits_id },
-      //   include: {
-      //     model: Post,
-      //     attributes: { exclude: ["updatedAt"] },
-      //   },
-      //   attributes: { exclude: ["created_at"] },
-      // });
       const habitInfo = await Habit.findOne({
         where: { habits_id },
         attributes: { exclude: ["created_at"] },
