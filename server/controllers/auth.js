@@ -5,7 +5,7 @@ const {
   saltRounds,
   oauth: { naverClientId, naverClientSecret, googleClientId, googleClientSecret },
 } = require("../config");
-const { User } = require("../models");
+const { User, Habit } = require("../models");
 const { generateAccessToken, setCookie, clearCookie } = require("./token");
 
 const getUniqueNickname = async (nick, num = 1) => {
@@ -36,7 +36,7 @@ module.exports = {
     const foundUser = await User.findOne({ where: { email } });
     if (foundUser) {
       const { sns } = foundUser.dataValues;
-      return res.status(409).json({ message: `${email} already exists`, sns });
+      return res.status(409).json({ message: `${email} already exists`, data: { sns } });
     }
     return res.status(200).json({ message: "Valid email" });
   },
@@ -51,9 +51,58 @@ module.exports = {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // TODO: userhabits와 habits를 join한 결과를 응답
+    const refinedUser = {
+      usersId: foundUser.dataValues.users_id,
+      email: foundUser.dataValues.email,
+      nickname: foundUser.dataValues.nickname,
+      bio: foundUser.dataValues.bio,
+      image: foundUser.dataValues.image,
+    };
 
-    return res.status(200).json({ message: "Valid user", user: foundUser.dataValues });
+    const userhabits = await foundUser.getUserhabits();
+    const refinedUserhabits = userhabits.map(({ habits_id: habitsId, end_date: endDate, done }) => {
+      return {
+        habitsId,
+        endDate,
+        done,
+      };
+    });
+    const habits = await Promise.all(
+      refinedUserhabits.map(async ({ habitsId, endDate, done }) => {
+        const foundHabit = await Habit.findOne({ where: { habits_id: habitsId } });
+        const { user_count: userCount, title, emoji_id: emojiId, color } = foundHabit.dataValues;
+        const topUsers = await foundHabit.getUserhabits({
+          limit: 5,
+          order: [["achievement", "desc"]],
+          include: [{ model: User, attributes: ["users_id", "image"] }],
+          attributes: [],
+        });
+        const refinedTopUsers = topUsers.map(
+          ({
+            dataValues: {
+              User: {
+                dataValues: { users_id: usersId, image },
+              },
+            },
+          }) => ({
+            usersId,
+            image,
+          })
+        );
+        return {
+          habitsId,
+          userCount,
+          title,
+          emojiId,
+          color,
+          endDate,
+          done,
+          topUsers: refinedTopUsers,
+        };
+      })
+    );
+
+    return res.status(200).json({ message: "Valid user", data: { ...refinedUser, habits } });
   },
 
   signin: async (req, res) => {
@@ -80,9 +129,58 @@ module.exports = {
 
     delete foundUserByEmail.dataValues.password;
 
-    // TODO: userhabits와 habits를 join한 결과를 응답
+    const refinedUser = {
+      usersId: foundUserByEmail.dataValues.users_id,
+      email: foundUserByEmail.dataValues.email,
+      nickname: foundUserByEmail.dataValues.nickname,
+      bio: foundUserByEmail.dataValues.bio,
+      image: foundUserByEmail.dataValues.image,
+    };
 
-    return res.status(200).json({ message: "Signed in", user: foundUserByEmail.dataValues });
+    const userhabits = await foundUserByEmail.getUserhabits();
+    const refinedUserhabits = userhabits.map(({ habits_id: habitsId, end_date: endDate, done }) => {
+      return {
+        habitsId,
+        endDate,
+        done,
+      };
+    });
+    const habits = await Promise.all(
+      refinedUserhabits.map(async ({ habitsId, endDate, done }) => {
+        const foundHabit = await Habit.findOne({ where: { habits_id: habitsId } });
+        const { user_count: userCount, title, emoji_id: emojiId, color } = foundHabit.dataValues;
+        const topUsers = await foundHabit.getUserhabits({
+          limit: 5,
+          order: [["achievement", "desc"]],
+          include: [{ model: User, attributes: ["users_id", "image"] }],
+          attributes: [],
+        });
+        const refinedTopUsers = topUsers.map(
+          ({
+            dataValues: {
+              User: {
+                dataValues: { users_id: usersId, image },
+              },
+            },
+          }) => ({
+            usersId,
+            image,
+          })
+        );
+        return {
+          habitsId,
+          userCount,
+          title,
+          emojiId,
+          color,
+          endDate,
+          done,
+          topUsers: refinedTopUsers,
+        };
+      })
+    );
+
+    return res.status(200).json({ message: "Signed in", data: { ...refinedUser, habits } });
   },
 
   signout: (req, res) => {
@@ -102,7 +200,7 @@ module.exports = {
     const foundUserByEmail = await User.findOne({ where: { email } });
     if (foundUserByEmail) {
       const { sns } = foundUserByEmail.dataValues;
-      return res.status(409).json({ message: `${email} already exists`, sns });
+      return res.status(409).json({ message: `${email} already exists`, data: { sns } });
     }
 
     const hashed = await bcrypt.hash(password, saltRounds);
@@ -118,11 +216,18 @@ module.exports = {
       where: { users_id: createdUser.dataValues.users_id },
       attributes: { exclude: ["password", "bio", "image", "sns", "createdAt", "updatedAt"] },
     });
+
+    const refinedUser = {
+      usersId: foundUser.dataValues.users_id,
+      email: foundUser.dataValues.email,
+      nickname: foundUser.dataValues.nickname,
+    };
+
     const token = generateAccessToken(foundUser.dataValues.users_id);
 
     setCookie(res, token);
 
-    return res.status(201).json({ message: "Signed up", user: foundUser.dataValues });
+    return res.status(201).json({ message: "Signed up", data: refinedUser });
   },
 
   getNaver: async (req, res) => {
@@ -149,7 +254,7 @@ module.exports = {
         },
       });
       if (profileRes.status === 200) {
-        const { nickname, profile_image: image, email } = profileRes.data.response;
+        const { nickname, email } = profileRes.data.response;
         let tempNickname = nickname;
         const foundUser = await User.findOne({ where: { email, sns: "naver" } });
         // email이 있고 sns가 naver 인 경우, 그 유저로 로그인시킨다.
@@ -157,10 +262,68 @@ module.exports = {
           const token = generateAccessToken(foundUser.dataValues.users_id);
           setCookie(res, token);
           delete foundUser.dataValues.password;
-          // TODO: userhabits와 habits를 join한 결과를 응답
-          return res.status(200).json({ message: "Signed in", user: foundUser.dataValues });
-        }
 
+          const refinedUser = {
+            usersId: foundUser.dataValues.users_id,
+            email: foundUser.dataValues.email,
+            nickname: foundUser.dataValues.nickname,
+            bio: foundUser.dataValues.bio,
+            image: foundUser.dataValues.image,
+          };
+
+          const userhabits = await foundUser.getUserhabits();
+          const refinedUserhabits = userhabits.map(
+            ({ habits_id: habitsId, end_date: endDate, done }) => {
+              return {
+                habitsId,
+                endDate,
+                done,
+              };
+            }
+          );
+          const habits = await Promise.all(
+            refinedUserhabits.map(async ({ habitsId, endDate, done }) => {
+              const foundHabit = await Habit.findOne({ where: { habits_id: habitsId } });
+              const {
+                user_count: userCount,
+                title,
+                emoji_id: emojiId,
+                color,
+              } = foundHabit.dataValues;
+              const topUsers = await foundHabit.getUserhabits({
+                limit: 5,
+                order: [["achievement", "desc"]],
+                include: [{ model: User, attributes: ["users_id", "image"] }],
+                attributes: [],
+              });
+              const refinedTopUsers = topUsers.map(
+                ({
+                  dataValues: {
+                    User: {
+                      dataValues: { users_id: usersId, image },
+                    },
+                  },
+                }) => ({
+                  usersId,
+                  image,
+                })
+              );
+              return {
+                habitsId,
+                userCount,
+                title,
+                emojiId,
+                color,
+                endDate,
+                done,
+                topUsers: refinedTopUsers,
+              };
+            })
+          );
+
+          return res.status(200).json({ message: "Signed in", data: { ...refinedUser, habits } });
+        }
+        const { profile_image: image } = profileRes.data.response;
         // email이 없는 경우, 유저 생성
         // nickname이 중복되는 경우
         tempNickname = await getUniqueNickname(tempNickname);
@@ -172,9 +335,17 @@ module.exports = {
           email,
           sns: "naver",
         });
+
+        const refinedUser = {
+          usersId: createdUser.dataValues.users_id,
+          email: createdUser.dataValues.email,
+          nickname: createdUser.dataValues.nickname,
+          image: createdUser.dataValues.image,
+        };
+
         const token = generateAccessToken(createdUser.dataValues.users_id);
         setCookie(res, token);
-        return res.status(201).json({ message: "Signed up", user: createdUser.dataValues });
+        return res.status(201).json({ message: "Signed up", data: refinedUser });
       }
     }
 
@@ -205,7 +376,7 @@ module.exports = {
         },
       });
       if (profileRes.status === 200) {
-        const { name: nickname, picture: image, email } = profileRes.data;
+        const { name: nickname, email } = profileRes.data;
         let tempNickname = nickname;
         const foundUser = await User.findOne({ where: { email, sns: "google" } });
         // email이 있고 sns가 naver 인 경우, 그 유저로 로그인시킨다.
@@ -213,9 +384,69 @@ module.exports = {
           const token = generateAccessToken(foundUser.dataValues.users_id);
           setCookie(res, token);
           delete foundUser.dataValues.password;
-          // TODO: userhabits와 habits를 join한 결과를 응답
-          return res.status(200).json({ message: "Signed in", user: foundUser.dataValues });
+
+          const refinedUser = {
+            usersId: foundUser.dataValues.users_id,
+            email: foundUser.dataValues.email,
+            nickname: foundUser.dataValues.nickname,
+            bio: foundUser.dataValues.bio,
+            image: foundUser.dataValues.image,
+          };
+
+          const userhabits = await foundUser.getUserhabits();
+          const refinedUserhabits = userhabits.map(
+            ({ habits_id: habitsId, end_date: endDate, done }) => {
+              return {
+                habitsId,
+                endDate,
+                done,
+              };
+            }
+          );
+          const habits = await Promise.all(
+            refinedUserhabits.map(async ({ habitsId, endDate, done }) => {
+              const foundHabit = await Habit.findOne({ where: { habits_id: habitsId } });
+              const {
+                user_count: userCount,
+                title,
+                emoji_id: emojiId,
+                color,
+              } = foundHabit.dataValues;
+              const topUsers = await foundHabit.getUserhabits({
+                limit: 5,
+                order: [["achievement", "desc"]],
+                include: [{ model: User, attributes: ["users_id", "image"] }],
+                attributes: [],
+              });
+              const refinedTopUsers = topUsers.map(
+                ({
+                  dataValues: {
+                    User: {
+                      dataValues: { users_id: usersId, image },
+                    },
+                  },
+                }) => ({
+                  usersId,
+                  image,
+                })
+              );
+              return {
+                habitsId,
+                userCount,
+                title,
+                emojiId,
+                color,
+                endDate,
+                done,
+                topUsers: refinedTopUsers,
+              };
+            })
+          );
+
+          return res.status(200).json({ message: "Signed in", data: { ...refinedUser, habits } });
         }
+
+        const { picture: image } = profileRes.data;
 
         // email이 없는 경우, 유저 생성
         // nickname이 중복되는 경우
@@ -228,9 +459,17 @@ module.exports = {
           email,
           sns: "google",
         });
+
+        const refinedUser = {
+          usersId: createdUser.dataValues.users_id,
+          email: createdUser.dataValues.email,
+          nickname: createdUser.dataValues.nickname,
+          image: createdUser.dataValues.image,
+        };
+
         const token = generateAccessToken(createdUser.dataValues.users_id);
         setCookie(res, token);
-        return res.status(201).json({ message: "Signed up", user: createdUser.dataValues });
+        return res.status(201).json({ message: "Signed up", data: refinedUser });
       }
     }
 
