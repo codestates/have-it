@@ -1,4 +1,5 @@
 const { Habit, Userhabit, User, Category, Post } = require("../models");
+const snakeToCamal = require("./snakeToCamal");
 
 const DBERROR = (res, err) => {
   res.status(500).json({ message: `Error occured in database: ${err}` });
@@ -6,17 +7,26 @@ const DBERROR = (res, err) => {
 
 module.exports = {
   createHabit: async (req, res) => {
-    const { categories_id, title, description, emoji_id, color } = req.body;
+    const {
+      categories_id,
+      title: title_,
+      description,
+      emoji_id: emoji_id_,
+      color: color_,
+    } = req.body;
     try {
       const createHabit = await Habit.create({
         categories_id,
-        title,
+        title: title_,
         description,
-        emoji_id,
-        color,
+        emoji_id: emoji_id_,
+        color: color_,
         creator_id: req.userId,
       });
-      res.status(201).json(createHabit.dataValues); //TODO: 데이터 정제 필요
+      const { habits_id, title, emoji_id, color } = createHabit.dataValues;
+      res
+        .status(201)
+        .json({ message: "ok", data: snakeToCamal({ habits_id, title, emoji_id, color }) });
     } catch (err) {
       DBERROR(res, err);
     }
@@ -28,7 +38,11 @@ module.exports = {
     if (category) {
       try {
         const foundCategory = await Category.findOne({ where: { en_title: category } });
-        const habitsList = await foundCategory.findHabits({
+        console.log(foundCategory);
+        if (!foundCategory) {
+          res.status(200).json({ message: "I don't have data", data: null });
+        }
+        const habitsList = await foundCategory.getHabits({
           order: [[sortValue, "DESC"]],
           limit: +limit || null,
         });
@@ -40,10 +54,21 @@ module.exports = {
             include: [{ model: User, attributes: ["users_id", "image"] }],
             attributes: [],
           });
-          const title = habitsList[i].dataValues;
-          habitsInfo.push({ ...title, top_user: userInfo });
+          const {
+            habits_id,
+            user_count,
+            title: title_,
+            emoji_id,
+            color,
+          } = habitsList[i].dataValues;
+          const title = snakeToCamal({ habits_id, user_count, title: title_, emoji_id, color });
+          userInfoInHabit = userInfo.map((el) => {
+            return snakeToCamal(el.User.dataValues);
+          });
+          habitsInfo.push({ ...title, topUser: userInfoInHabit });
         }
-        res.status(200).json(habitsInfo);
+
+        res.status(200).json({ message: "ok", data: habitsInfo });
       } catch (err) {
         DBERROR(res, err);
       }
@@ -60,10 +85,20 @@ module.exports = {
           include: [{ model: User, attributes: ["users_id", "image"] }],
           attributes: [],
         });
-        const title = habitsList[i].dataValues;
-        habitsInfo.push({ ...title, top_user: userInfo });
+        const { habits_id, user_count, title: title_, emoji_id, color } = habitsList[i].dataValues;
+        const title = snakeToCamal({
+          habits_id,
+          user_count,
+          title: title_,
+          emoji_id,
+          color,
+        });
+        userInfoInHabit = userInfo.map((el) => {
+          return snakeToCamal(el.User.dataValues);
+        });
+        habitsInfo.push({ ...title, topUser: userInfoInHabit });
       }
-      res.status(200).json(habitsInfo);
+      res.status(200).json({ message: "ok", data: habitsInfo });
       try {
       } catch (err) {
         DBERROR(res, err);
@@ -77,17 +112,21 @@ module.exports = {
         where: { habits_id },
         include: {
           model: Post,
-          include: {
-            model: User,
-            attributes: ["nickname"],
-          },
+          attributes: { exclude: ["updatedAt"] },
         },
+        attributes: { exclude: ["created_at"] },
       });
       const userHabitInfo = await Userhabit.findOne({
         where: { users_id: req.userId, habits_id },
         attributes: ["userhabits_id", "goal", "actual_amount", "target_amount"],
       });
-      res.status(200).json({ habits: habitInfo, userInfo: userHabitInfo });
+      res.status(200).json({
+        message: "ok",
+        data: {
+          habits: snakeToCamal(habitInfo.dataValues),
+          userInfo: snakeToCamal(userHabitInfo.dataValues),
+        },
+      });
     } catch (err) {
       DBERROR(res, err);
     }
@@ -104,7 +143,7 @@ module.exports = {
       });
       const infoOfHabit = await joinHabit.getHabit();
       await infoOfHabit.update({ user_count: infoOfHabit.user_count + 1 });
-      res.status(200).json({ userhabits_id: joinHabit.dataValues.userhabits_id });
+      res.status(200).json({ userhabitsId: joinHabit.dataValues.userhabits_id });
     } catch (err) {
       DBERROR(res, err);
     }
@@ -124,6 +163,14 @@ module.exports = {
     }
   },
   modifyHabit: async (req, res) => {
-    res.status(200).send("아직 구현 중 입니다");
+    //TODO: req.file 어떻게 s3등록할지 생각
+    const { habits_id } = req.params;
+    const { description } = req.body;
+    try {
+      await Habit.update({ description }, { where: { habits_id } });
+      res.status(200).json({ message: "ok", data: { habitsId: habits_id } });
+    } catch (err) {
+      DBERROR(res, err);
+    }
   },
 };
