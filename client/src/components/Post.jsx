@@ -65,6 +65,10 @@ const InputForm = styled.form`
   padding: 1rem;
   display: flex;
   flex-direction: column;
+
+  #photo {
+    display: none;
+  }
 `;
 
 const Input = styled.input`
@@ -72,24 +76,51 @@ const Input = styled.input`
   background-color: transparent;
   margin-bottom: 0.5rem;
 
-  ::placeholder {
+  #text::placeholder {
     color: var(--color-gray);
   }
+`;
+
+const PreviewImage = styled.div`
+  width: 100%;
+  height: 0;
+  padding-top: ${(props) => (props.url ? "60%" : 0)};
+  /* border: 1px solid var(--color-midgray); */
+  border-radius: 10px;
+  background-image: url(${(props) => props.url});
+  background-size: cover;
 `;
 
 const PostButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-top: 1rem;
   > * {
     border-radius: 6px;
   }
 `;
 
-const AddImage = styled.input`
+const AddImage = styled.label`
+  font-size: 1.125rem;
   width: 2rem;
   height: 2rem;
+  /* border: 1px solid var(--color-lightblue); */
   color: var(--color-mainblue);
+  margin-right: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  ::before {
+    width: 100%;
+    top: calc(1rem - 1.125rem / 2);
+    left: calc(1rem - 1.575rem / 2);
+  }
+
+  :hover {
+    background-color: var(--color-lightblue--04);
+  }
 `;
 
 const UploadPost = styled.button`
@@ -124,17 +155,28 @@ const PostImage = styled.div`
 const Post = ({ info, isInput }) => {
   const inputLimit = 40;
   const nowUserId = 2;
-  const [inputText, setInputText] = useState(null);
-  const [inputFile, setInputFile] = useState(null);
+  const [inputText, setInputText] = useState("");
+  const [inputFile, setInputFile] = useState("");
+  const [imgBase64, setImgBase64] = useState("");
 
   const handleInputChange = (event) => {
     event.preventDefault();
+    const reader = new FileReader();
     switch (event.target.name) {
       case "text":
         setInputText(event.target.value);
         break;
       case "photo":
-        setInputFile(event.target.files[0]);
+        reader.onloadend = () => {
+          const base64 = reader.result;
+          if (base64) {
+            setImgBase64(base64.toString());
+          }
+        };
+        if (event.target.files[0]) {
+          reader.readAsDataURL(event.target.files[0]);
+          setInputFile(event.target.files[0]);
+        }
         break;
       default:
     }
@@ -154,8 +196,9 @@ const Post = ({ info, isInput }) => {
         "Content-Type": "multipart/form-data",
       },
     }).then(() => {
-      setInputText(null);
-      setInputFile(null);
+      setInputText("");
+      setInputFile("");
+      setImgBase64("");
     });
   };
 
@@ -170,6 +213,7 @@ const Post = ({ info, isInput }) => {
           onSubmit={handleSubmit}
         >
           <Input
+            id="text"
             type="text"
             name="text"
             placeholder={`오늘 달성하신 습관에 대해 공유해보세요. (최대 ${inputLimit}자)`}
@@ -177,15 +221,17 @@ const Post = ({ info, isInput }) => {
             onChange={handleInputChange}
             required
           />
+          <Input
+            id="photo"
+            type="file"
+            name="photo"
+            accept="image/*,audio/*,video/mp4,video/x-m4v,application/pdf"
+            onChange={handleInputChange}
+          />
+          <PreviewImage url={imgBase64} />
           {/* <image src={inputFile} /> */}
           <PostButtonContainer>
-            <AddImage
-              className="icon-picture"
-              type="file"
-              name="photo"
-              accept="image/*,audio/*,video/mp4,video/x-m4v,application/pdf"
-              onChange={handleInputChange}
-            />
+            <AddImage className="icon-picture" htmlFor="photo" />
             <UploadPost type="submit">공유하기</UploadPost>
           </PostButtonContainer>
         </InputForm>
