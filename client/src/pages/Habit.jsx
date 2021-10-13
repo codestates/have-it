@@ -162,6 +162,7 @@ const ProgressBar = styled(Progress)`
   > div {
     height: calc(100% - 0.2rem);
     :first-of-type {
+      overflow: hidden;
       margin-top: 0.125rem;
       background-color: var(--color-lightblue);
     }
@@ -201,7 +202,7 @@ const Habit = () => {
   const user = { id: 2, username: "leezy_kim" };
   const userHabit = {
     goal: "💎 자기 전 하루를 돌아보며 칭찬 일기 쓰기 💎",
-    actual_amount_percent: 0.725,
+    actual_amount_percent: 0.01,
     target_amount_percent: 0.888,
   };
 
@@ -233,7 +234,7 @@ const Habit = () => {
           <GoalContentContainer>
             <GoalSubtitle>하루 목표</GoalSubtitle>
             <GoalContent>{userHabit.goal}</GoalContent>
-            <GoalSubtitle>달성율</GoalSubtitle>
+            <GoalSubtitle>달성율 {userHabit.actual_amount_percent * 100}%</GoalSubtitle>
             <ProgressBar
               percent={userHabit.actual_amount_percent * 100}
               theme={{
