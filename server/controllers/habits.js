@@ -111,17 +111,28 @@ module.exports = {
         },
         attributes: { exclude: ["created_at"] },
       });
+
       const userHabitInfo = await Userhabit.findOne({
         where: { users_id: req.userId, habits_id },
         attributes: ["userhabits_id", "goal", "actual_amount", "target_amount"],
       });
-      res.status(200).json({
-        message: "ok",
-        data: {
-          habits: snakeToCamal(habitInfo.dataValues),
-          userInfo: snakeToCamal(userHabitInfo.dataValues),
-        },
-      });
+      if (userHabitInfo) {
+        res.status(200).json({
+          message: "ok",
+          data: {
+            habits: snakeToCamal(habitInfo.dataValues),
+            userInfo: snakeToCamal(userHabitInfo.dataValues || null),
+          },
+        });
+      } else {
+        res.status(200).json({
+          message: "ok",
+          data: {
+            habits: snakeToCamal(habitInfo.dataValues),
+            userInfo: null,
+          },
+        });
+      }
     } catch (err) {
       DBERROR(res, err);
     }
