@@ -35,7 +35,7 @@ const ProfileView = styled.div`
     padding: 0.5rem 0.75rem;
     font-size: 1rem;
     color: var(--color-black);
-    line-spacing: 150%;
+    line-height: 150%;
     ::placeholder {
       color: var(--color-black);
     }
@@ -115,7 +115,7 @@ const ProfileEditView = styled.form`
     padding: 0.5rem 0.75rem;
     font-size: 1rem;
     color: var(--color-black);
-    line-spacing: 150%;
+    line-height: 150%;
     ::placeholder {
       color: var(--color-black);
     }
@@ -124,7 +124,36 @@ const ProfileEditView = styled.form`
     height: 6rem;
   }
 `;
-const ProfileEditImage = styled(ProfileImage)``;
+const ProfileEditImage = styled.div`
+  width: 15rem;
+  height: 15rem;
+  border: 1px solid var(--color-midgray--04);
+  border-radius: 100%;
+  margin-bottom: 2.5rem;
+  background-image: url("../images/profile/pf_1.svg");
+`;
+const ProfileEditInput = styled.input`
+  display: none;
+`;
+const ProfileEditLabel = styled.label`
+  display: block;
+  width: 15rem;
+  height: 15rem;
+  object-fit: cover;
+  background-color: var(--color-white);
+  font-weight: var(--fontWeight-bold);
+  font-size: 1.2rem;
+  color: black;
+  cursor: pointer;
+  margin: -1px;
+  text-align: center;
+  border-radius: 100%;
+  padding: 50% 0;
+  opacity: 0%;
+  :hover {
+    opacity: 50%;
+  }
+`;
 const ProfileEditUsername = styled.div`
   width: 15rem;
   font-size: 0.75rem;
@@ -146,8 +175,10 @@ const ButtonContainer = styled.div`
 const CancelButton = styled(Button)`
   width: 7.2rem;
 `;
-const SaveButton = styled(Button)`
-  width: 7.2rem;
+const SaveButton = styled.div`
+  width: 15rem;
+  height: 2.25rem;
+  border: 1px solid var(--color-midgray--04);
   background-color: var(--color-darkblue);
   color: var(--color-white) !important;
 `;
@@ -197,6 +228,7 @@ const MyHabit = styled.div`
 
 const MyPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const getNaverLogin = async (authorizationCode) => {
     const res = await axios({
@@ -253,6 +285,33 @@ const MyPage = () => {
     }
   }, []);
 
+  const handleFileChange = async (event) => {
+    console.log(event.target.files);
+    const fileInfo = event.target.files[0];
+    setSelectedFile(fileInfo);
+    console.log(selectedFile);
+  };
+
+  const handleFileUpload = () => {
+    console.log(1);
+    const formData = new FormData();
+    console.log(formData);
+    formData.append("userfile", selectedFile, selectedFile.name);
+
+    axios
+      .post("http://localhost:8080/uploads/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <MyPageView>
       {!isEditMode ? (
@@ -268,8 +327,11 @@ const MyPage = () => {
           </Container>
         </ProfileView>
       ) : (
-        <ProfileEditView>
-          <ProfileEditImage src="../images/profile/pf_1.svg" />
+        <ProfileEditView onSubmit={handleFileUpload}>
+          <ProfileEditImage>
+            <ProfileEditLabel htmlFor="image">프로필 이미지 수정</ProfileEditLabel>
+            <ProfileEditInput type="file" id="image" name="image" onChange={handleFileChange} />
+          </ProfileEditImage>
           <Container>
             <ProfileEditUsername>
               <div>Name</div>
@@ -284,7 +346,9 @@ const MyPage = () => {
             </ProfileEditUserBio>
             <ButtonContainer>
               <CancelButton onClick={() => setIsEditMode(false)}>취소</CancelButton>
-              <SaveButton onClick={() => setIsEditMode(false)}>저장</SaveButton>
+              <SaveButton>
+                <input type="submit" value="저장" />
+              </SaveButton>
             </ButtonContainer>
             <DeleteAccountButton>회원 탈퇴</DeleteAccountButton>
           </Container>
