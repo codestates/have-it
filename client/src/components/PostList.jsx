@@ -1,8 +1,10 @@
 import React from "react";
 // import styled from "styled-component";
+import uuid from "react-uuid";
 import Post from "./Post";
 
 const PostList = () => {
+  const userInfo = { usersId: 2, nickname: "leezy_kim", userImage: "../images/profile/pf_8.svg" };
   const posts = [
     {
       postsId: 1,
@@ -27,8 +29,9 @@ const PostList = () => {
 
   return (
     <>
+      <Post isInput info={userInfo} />
       {posts.map((post) => (
-        <Post key={post.postsId} post={post} />
+        <Post key={uuid()} info={post} />
       ))}
     </>
   );
