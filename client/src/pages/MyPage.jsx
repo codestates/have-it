@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Cards from "../components/Cards";
 import authApi from "../api/auth";
-import { signInAction, signOutAction } from "../store/actions";
+import { signInAction, signOutAction, updateInfoAction } from "../store/actions";
+import usersApi from "../api/users";
 
 const MyPageView = styled.div`
   display: flex;
@@ -26,7 +27,6 @@ const ProfileView = styled.div`
   border-right: 1px solid var(--color-midgray--04);
   button {
     border-radius: 6px;
-    color: var(--color-gray);
   }
   input,
   textarea {
@@ -39,7 +39,7 @@ const ProfileView = styled.div`
     resize: none;
     padding: 0.5rem 0.75rem;
     font-size: 1rem;
-    color: var(--color-black);
+    color: var(--color-white);
     line-height: 150%;
     ::placeholder {
       color: var(--color-black);
@@ -122,7 +122,7 @@ const ProfileEditView = styled.form`
     color: var(--color-black);
     line-height: 150%;
     ::placeholder {
-      color: var(--color-black);
+      color: var(--color-gray);
     }
   }
   textarea {
@@ -135,7 +135,8 @@ const ProfileEditImage = styled.div`
   border: 1px solid var(--color-midgray--04);
   border-radius: 100%;
   margin-bottom: 2.5rem;
-  background-image: url("../images/profile/pf_1.svg");
+  background-image: url(${(props) => props.photo});
+  background-size: 100%;
 `;
 const ProfileEditInput = styled.input`
   display: none;
@@ -180,10 +181,8 @@ const ButtonContainer = styled.div`
 const CancelButton = styled(Button)`
   width: 7.2rem;
 `;
-const SaveButton = styled.div`
-  width: 15rem;
-  height: 2.25rem;
-  border: 1px solid var(--color-midgray--04);
+const SaveButton = styled(Button)`
+  width: 7.2rem;
   background-color: var(--color-darkblue);
   color: var(--color-white) !important;
 `;
@@ -233,8 +232,16 @@ const MyHabit = styled.div`
 
 const MyPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
+  const [photo, setPhoto] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+
   const history = useHistory();
   const dispatch = useDispatch();
+  const userInfo = useSelector(({ authReducer }) => authReducer);
+  const [inputValue, setInputValue] = useState({
+    nickname: userInfo.nickname,
+    bio: userInfo.bio,
+  });
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -277,70 +284,86 @@ const MyPage = () => {
     }
   }, [dispatch]);
 
-  const handleFileChange = async (event) => {
-    console.log(event.target.files);
-    const fileInfo = event.target.files[0];
-    setSelectedFile(fileInfo);
-    console.log(selectedFile);
+  useEffect(() => {
+    setInputValue({
+      nickname: userInfo.nickname,
+      bio: userInfo.bio,
+    });
+  }, [userInfo]);
+
+  const handleFileChange = (e) => {
+    const fileInfo = e.target.files[0];
+    const imageUrl = URL.createObjectURL(fileInfo);
+
+    setPhoto(fileInfo);
+    setImageUrl(imageUrl);
+    console.log("fileInfo", fileInfo);
+    console.log(imageUrl);
   };
 
-  const handleFileUpload = () => {
-    console.log(1);
-    const formData = new FormData();
-    console.log(formData);
-    formData.append("userfile", selectedFile, selectedFile.name);
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setInputValue((prevState) => ({ ...prevState, [name]: value }));
+  };
 
-    axios
-      .post("http://localhost:8080/uploads/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("image", photo);
+    formData.append("nickname", inputValue.nickname);
+    formData.append("bio", inputValue.bio);
+
+    const res = await usersApi.modifyUserInfo(userInfo.usersId, formData);
+    dispatch(updateInfoAction(res.data));
   };
 
   return (
     <MyPageView>
       {!isEditMode ? (
         <ProfileView>
-          <ProfileImage src="../images/profile/pf_1.svg" />
+          <ProfileImage src={userInfo.image} />
           <Container>
-            <ProfileUsername>Leezy_Kim</ProfileUsername>
-            <ProfileUserBio>
-              🐢하루하루 꾸준히😌 <br />
-              🔥Never Say Never🔥
-            </ProfileUserBio>
+            <ProfileUsername>{userInfo.nickname}</ProfileUsername>
+            <ProfileUserBio>{userInfo.bio}</ProfileUserBio>
             <ProfileEditButton onClick={() => setIsEditMode(true)}>프로필 수정</ProfileEditButton>
           </Container>
         </ProfileView>
       ) : (
-        <ProfileEditView onSubmit={handleFileUpload}>
-          <ProfileEditImage>
-            <ProfileEditLabel htmlFor="image">프로필 이미지 수정</ProfileEditLabel>
-            <ProfileEditInput type="file" id="image" name="image" onChange={handleFileChange} />
+        <ProfileEditView onSubmit={handleSubmit}>
+          <ProfileEditImage photo={imageUrl}>
+            <ProfileEditLabel htmlFor="photo">프로필 이미지 수정</ProfileEditLabel>
+            <ProfileEditInput
+              id="photo"
+              type="file"
+              accept="image/png, image/jpeg"
+              onChange={handleFileChange}
+            />
           </ProfileEditImage>
           <Container>
             <ProfileEditUsername>
               <div>Name</div>
-              <input type="text" placeholder="Leezy_kim" />
+              <input
+                name="nickname"
+                type="text"
+                value={inputValue.nickname}
+                placeholder="Leezy_kim"
+                onChange={handleInputChange}
+              />
             </ProfileEditUsername>
             <ProfileEditUserBio>
               <div>Bio</div>
               <textarea
+                name="bio"
+                type="text"
+                value={inputValue.bio}
                 placeholder={`🐢하루하루 꾸준히😌
 🔥Nerver Say Never🔥`}
+                onChange={handleInputChange}
               />
             </ProfileEditUserBio>
             <ButtonContainer>
               <CancelButton onClick={() => setIsEditMode(false)}>취소</CancelButton>
-              <SaveButton>
-                <input type="submit" value="저장" />
-              </SaveButton>
+              <SaveButton type="submit">저장</SaveButton>
             </ButtonContainer>
             <DeleteAccountButton>회원 탈퇴</DeleteAccountButton>
           </Container>
