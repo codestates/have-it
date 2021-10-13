@@ -1,9 +1,5 @@
-const { Habit, Userhabit, User, Category, Post } = require("../models");
-const { DeleteImageinTable } = require("./functions");
-
-const DBERROR = (res, err) => {
-  res.status(500).json({ message: `Error occured in database: ${err}` });
-};
+const { Userhabit, Post } = require("../models");
+const { DeleteImageinTable, DBERROR } = require("./functions");
 
 module.exports = {
   writePost: async (req, res) => {
@@ -69,6 +65,8 @@ module.exports = {
         DeleteImageinTable(image);
       }
       if (req.userId === postInfo.users_id) {
+        const userhabits = await postInfo.getUserhabit();
+        userhabits.update({ actual_amount: userhabits.dataValues.actual_amount - 1 });
         await postInfo.destroy();
         res.status(200).json({ message: "ok", data: { postsId: posts_id } });
       } else {

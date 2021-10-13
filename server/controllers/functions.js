@@ -8,20 +8,23 @@ function test1(str) {
   });
 }
 module.exports = {
-  snakeToCamal: (obj) => {
+  snakeToCamal: function snakeToCamal(obj) {
     if (typeof obj !== "object") return test1(obj);
     if (Array.isArray(obj)) {
       if (obj[0] !== Object) return obj;
       return obj.map((el) => {
-        return test2(el);
+        return snakeToCamal(el);
       });
     } else {
       if (obj === null) return null;
       const a = Object.entries(obj);
+      if (!a.length) {
+        return obj;
+      }
       return a.reduce((acc, cur) => {
         let b;
         if (typeof cur[1] === "object") {
-          b = test2(cur[1]);
+          b = snakeToCamal(cur[1]);
         } else {
           b = cur[1];
         }
@@ -41,5 +44,8 @@ module.exports = {
       if (err) console.log(err, err.stack);
       else console.log();
     });
+  },
+  DBERROR: (res, err) => {
+    res.status(500).json({ message: `Error occured in database: ${err}` });
   },
 };

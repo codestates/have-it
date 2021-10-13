@@ -1,9 +1,5 @@
 const { Habit, Userhabit, User, Category, Post } = require("../models");
-const { snakeToCamal, DeleteImageinTable } = require("./functions");
-
-const DBERROR = (res, err) => {
-  res.status(500).json({ message: `Error occured in database: ${err}` });
-};
+const { snakeToCamal, DeleteImageinTable, DBERROR } = require("./functions");
 
 module.exports = {
   createHabit: async (req, res) => {
