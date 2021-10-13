@@ -24,9 +24,10 @@ const getUniqueNickname = async (nick, num = 1) => {
 module.exports = {
   checkNickname: async (req, res) => {
     const { nickname } = req.params;
+    console.log(nickname);
     const foundUser = await User.findOne({ where: { nickname } });
     if (foundUser) {
-      return res.status(409).json({ message: `${nickname} already exists` });
+      return res.status(202).json({ message: `${nickname} already exists` });
     }
     return res.status(200).json({ message: "Valid nickname" });
   },
@@ -48,7 +49,7 @@ module.exports = {
     });
 
     if (!foundUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(202).json({ message: "User not found" });
     }
 
     const refinedUser = {
@@ -110,17 +111,17 @@ module.exports = {
 
     const foundUserByEmail = await User.findOne({ where: { email } });
     if (!foundUserByEmail) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(202).json({ message: "아이디 또는 비밀번호를 잘못 입력하셨습니다." });
     }
 
     const { sns } = foundUserByEmail.dataValues;
     if (sns !== "local") {
-      return res.status(409).json({ message: `${email} already exists`, sns });
+      return res.status(202).json({ message: `${email} already exists`, sns });
     }
 
     const isValidPassword = await bcrypt.compare(password, foundUserByEmail.dataValues.password);
     if (!isValidPassword) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(202).json({ message: "아이디 또는 비밀번호를 잘못 입력하셨습니다." });
     }
 
     const token = generateAccessToken(foundUserByEmail.dataValues.users_id);
