@@ -5,6 +5,10 @@ module.exports = {
   modifyUserInfo: async (req, res) => {
     const { bio, nickname } = req.body;
     const { users_id } = req.params;
+    if (!users_id) {
+      res.status(400).json({ message: "User not found" });
+      return;
+    }
     let location;
     if (req.file) {
       location = req.file.location;
