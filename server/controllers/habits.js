@@ -1,9 +1,5 @@
 const { Habit, Userhabit, User, Category, Post } = require("../models");
-const snakeToCamal = require("./snakeToCamal");
-
-const DBERROR = (res, err) => {
-  res.status(500).json({ message: `Error occured in database: ${err}` });
-};
+const { snakeToCamal, DeleteImageinTable, DBERROR } = require("./functions");
 
 module.exports = {
   createHabit: async (req, res) => {
@@ -33,7 +29,6 @@ module.exports = {
   },
   findHabits: async (req, res) => {
     const { category, sort, limit } = req.query;
-    //sort값 [sortByUserCount, sortByCreatedAt] 인기순은 advanced
     const sortValue = sort === "sortByCreatedAt" ? "created_at" : "user_count";
     if (category) {
       try {
@@ -65,7 +60,7 @@ module.exports = {
           userInfoInHabit = userInfo.map((el) => {
             return snakeToCamal(el.User.dataValues);
           });
-          habitsInfo.push({ ...title, topUser: userInfoInHabit });
+          habitsInfo.push({ ...title, topUsers: userInfoInHabit });
         }
 
         res.status(200).json({ message: "ok", data: habitsInfo });
@@ -96,7 +91,7 @@ module.exports = {
         userInfoInHabit = userInfo.map((el) => {
           return snakeToCamal(el.User.dataValues);
         });
-        habitsInfo.push({ ...title, topUser: userInfoInHabit });
+        habitsInfo.push({ ...title, topUsers: userInfoInHabit });
       }
       res.status(200).json({ message: "ok", data: habitsInfo });
       try {
@@ -163,11 +158,15 @@ module.exports = {
     }
   },
   modifyHabit: async (req, res) => {
-    //TODO: req.file 어떻게 s3등록할지 생각
     const { habits_id } = req.params;
     const { description } = req.body;
     try {
-      await Habit.update({ description }, { where: { habits_id } });
+      const habitInfo = await Habit.findOne({ where: { habits_id } });
+      const { image } = habitInfo.dataValues;
+      if (image && req.file) {
+        DeleteImageinTable(image);
+      }
+      await Habit.update({ description, image: req.file.location }, { where: { habits_id } });
       res.status(200).json({ message: "ok", data: { habitsId: habits_id } });
     } catch (err) {
       DBERROR(res, err);

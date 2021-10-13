@@ -8,6 +8,7 @@ module.exports = {
     host: config.db.host,
     port: config.db.port,
     dialect: "mysql",
+    timezone: "+09:00",
   },
   test: {
     username: config.db.username,
@@ -16,6 +17,7 @@ module.exports = {
     host: config.db.host,
     port: config.db.port,
     dialect: "mysql",
+    timezone: "+09:00",
   },
   production: {
     username: config.db.username,
@@ -24,5 +26,6 @@ module.exports = {
     host: config.db.host,
     port: config.db.port,
     dialect: "mysql",
+    timezone: "+09:00",
   },
 };
