@@ -1,11 +1,22 @@
 import React from "react";
 import styled from "styled-components";
+import Post from "../components/Post";
 
 const HabitContainer = styled.div`
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 6rem);
   display: flex;
   padding: 40px 60px;
+
+  > * {
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  > *:last-of-type {
+    overflow-y: scroll;
+  }
 `;
 
 const InfoContainer = styled.div`
@@ -194,8 +205,8 @@ const Divider = styled.div`
 `;
 
 const Feed = styled.div`
-  flex: 1 1 0;
-  border: 1px solid red;
+  flex: 0 0 1;
+  width: 100%;
 `;
 
 const Habit = () => {
@@ -264,7 +275,9 @@ const Habit = () => {
         </UserGoalInfo>
       </InfoContainer>
       <Divider />
-      <Feed />
+      <Feed>
+        <Post />
+      </Feed>
     </HabitContainer>
   );
 };
