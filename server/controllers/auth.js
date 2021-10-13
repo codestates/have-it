@@ -1,8 +1,25 @@
 const bcrypt = require("bcrypt");
 const { v4: uuid } = require("uuid");
-const { saltRounds } = require("../config");
+const axios = require("axios");
+const {
+  saltRounds,
+  oauth: { naverClientId, naverClientSecret, googleClientId, googleClientSecret },
+} = require("../config");
 const { User } = require("../models");
 const { generateAccessToken, setCookie, clearCookie } = require("./token");
+
+const getUniqueNickname = async (nick, num = 1) => {
+  let tempNick = nick;
+  const foundUserByNickname = await User.findOne({ where: { nickname: nick } });
+  if (foundUserByNickname) {
+    if (num !== 1) {
+      [tempNick] = tempNick.split("_");
+    }
+    tempNick = `${tempNick}_${num}`;
+    return getUniqueNickname(tempNick, num + 1);
+  }
+  return nick;
+};
 
 module.exports = {
   checkNickname: async (req, res) => {
@@ -106,5 +123,117 @@ module.exports = {
     setCookie(res, token);
 
     return res.status(201).json({ message: "Signed up", user: foundUser.dataValues });
+  },
+
+  getNaver: async (req, res) => {
+    const { authorizationCode } = req.body;
+    const params = {
+      grant_type: "authorization_code",
+      client_id: naverClientId,
+      client_secret: naverClientSecret,
+      code: authorizationCode,
+      state: "naver",
+    };
+    const axiosRes = await axios({
+      method: "post",
+      url: "https://nid.naver.com/oauth2.0/token",
+      params,
+    });
+    if (axiosRes.status === 200) {
+      const { access_token: accessToken } = axiosRes.data;
+      const profileRes = await axios({
+        method: "get",
+        url: "https://openapi.naver.com/v1/nid/me",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (profileRes.status === 200) {
+        const { nickname, profile_image: image, email } = profileRes.data.response;
+        let tempNickname = nickname;
+        const foundUser = await User.findOne({ where: { email, sns: "naver" } });
+        // email이 있고 sns가 naver 인 경우, 그 유저로 로그인시킨다.
+        if (foundUser) {
+          const token = generateAccessToken(foundUser.dataValues.users_id);
+          setCookie(res, token);
+          delete foundUser.dataValues.password;
+          // TODO: userhabits와 habits를 join한 결과를 응답
+          return res.status(200).json({ message: "Signed in", user: foundUser.dataValues });
+        }
+
+        // email이 없는 경우, 유저 생성
+        // nickname이 중복되는 경우
+        tempNickname = await getUniqueNickname(tempNickname);
+
+        const createdUser = await User.create({
+          users_id: uuid(),
+          nickname: tempNickname,
+          image,
+          email,
+          sns: "naver",
+        });
+        const token = generateAccessToken(createdUser.dataValues.users_id);
+        setCookie(res, token);
+        return res.status(201).json({ message: "Signed up", user: createdUser.dataValues });
+      }
+    }
+
+    return res.status(axiosRes.status).json({ message: "Error occured during social login" });
+  },
+
+  getGoogle: async (req, res) => {
+    const { authorizationCode } = req.body;
+    const params = {
+      grant_type: "authorization_code",
+      client_id: googleClientId,
+      client_secret: googleClientSecret,
+      code: authorizationCode,
+      redirect_uri: "http://localhost:3000/mypage",
+    };
+    const axiosRes = await axios({
+      method: "post",
+      url: "https://oauth2.googleapis.com/token",
+      params,
+    });
+    if (axiosRes.status === 200) {
+      const { access_token: accessToken } = axiosRes.data;
+      const profileRes = await axios({
+        method: "get",
+        url: "https://www.googleapis.com/oauth2/v2/userinfo",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (profileRes.status === 200) {
+        const { name: nickname, picture: image, email } = profileRes.data;
+        let tempNickname = nickname;
+        const foundUser = await User.findOne({ where: { email, sns: "google" } });
+        // email이 있고 sns가 naver 인 경우, 그 유저로 로그인시킨다.
+        if (foundUser) {
+          const token = generateAccessToken(foundUser.dataValues.users_id);
+          setCookie(res, token);
+          delete foundUser.dataValues.password;
+          // TODO: userhabits와 habits를 join한 결과를 응답
+          return res.status(200).json({ message: "Signed in", user: foundUser.dataValues });
+        }
+
+        // email이 없는 경우, 유저 생성
+        // nickname이 중복되는 경우
+        tempNickname = await getUniqueNickname(tempNickname);
+
+        const createdUser = await User.create({
+          users_id: uuid(),
+          nickname: tempNickname,
+          image,
+          email,
+          sns: "google",
+        });
+        const token = generateAccessToken(createdUser.dataValues.users_id);
+        setCookie(res, token);
+        return res.status(201).json({ message: "Signed up", user: createdUser.dataValues });
+      }
+    }
+
+    return res.status(axiosRes.status).json({ message: "Error occured during social login" });
   },
 };
