@@ -15,6 +15,7 @@ const habitsRouter = require("./routes/habits");
 const postsRouter = require("./routes/posts");
 const usersRouter = require("./routes/users");
 const categoriesRouter = require("./routes/categories");
+const testRouter = require("./routes/test");
 
 const app = express();
 
@@ -35,6 +36,8 @@ app.use("/habits", habitsRouter);
 app.use("/posts", postsRouter);
 app.use("/users", usersRouter);
 app.use("/categories", categoriesRouter);
+
+app.use("/test", testRouter);
 
 app.use((err, req, res, next) => {
   res.status(500).json({ message: `Something went wrong: ${err}` });
