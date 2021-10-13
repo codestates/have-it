@@ -37,7 +37,7 @@ module.exports = {
     const foundUser = await User.findOne({ where: { email } });
     if (foundUser) {
       const { sns } = foundUser.dataValues;
-      return res.status(409).json({ message: `${email} already exists`, data: { sns } });
+      return res.status(202).json({ message: `${email} already exists`, data: { sns } });
     }
     return res.status(200).json({ message: "Valid email" });
   },
@@ -113,10 +113,9 @@ module.exports = {
     if (!foundUserByEmail) {
       return res.status(202).json({ message: "아이디 또는 비밀번호를 잘못 입력하셨습니다." });
     }
-
     const { sns } = foundUserByEmail.dataValues;
     if (sns !== "local") {
-      return res.status(202).json({ message: `${email} already exists`, sns });
+      return res.status(202).json({ message: `${email} already exists`, data: { sns } });
     }
 
     const isValidPassword = await bcrypt.compare(password, foundUserByEmail.dataValues.password);
@@ -185,8 +184,7 @@ module.exports = {
   },
 
   signout: (req, res) => {
-    const { jwt } = req.cookies;
-    clearCookie(res, jwt);
+    clearCookie(res);
     res.status(205).json({ message: "Signed out" });
   },
 
@@ -195,13 +193,13 @@ module.exports = {
 
     const foundUserByNickname = await User.findOne({ where: { nickname } });
     if (foundUserByNickname) {
-      return res.status(409).json({ message: `${nickname} already exists` });
+      return res.status(202).json({ message: `${nickname} already exists` });
     }
 
     const foundUserByEmail = await User.findOne({ where: { email } });
     if (foundUserByEmail) {
       const { sns } = foundUserByEmail.dataValues;
-      return res.status(409).json({ message: `${email} already exists`, data: { sns } });
+      return res.status(202).json({ message: `${email} already exists`, data: { sns } });
     }
 
     const hashed = await bcrypt.hash(password, saltRounds);
