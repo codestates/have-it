@@ -418,10 +418,10 @@ const Signing = ({ defaultType }) => {
       </InputContainer>
       <SocialContainer>
         <span>OR</span>
-        <SocialLoginButton onClick={handleNaverLogInClick} color="#03C75A">
+        <SocialLoginButton type="button" onClick={handleNaverLogInClick} color="#03C75A">
           네이버로 로그인하기
         </SocialLoginButton>
-        <SocialLoginButton onClick={handleGoogleLogInClick} color="#00000066">
+        <SocialLoginButton type="button" onClick={handleGoogleLogInClick} color="#00000066">
           구글로 로그인하기
         </SocialLoginButton>
       </SocialContainer>
