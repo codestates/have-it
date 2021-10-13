@@ -1,11 +1,24 @@
 import React from "react";
 import styled from "styled-components";
+import { Progress } from "react-sweet-progress";
+import PostList from "../components/PostList";
+import "react-sweet-progress/lib/style.css";
 
 const HabitContainer = styled.div`
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 6rem);
   display: flex;
   padding: 40px 60px;
+
+  > * {
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  > *:last-of-type {
+    overflow-y: scroll;
+  }
 `;
 
 const InfoContainer = styled.div`
@@ -84,6 +97,7 @@ const UserGoalInfo = styled.div`
   display: flex;
   flex-direction: column;
   font-family: Interop-SemiBold;
+
   * {
     font-family: inherit;
   }
@@ -130,7 +144,7 @@ const GoalContentContainer = styled.div`
 const GoalSubtitle = styled.h3`
   color: var(--color-mainblue);
   font-size: 1rem;
-  margin: 1.6rem 0 0.8rem;
+  margin: 0.8em 0 0.4rem;
 
   :first-of-type {
     margin-top: 0;
@@ -138,50 +152,23 @@ const GoalSubtitle = styled.h3`
 `;
 
 const GoalContent = styled.p`
-  font-size: 1.25rem;
+  font-size: 1.125rem;
+  margin: 0.1rem 0;
 `;
 
-const ProgressBar = styled.div`
-  position: relative;
-  width: 100%;
+const ProgressBar = styled(Progress)`
   height: 1rem;
-  border: 1px solid var(--color-mainblue);
-  border-radius: 0.6rem;
-`;
-
-const TargetBar = styled.div`
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: ${(props) => props.rate * 100}%;
-  height: 100%;
-  background-color: var(--color-lightblue);
-  border-radius: 0.6rem 0 0 0.6rem;
-`;
-
-const ActualBar = styled.div`
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: ${(props) => props.rate * 100}%;
-  height: 100%;
-  background-color: var(--color-mainblue);
-  border-radius: 0.6rem 0 0 0.6rem;
-`;
-
-const RateTextContainer = styled.div`
-  width: 100%;
-  height: 1.4rem;
-  position: relative;
-`;
-
-const RateText = styled.span`
-  margin-top: 0.4rem;
-  position: absolute;
-  top: 0;
-  left: ${(props) => props.rate * 100}%;
-  font-size: 0.875rem;
-  color: var(--color-mainblue);
+  font-size: 1.25rem;
+  > div {
+    height: calc(100% - 0.2rem);
+    :first-of-type {
+      margin-top: 0.125rem;
+      background-color: var(--color-lightblue);
+    }
+  }
+  * {
+    height: 100%;
+  }
 `;
 
 const Divider = styled.div`
@@ -194,8 +181,8 @@ const Divider = styled.div`
 `;
 
 const Feed = styled.div`
-  flex: 1 1 0;
-  border: 1px solid red;
+  flex: 0 0 1;
+  width: 100%;
 `;
 
 const Habit = () => {
@@ -212,11 +199,10 @@ const Habit = () => {
   };
 
   const user = { id: 2, username: "leezy_kim" };
-
   const userHabit = {
     goal: "💎 자기 전 하루를 돌아보며 칭찬 일기 쓰기 💎",
-    actual_amount_percent: 0.435,
-    target_amount_percent: 0.707,
+    actual_amount_percent: 0.725,
+    target_amount_percent: 0.888,
   };
 
   return (
@@ -248,23 +234,21 @@ const Habit = () => {
             <GoalSubtitle>하루 목표</GoalSubtitle>
             <GoalContent>{userHabit.goal}</GoalContent>
             <GoalSubtitle>달성율</GoalSubtitle>
-            <ProgressBar>
-              <TargetBar rate={userHabit.target_amount_percent} />
-              <ActualBar rate={userHabit.actual_amount_percent} />
-            </ProgressBar>
-            <RateTextContainer>
-              <RateText rate={userHabit.target_amount_percent}>
-                {userHabit.target_amount_percent * 100}%
-              </RateText>
-              <RateText rate={userHabit.actual_amount_percent}>
-                {userHabit.actual_amount_percent * 100}%
-              </RateText>
-            </RateTextContainer>
+            <ProgressBar
+              percent={userHabit.actual_amount_percent * 100}
+              theme={{
+                success: { symbol: "🥳", color: "var(--color-mainblue)" },
+                active: { symbol: "🔥", color: "var(--color-mainblue)" },
+                default: { symbol: "👏", color: "var(--color-lightblue)" },
+              }}
+            />
           </GoalContentContainer>
         </UserGoalInfo>
       </InfoContainer>
       <Divider />
-      <Feed />
+      <Feed>
+        <PostList />
+      </Feed>
     </HabitContainer>
   );
 };
