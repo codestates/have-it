@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import styled, { css } from "styled-components";
 import { Emoji } from "emoji-mart";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useHistory } from "react-router-dom";
 import habitsApi from "../api/habits";
+import { modalOffAction, updateUserHabitAction } from "../store/actions";
 
 const Form = styled.form`
   width: 48rem;
@@ -330,6 +332,8 @@ const HabitJoin = () => {
   const { habitsId, title, emojiId, color } = useSelector(
     ({ habitJoinReducer }) => habitJoinReducer
   );
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -385,15 +389,11 @@ const HabitJoin = () => {
     }
     setMessage(null);
     const res = await habitsApi.joinHabit(habitsId, startDate, endDate, goal, habitDayNumber);
-    // if (res.status === 201) {
-    // TODO:
-    // 1. auth reducer 업데이트
-    // 2. 모달 오프
-    // 3. /habits/{habitsId} 로 push
-    //   dispatch(habitJoinProceedAction(res.data.data));
-    //   dispatch(modalOffAction);
-    //   dispatch(habitJoinModalOnAction);
-    // }
+    if (res.status === 200) {
+      dispatch(updateUserHabitAction(res.data.data));
+      dispatch(modalOffAction);
+      history.push(`/habit/${habitsId}`);
+    }
   };
 
   return habitsId ? (
