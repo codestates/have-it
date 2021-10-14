@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import "../styles/fontello/css/fontello.css";
 import { useDispatch, useSelector } from "react-redux";
+import { Emoji } from "emoji-mart";
 import { signInModalOnAction, habitCreateModalOnAction } from "../store/actions";
 
 const NavContainer = styled.div`
@@ -12,6 +13,7 @@ const NavContainer = styled.div`
   min-width: 5rem;
   height: 100vh;
   background-color: var(--color-lightgray);
+  z-index: 1;
 `;
 
 const FlexContainer = styled.div`
@@ -57,16 +59,86 @@ const Button = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--color-midgray--04);
+  background-color: var(--color-lightblue--02);
   color: var(--color-white);
-  border-radius: 5px;
+  border-radius: 1.5rem;
   width: 3rem;
   height: 3rem;
 `;
 
-const MenuButton = styled(Button)``;
-const HabitButton = styled(Button)`
+const MenuButton = styled(Button)`
+  :hover {
+    background-color: var(--color-lightblue--04);
+  }
+`;
+
+const LinkRouter = styled(Link)`
+  width: max-content;
+`;
+
+const EnlargeContainer = styled.div`
+  width: 15rem;
+  margin-left: 12rem;
+  border-radius: 1.5rem;
   margin-bottom: 1rem;
+  background-color: ${(props) => props.backgroundColor};
+`;
+
+const WhiteBackground = styled.div`
+  width: 3rem;
+  height: 3rem;
+  background-color: var(--color-lightblue--04);
+  background-color: var(--color-white);
+  border-radius: 1.5rem;
+  :hover {
+    width: max-content;
+    div {
+      visibility: visible;
+    }
+  }
+`;
+
+const HabitButtonContainer = styled(Button)`
+  background-color: ${(props) => props.backgroundColor};
+  opacity: 100%;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  color: var(--color-white);
+  border-radius: 1.5rem;
+  border: 2px solid;
+  border-color: ${(props) => {
+    console.log("color", props.borderColor);
+
+    return props.borderColor;
+  }};
+  width: 3rem;
+  height: 3rem;
+  transition: width 1s ease;
+  padding: 0rem 0.6rem;
+  :hover {
+    width: auto;
+    max-width: 20rem;
+    div {
+      visibility: visible;
+    }
+  }
+`;
+
+const HabitButtonBox = styled.div`
+  display: flex;
+  height: 3rem;
+  align-items: center;
+`;
+
+const Habit = styled.div`
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  color: var(--color-white);
+  visibility: hidden;
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
 `;
 
 const Divider = styled.div`
@@ -82,26 +154,15 @@ const HabitCreateContainer = styled(Container)`
 const HabitCreateButton = styled(Button)`
   font-size: 2rem;
   background-color: var(--color-mainblue);
+  :hover {
+    background-color: var(--color-mainblue);
+  }
 `;
 
 const Nav = () => {
   const { isLogin } = useSelector(({ authReducer }) => authReducer);
+  const userInfo = useSelector(({ authReducer }) => authReducer);
   const dispatch = useDispatch();
-
-  const dummy = [
-    { id: 1, title: "달리기", color: "red", icon: "123" },
-    { id: 2, title: "집중 50분, 10분 휴식 지키기", color: "red", icon: "123" },
-    { id: 3, title: "하루 2L 물마시기", color: "red", icon: "123" },
-    { id: 4, title: "12가지 인생의 법칙!", color: "red", icon: "123" },
-    { id: 5, title: "달리기", color: "red", icon: "123" },
-    { id: 6, title: "집중 50분, 10분 휴식 지키기", color: "red", icon: "123" },
-    { id: 7, title: "하루 2L 물마시기", color: "red", icon: "123" },
-    { id: 8, title: "12가지 인생의 법칙!", color: "red", icon: "123" },
-    { id: 9, title: "달리기", color: "red", icon: "123" },
-    { id: 10, title: "집중 50분, 10분 휴식 지키기", color: "red", icon: "123" },
-    { id: 11, title: "하루 2L 물마시기", color: "red", icon: "123" },
-    { id: 12, title: "12가지 인생의 법칙!", color: "red", icon: "123" },
-  ];
 
   const handleSignIn = () => {
     dispatch(signInModalOnAction);
@@ -121,22 +182,38 @@ const Nav = () => {
           <MenuContainer>
             <Link to="/">
               <MenuButton>
-                <i className="icon-home" style={{ fontSize: "26px", color: "white " }} />
+                <i className="icon-home" style={{ fontSize: "26px", color: "#4D4DFF" }} />
               </MenuButton>
             </Link>
             <Link to="/mypage">
               <MenuButton>
-                <i className="icon-user" style={{ fontSize: "26px", color: "white " }} />
+                <i className="icon-user" style={{ fontSize: "26px", color: "#4D4DFF " }} />
               </MenuButton>
             </Link>
           </MenuContainer>
           <Divider />
           <HabitContainer>
             {isLogin &&
-              dummy.map((el) => (
-                <Link key={el.id} to={`/habit/${el.id}`}>
-                  <HabitButton>{el.id}</HabitButton>
-                </Link>
+              userInfo.habits.map((habit) => (
+                <LinkRouter key={habit.id} to={`/habit/${habit.habitsId}`}>
+                  <EnlargeContainer>
+                    <WhiteBackground>
+                      <HabitButtonContainer
+                        backgroundColor={habit.color}
+                        borderColor={(() => {
+                          const deci = parseInt(habit.color.substring(1), 16) - 8000;
+                          const hex = deci.toString(16);
+                          return `#${hex}`;
+                        })()}
+                      >
+                        <HabitButtonBox>
+                          <Emoji emoji={habit.emojiId} size={20} />
+                          <Habit> {habit.title}</Habit>
+                        </HabitButtonBox>
+                      </HabitButtonContainer>
+                    </WhiteBackground>
+                  </EnlargeContainer>
+                </LinkRouter>
               ))}
           </HabitContainer>
           <Divider />

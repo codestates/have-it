@@ -54,59 +54,6 @@ module.exports = {
       DBERROR(res, err);
     }
   },
-  removeUserInfo: async (req, res) => {
-    const { users_id } = req.params;
-
-    let location;
-    if (req.file) {
-      location = req.file.location;
-    }
-    try {
-      const userInfo = await User.findOne({ where: { users_id } });
-      const { image } = userInfo.dataValues;
-      if (image && location) {
-        DeleteImageinTable(image);
-      }
-      await userInfo.update({ bio, image: location });
-      if (nickname) {
-        const checkNickName = await User.findOne({ where: { nickname } });
-        if (!checkNickName) {
-          await userInfo.update({ nickname });
-          res.status(201).json({
-            message: "ok",
-            data: {
-              usersId: users_id,
-              nickname: userInfo.dataValues.nickname,
-              image: location || userInfo.dataValues.image,
-              bio: userInfo.dataValues.bio,
-            },
-          });
-        } else {
-          res.status(201).json({
-            message: "Nickname already exists but else other information has been updated.",
-            data: {
-              usersId: users_id,
-              nickname: userInfo.dataValues.nickname,
-              image: location || userInfo.dataValues.image,
-              bio: userInfo.dataValues.bio,
-            },
-          });
-        }
-      } else {
-        res.status(201).json({
-          message: "ok",
-          data: {
-            usersId: users_id,
-            nickname: userInfo.dataValues.nickname,
-            image: location || userInfo.dataValues.image,
-            bio: userInfo.dataValues.bio,
-          },
-        });
-      }
-    } catch (err) {
-      DBERROR(res, err);
-    }
-  },
 
   removeUserInfo: async (req, res) => {
     const {

@@ -9,6 +9,7 @@ export const MODAL_OFF = "MODAL_OFF";
 export const SIGN_IN = "SIGN_IN";
 export const SIGN_OUT = "SIGN_OUT";
 export const UPDATE_INFO = "UPDATE_INFO";
+export const UPDATE_USER_HABIT = "UPDATE_USER_HABIT";
 
 // Home
 export const SHOW_POPUP = "SHOW_POPUP";

@@ -20,7 +20,14 @@ const habitsApi = {
       description,
     }),
   findHabitById: (id) => api.get(`/habits/${id}`),
-  joinHabit: () => api.post("/habits/:habits_id"),
+  joinHabit: (habitsId, startDate, endDate, goal, habitDayNumber) =>
+    api.post(`/habits/${habitsId}`, {
+      habits_id: habitsId,
+      goal,
+      habit_day: habitDayNumber,
+      start_date: startDate,
+      end_date: endDate,
+    }),
   modifyHabit: (id, data, options) =>
     api.put(`/habits/${id}`, data, {
       headers: {
@@ -28,7 +35,7 @@ const habitsApi = {
       },
       ...options,
     }),
-  getTitle: () => api.put("/habits/title/:habits_id"),
+  getTitle: (id) => api.get(`/habits/title/${id}`),
 };
 
 export default habitsApi;

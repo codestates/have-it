@@ -1,4 +1,4 @@
-import { SIGN_IN, SIGN_OUT, UPDATE_INFO } from "../actions/actionTypes";
+import { SIGN_IN, SIGN_OUT, UPDATE_INFO, UPDATE_USER_HABIT } from "../actions/actionTypes";
 
 const initialState = {
   isLogin: false,
@@ -12,7 +12,6 @@ const initialState = {
 
 const authReducer = (prevState = initialState, action) => {
   let state;
-
   switch (action.type) {
     case SIGN_IN:
       state = {
@@ -30,6 +29,17 @@ const authReducer = (prevState = initialState, action) => {
         image: action.payload.data.image,
         nickname: action.payload.data.nickname,
         bio: action.payload.data.bio,
+      };
+      break;
+    case UPDATE_USER_HABIT:
+      state = {
+        ...prevState,
+        habits: [
+          ...prevState.habits,
+          {
+            ...action.payload,
+          },
+        ],
       };
       break;
     default:

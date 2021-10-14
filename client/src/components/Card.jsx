@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
@@ -5,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Emoji } from "emoji-mart";
 import uuid from "react-uuid";
 import { useHistory } from "react-router-dom";
+import ReactLogo from "../assets/joining-icon.svg";
 import {
   signInModalOnAction,
   habitJoinModalOnAction,
@@ -21,6 +24,12 @@ const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   color: var(--color-white);
+`;
+
+const Bookmark = styled.img`
+  position: absolute;
+  top: 0;
+  right: 1.25rem;
 `;
 
 const Icon = styled.div`
@@ -104,6 +113,7 @@ const Card = ({ habit, isJoin }) => {
 
   return (
     <CardContainer onClick={handleClick}>
+      {isJoin && <Bookmark src={ReactLogo} />}
       <Icon>
         <Emoji emoji={habit.emojiId} size={32} />
       </Icon>
