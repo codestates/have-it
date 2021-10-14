@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Progress } from "react-sweet-progress";
 import "react-sweet-progress/lib/style.css";
-import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router-dom";
+import uuid from "react-uuid";
 import authApi from "../api/auth";
+import habitsApi from "../api/habits";
 import { signInAction, signOutAction } from "../store/actions";
+import Post from "../components/Post";
 
 const HabitContainer = styled.div`
   width: 100%;
@@ -192,6 +195,27 @@ const Feed = styled.div`
 const Habit = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const { id } = useParams();
+  const [habits, setHabits] = useState({
+    habitsId: null,
+    userCount: null,
+    title: "",
+    description: "",
+    image: null,
+    emojiId: "",
+    color: "",
+    categoriesId: null,
+    creatorId: "",
+    Posts: [],
+  });
+  const [userHabits, setUserHabits] = useState({
+    userhabitsId: null,
+    goal: "",
+    actualAmount: 0,
+    targetAmount: 0,
+  });
+  const [posts, setPosts] = useState([]);
+  const { nickname } = useSelector(({ authReducer }) => authReducer);
 
   useEffect(() => {
     const checkValidUser = async () => {
@@ -206,56 +230,50 @@ const Habit = () => {
     checkValidUser();
   }, [dispatch, history]);
 
-  const habit = {
-    image:
-      "https://media.istockphoto.com/photos/female-hand-giving-thumbs-up-picture-id627216922?k=20&m=627216922&s=612x612&w=0&h=CzSWk_kGugXM7oWDOyxPv_yvBsWxykXZ1LwN9oS33rI=",
-    title: "칭찬합시다~!🐳",
-    desc: "칭찬은 평범한 사람을 특별한 사람으로 만드는 ⭐마법의 문장⭐입니다. 스스로를 위해, 주변을 위해 칭찬하는 습관을 길러보는건 어떨까요?👏💖",
-    category: "💖 마음",
-    user_count: 127,
-    emoji_id: "😌",
-    color: "#F0CA4D",
-    creator_id: 1,
-  };
-
-  const user = { id: 2, username: "leezy_kim" };
-  const userHabit = {
-    goal: "💎 자기 전 하루를 돌아보며 칭찬 일기 쓰기 💎",
-    actual_amount_percent: 0.01,
-    target_amount_percent: 0.888,
-  };
+  useEffect(() => {
+    const getHabitInfo = async () => {
+      const res = await habitsApi.findHabitById(id);
+      console.log(res.data);
+      if (res.status === 200) {
+        setHabits(res.data.data.habits);
+        setUserHabits(res.data.data.userInfo);
+        setPosts(res.data.data.habits.posts);
+      }
+    };
+    getHabitInfo();
+  }, [id]);
 
   return (
     <HabitContainer>
       <InfoContainer>
         <HabitInfo>
           <CategoryContainer>
-            <Category>{habit.category}</Category>
+            <Category>{habits.categoryTitle}</Category>
             <EditButton className="icon-pencil">
               <div>수정</div>
             </EditButton>
           </CategoryContainer>
           <CoverContainer>
-            <Image src={habit.image} color={habit.color} />
+            <Image src={habits.image} color={habits.color} />
             <EmojiContainer>
-              <Emoji color={habit.color}>{habit.emoji_id}</Emoji>
+              <Emoji color={habits.color}>{habits.emojiId}</Emoji>
             </EmojiContainer>
           </CoverContainer>
-          <Description>{habit.desc}</Description>
+          <Description>{habits.description}</Description>
         </HabitInfo>
         <UserGoalInfo>
           <GoalTitleContainer>
-            <GoalTitle>{user.username}님의 해빗</GoalTitle>
+            <GoalTitle>{nickname}님의 해빗</GoalTitle>
             <EditButton className="icon-pencil">
               <div>수정</div>
             </EditButton>
           </GoalTitleContainer>
           <GoalContentContainer>
             <GoalSubtitle>하루 목표</GoalSubtitle>
-            <GoalContent>{userHabit.goal}</GoalContent>
-            <GoalSubtitle>달성율 {userHabit.actual_amount_percent * 100}%</GoalSubtitle>
+            <GoalContent>{userHabits.goal}</GoalContent>
+            <GoalSubtitle>달성율 {userHabits.actualAmount * 100}%</GoalSubtitle>
             <ProgressBar
-              percent={userHabit.actual_amount_percent * 100}
+              percent={userHabits.actualAmount * 100}
               theme={{
                 success: { symbol: "🥳", color: "var(--color-mainblue)" },
                 active: { symbol: "🔥", color: "var(--color-mainblue)" },
@@ -266,7 +284,12 @@ const Habit = () => {
         </UserGoalInfo>
       </InfoContainer>
       <Divider />
-      <Feed />
+      <Feed>
+        <Post isInput />
+        {posts.map((post) => (
+          <Post key={uuid()} info={post} />
+        ))}
+      </Feed>
     </HabitContainer>
   );
 };
