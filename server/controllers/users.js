@@ -54,7 +54,7 @@ module.exports = {
       DBERROR(res, err);
     }
   },
-  removeUserInfo: (req, res) => {
+  removeUserInfo: async (req, res) => {
     const { users_id } = req.params;
 
     let location;
