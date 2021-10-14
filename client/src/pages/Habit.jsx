@@ -192,6 +192,40 @@ const Feed = styled.div`
   width: 100%;
 `;
 
+const EmptyComponent = styled.div`
+  border: 1px solid var(--color-mainblue);
+  background-color: var(--color-lightblue--02);
+  color: var(--color-mainblue);
+  position: relative;
+`;
+
+const EmptyImage = styled(EmptyComponent)`
+  width: 100%;
+  height: 0;
+  padding-top: 60%;
+  border-radius: 10px;
+
+  > * {
+    width: 100%;
+    position: absolute;
+    top: calc(50% - 0.5rem);
+    text-align: center;
+  }
+`;
+
+const EmptyFeed = styled(EmptyComponent)`
+  height: 100%;
+  border-radius: 10px;
+  margin: 0 6rem;
+
+  > * {
+    width: 100%;
+    position: absolute;
+    top: calc(50% - 0.5rem);
+    text-align: center;
+  }
+`;
+
 const Habit = () => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -254,7 +288,16 @@ const Habit = () => {
             </EditButton>
           </CategoryContainer>
           <CoverContainer>
-            <Image src={habits.image} color={habits.color} />
+            {habits.image ? (
+              <Image src={habits.image} color={habits.color} />
+            ) : (
+              <EmptyImage>
+                <div>
+                  대표 사진이 아직 없어요. 🤨
+                  <br />
+                </div>
+              </EmptyImage>
+            )}
             <EmojiContainer>
               <Emoji color={habits.color}>{habits.emojiId}</Emoji>
             </EmojiContainer>
@@ -286,9 +329,17 @@ const Habit = () => {
       <Divider />
       <Feed>
         <Post isInput />
-        {posts.map((post) => (
-          <Post key={uuid()} info={post} />
-        ))}
+        {posts.length ? (
+          <>
+            {posts.map((post) => (
+              <Post key={uuid()} info={post} />
+            ))}
+          </>
+        ) : (
+          <EmptyFeed>
+            <div>습관을 실천한 해비터가 아직 없어요. 🤨</div>
+          </EmptyFeed>
+        )}
       </Feed>
     </HabitContainer>
   );
