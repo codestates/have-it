@@ -19,6 +19,7 @@ const PostContainer = styled.div`
     border: 1px solid
       ${(props) => (props.isMine ? "var(--color-mainblue)" : "var(--color-midgray)")};
     position: relative;
+    position: relative;
 
     > #delete {
       display: none;
