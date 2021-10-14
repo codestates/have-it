@@ -6,6 +6,7 @@ import Cards from "../components/Cards";
 import CategoryList from "../components/CategoryList";
 import { signInAction, signOutAction, hidePopupAction } from "../store/actions";
 import authApi from "../api/auth";
+import habitsApi from "../api/habits";
 
 const Main = styled.div`
   overflow: scroll;
@@ -53,12 +54,15 @@ const HidePopup = styled.button`
 const Home = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+
   const { isPopup } = useSelector(({ homeReducer }) => homeReducer);
   const [selectCategory, setSelectCategory] = useState({
     id: 1,
     title: "💪🏻 운동",
     enTitle: "exercise",
   });
+  const [trendingHabits, setTrendingHabits] = useState([]);
+  const [habitsByCategory, setHabitsByCategory] = useState([]);
 
   useEffect(() => {
     const checkValidUser = async () => {
@@ -84,6 +88,22 @@ const Home = () => {
     [setSelectCategory]
   );
 
+  useEffect(() => {
+    const getTrendingHabits = async () => {
+      const res = await habitsApi.findHabits(null, 5, "sortByUserCount");
+      setTrendingHabits(res.data.data);
+    };
+    getTrendingHabits();
+  }, []);
+
+  useEffect(() => {
+    const getHabitsByCategory = async () => {
+      const res = await habitsApi.findHabits(selectCategory.enTitle, 10, "sortByUserCount");
+      setHabitsByCategory(res.data.data);
+    };
+    getHabitsByCategory();
+  }, [selectCategory]);
+
   return (
     <Main>
       {isPopup && (
@@ -97,7 +117,7 @@ const Home = () => {
 
       <>
         <Title>지금 뜨는 채널</Title>
-        <Cards isAtHome />
+        <Cards isAtHome habits={trendingHabits} />
         <CategoryListContainer>
           <CategoryList isAtHome handleCategoryClick={handleCategoryClick} />
           <Link to={`/more/${selectCategory.enTitle}`}>
@@ -107,7 +127,7 @@ const Home = () => {
             </ViewMore>
           </Link>
         </CategoryListContainer>
-        <Cards isAtHome />
+        <Cards isAtHome habits={habitsByCategory} />
       </>
     </Main>
   );

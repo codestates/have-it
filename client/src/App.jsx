@@ -37,7 +37,7 @@ const App = () => {
           <Header />
           <Switch>
             <Route path="/" exact component={Home} />
-            <Route path="/more/:id" component={HomeMore} />
+            <Route path="/more/:enTitle" component={HomeMore} />
             <Route path="/mypage" component={MyPage} />
             <Route path="/habit/:id" component={Habit} />
             <Redirect from="*" to="/" />

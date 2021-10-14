@@ -30,7 +30,7 @@ module.exports = {
           password: "$2b$12$y5.tzZaIs23N0s//xP3XnOIW2ANv/02FRjUSElhOXoe4VaglRthVK",
           nickname: "local",
           bio: null,
-          image: null,
+          image: "https://haveit.s3.ap-northeast-2.amazonaws.com/profile/pf_5.svg",
           sns: "local",
         },
         {
@@ -39,7 +39,7 @@ module.exports = {
           password: "$2b$12$y5.tzZaIs23N0s//xP3XnOIW2ANv/02FRjUSElhOXoe4VaglRthVK",
           nickname: "garlic",
           bio: "오직 너마늘",
-          image: null,
+          image: "https://haveit.s3.ap-northeast-2.amazonaws.com/profile/pf_1.svg",
           sns: "local",
         },
         {
@@ -48,7 +48,7 @@ module.exports = {
           password: "$2b$12$y5.tzZaIs23N0s//xP3XnOIW2ANv/02FRjUSElhOXoe4VaglRthVK",
           nickname: "Potato",
           bio: "말하는 감자입니다",
-          image: null,
+          image: "https://haveit.s3.ap-northeast-2.amazonaws.com/profile/pf_2.svg",
           sns: "local",
         },
         {
@@ -57,7 +57,7 @@ module.exports = {
           password: "$2b$12$y5.tzZaIs23N0s//xP3XnOIW2ANv/02FRjUSElhOXoe4VaglRthVK",
           nickname: "carrot",
           bio: "당근입니당",
-          image: null,
+          image: "https://haveit.s3.ap-northeast-2.amazonaws.com/profile/pf_3.svg",
           sns: "local",
         },
         {
@@ -66,7 +66,16 @@ module.exports = {
           password: "$2b$12$y5.tzZaIs23N0s//xP3XnOIW2ANv/02FRjUSElhOXoe4VaglRthVK",
           nickname: "pig",
           bio: "다돼징",
-          image: null,
+          image: "https://haveit.s3.ap-northeast-2.amazonaws.com/profile/pf_4.svg",
+          sns: "local",
+        },
+        {
+          users_id: "e8023291-7809-46d0-9afd-f29d561d1253",
+          email: "hi@hi.com",
+          password: "$2b$12$y5.tzZaIs23N0s//xP3XnOIW2ANv/02FRjUSElhOXoe4VaglRthVK",
+          nickname: "hi",
+          bio: "hi",
+          image: "https://haveit.s3.ap-northeast-2.amazonaws.com/profile/pf_6.svg",
           sns: "local",
         },
       ],

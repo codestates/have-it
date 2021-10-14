@@ -1,7 +1,16 @@
 import api from "./index";
 
 const habitsApi = {
-  findHabits: () => api.get("/habits"),
+  findHabits: (category, limit, sort) => {
+    const params = {
+      category,
+      limit,
+      sort,
+    };
+    return api.get("/habits", {
+      params,
+    });
+  },
   createHabit: () => api.post("/habits"),
   findHabitById: () => api.get("/habits/:habits_id"),
   joinHabit: () => api.post("/habits/:habits_id"),
