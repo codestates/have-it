@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import axios from "axios";
+import postsApi from "../api/posts";
 
 const PostContainer = styled.div`
   display: flex;
@@ -179,7 +180,8 @@ const DeleteButton = styled.button`
   border-radius: 6px;
 `;
 
-const Post = ({ info }) => {
+const Post = ({ info, habitsId }) => {
+  const history = useHistory();
   const { usersId, nickname, image } = useSelector(({ authReducer }) => authReducer);
   const [inputText, setInputText] = useState("");
   const [inputFile, setInputFile] = useState("");
@@ -208,29 +210,35 @@ const Post = ({ info }) => {
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData();
-    formData.append("text", inputText);
-    formData.append("photo", inputFile);
-
-    axios({
-      method: "post",
-      url: "http://localhost:8080/test",
-      data: formData,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }).then(() => {
+  const handleSubmit = async (event) => {
+    try {
+      event.preventDefault();
+      const formData = new FormData();
+      formData.append("content", inputText);
+      formData.append("image", inputFile);
+      await postsApi.writePost(habitsId, formData);
       setInputText("");
       setInputFile("");
       setImgBase64("");
-    });
+      history.push("/");
+      history.push(`/habit/${habitsId}`);
+    } catch (err) {
+      // console.log(err);
+    }
+  };
+
+  const handleDeleteClick = async (id, infoHabitsId) => {
+    try {
+      await postsApi.removePost(id);
+      history.push("/");
+      history.push(`/habit/${infoHabitsId}`);
+    } catch (err) {
+      // console.log(err);
+    }
   };
 
   return (
-    <PostContainer isMine={usersId === "e8023291-7809-46d0-9afd-f29d561d1248"}>
-      {/* isMine이 참일 경우가 필요해 임시로 수정함 : info.usersId === usersId */}
+    <PostContainer isMine={!info.postsId || info.usersId === usersId}>
       <ProfileImage url={image} />
       {!info.postsId ? (
         <InputForm
@@ -273,7 +281,15 @@ const Post = ({ info }) => {
           </ProfileText>
           <Content>{info.content}</Content>
           {info.image && <PostImage url={info.image} />}
-          <DeleteButton className="icon-cancel" id="delete" />
+          {info.usersId === usersId && (
+            <DeleteButton
+              className="icon-cancel"
+              id="delete"
+              onClick={() => {
+                handleDeleteClick(info.postsId, info.habitsId);
+              }}
+            />
+          )}
         </ContentContainer>
       )}
     </PostContainer>
@@ -290,6 +306,7 @@ Post.defaultProps = {
     image: "",
     content: "",
   },
+  habitsId: null,
 };
 
 Post.propTypes = {
@@ -302,6 +319,7 @@ Post.propTypes = {
     image: PropTypes.string,
     content: PropTypes.string,
   }),
+  habitsId: PropTypes.number,
 };
 
 export default Post;

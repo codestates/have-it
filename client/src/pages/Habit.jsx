@@ -273,11 +273,10 @@ const Habit = () => {
   useEffect(() => {
     const getHabitInfo = async () => {
       const res = await habitsApi.findHabitById(id);
-      console.log(res.data);
       if (res.status === 200) {
         setHabits(res.data.data.habits);
         setUserHabits(res.data.data.userInfo);
-        setPosts(res.data.data.habits.posts);
+        setPosts(res.data.data.habits.posts.reverse());
       }
     };
     getHabitInfo();
@@ -336,7 +335,7 @@ const Habit = () => {
       </InfoContainer>
       <Divider />
       <Feed>
-        <Post />
+        <Post habitsId={habits.habitsId} />
         {posts.length ? (
           <>
             {posts.map((post) => (
