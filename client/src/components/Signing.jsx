@@ -1,10 +1,9 @@
-/* eslint-disable */
-
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
-import { signInAction, modalOffAction, findHabitsAction } from "../store/actions";
+import { useHistory } from "react-router-dom";
+import { signInAction, modalOffAction } from "../store/actions";
 import authApi from "../api/auth";
 
 const Form = styled.form`
@@ -147,6 +146,7 @@ const Signing = ({ defaultType }) => {
   const [isDisabled, setIsDisabled] = useState(true);
 
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const validator = {
     // [유효성 검증 함수]: 영어 또는 숫자만 가능 && 중복 불가능
@@ -265,7 +265,6 @@ const Signing = ({ defaultType }) => {
   const handleSignInClick = async (e) => {
     e.preventDefault();
     if (type === "로그인") {
-      // TODO: 로그인 요청
       const res = await authApi.signin(inputValue.email, inputValue.password);
 
       if (res.status === 202) {
@@ -274,6 +273,7 @@ const Signing = ({ defaultType }) => {
       if (res.status === 200) {
         dispatch(signInAction(res.data.data));
         dispatch(modalOffAction);
+        history.push("/mypage");
       }
     } else if (type === "회원가입") {
       const res = await authApi.signup(inputValue.username, inputValue.email, inputValue.password);
@@ -284,6 +284,7 @@ const Signing = ({ defaultType }) => {
       if (res.status === 201) {
         dispatch(signInAction(res.data.data));
         dispatch(modalOffAction);
+        history.push("/mypage");
       }
     }
   };
