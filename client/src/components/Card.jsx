@@ -2,8 +2,14 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
+import { Emoji } from "emoji-mart";
 import uuid from "react-uuid";
-import { signInModalOnAction, habitJoinModalOnAction } from "../store/actions";
+import { useHistory } from "react-router-dom";
+import {
+  signInModalOnAction,
+  habitJoinModalOnAction,
+  habitJoinProceedAction,
+} from "../store/actions";
 
 const CardContainer = styled.div`
   position: absolute;
@@ -79,54 +85,70 @@ const Count = styled.div`
   height: 1.15rem;
 `;
 
-const Card = ({ info }) => {
+const Card = ({ habit, isJoin }) => {
   const { isLogin } = useSelector(({ authReducer }) => authReducer);
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const handleSignInModalOn = () => {
-    dispatch(signInModalOnAction);
-  };
-
-  const handleHabitJoinModalOn = () => {
-    dispatch(habitJoinModalOnAction);
+  const handleClick = () => {
+    if (!isLogin) {
+      return dispatch(signInModalOnAction);
+    }
+    if (!isJoin) {
+      // TODO: Join Reducer 업데이트
+      dispatch(habitJoinProceedAction(habit));
+      return dispatch(habitJoinModalOnAction);
+    }
+    return history.push(`/habit/${habit.habitsId}`);
   };
 
   return (
-    <CardContainer onClick={isLogin ? handleHabitJoinModalOn : handleSignInModalOn}>
-      <Icon>{info.icon}</Icon>
-      <Title>{info.title}</Title>
+    <CardContainer onClick={handleClick}>
+      <Icon>
+        <Emoji emoji={habit.emojiId} size={32} />
+      </Icon>
+      <Title>{habit.title}</Title>
       <Info>
         <Users>
-          {info.users.length &&
-            (info.count === info.users.length && info.count <= 5 ? (
-              info.users.reverse().map((url) => <ProfileImage key={uuid()} profileUrl={url} />)
+          {habit.topUsers.length &&
+            (habit.userCount === habit.topUsers.length && habit.userCount <= 5 ? (
+              habit.topUsers
+                .reverse()
+                .map((user) => <ProfileImage key={uuid()} profileUrl={user.image} />)
             ) : (
               <>
                 <More className="icon-dot-3" />
-                {info.users
+                {habit.topUsers
                   .slice(0, 4)
                   .reverse()
-                  .map((url) => (
-                    <ProfileImage key={uuid()} profileUrl={url} />
+                  .map((user) => (
+                    <ProfileImage key={uuid()} profileUrl={user.image} />
                   ))}
               </>
             ))}
         </Users>
-        <Count>{info.count}명 참여중</Count>
+        <Count>{habit.userCount}명 참여중</Count>
       </Info>
     </CardContainer>
   );
 };
 
 Card.propTypes = {
-  info: PropTypes.shape({
-    id: PropTypes.number,
+  habit: PropTypes.shape({
+    habitsId: PropTypes.number,
     title: PropTypes.string,
-    icon: PropTypes.string,
+    emojiId: PropTypes.string,
     color: PropTypes.string,
-    count: PropTypes.number,
-    users: PropTypes.arrayOf(PropTypes.string),
+    userCount: PropTypes.number,
+    topUsers: PropTypes.arrayOf(
+      PropTypes.shape({ usersId: PropTypes.string, image: PropTypes.string })
+    ),
   }).isRequired,
+  isJoin: PropTypes.bool,
+};
+
+Card.defaultProps = {
+  isJoin: false,
 };
 
 export default Card;

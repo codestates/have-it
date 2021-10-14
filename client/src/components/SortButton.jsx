@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const Container = styled.div`
   margin: 24px 0px 24px 40px;
@@ -47,14 +48,14 @@ const SortButton = styled.li`
   }
 `;
 
-const Sort = () => {
+const Sort = ({ handleSortClick }) => {
   const [isClicked, setIsClicked] = useState(false);
   const [select, setSelect] = useState(1);
   const [options, setOptions] = useState([
     { id: 0, sortBy: "인기순" },
     { id: 1, sortBy: "인기순" },
     { id: 2, sortBy: "최신순" },
-    { id: 3, sortBy: "사용자순" },
+    // { id: 3, sortBy: "사용자순" },
   ]);
 
   const handleSelect = (index) => {
@@ -63,6 +64,13 @@ const Sort = () => {
     const newOptions = options.slice();
     newOptions[0].sortBy = options[index].sortBy;
     setOptions(newOptions);
+    let sortName;
+    if (index === 1) {
+      sortName = "sortByUserCount";
+    } else if (index === 2) {
+      sortName = "sortByCreatedAt";
+    }
+    handleSortClick(sortName);
   };
 
   const handleClick = () => {
@@ -107,6 +115,10 @@ const Sort = () => {
       )}
     </Container>
   );
+};
+
+Sort.propTypes = {
+  handleSortClick: PropTypes.func.isRequired,
 };
 
 export default Sort;

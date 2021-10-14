@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
 import Card from "./Card";
 
 const CardList = styled.div`
@@ -13,6 +14,7 @@ const CardList = styled.div`
 `;
 
 const CardItem = styled.div`
+  cursor: pointer;
   position: relative;
   top: 0;
   width: 100%;
@@ -23,82 +25,25 @@ const CardItem = styled.div`
   max-width: 360px;
 `;
 
-const Cards = ({ isAtHome }) => {
-  const dummy = [
-    {
-      id: 1,
-      title: "달리기",
-      icon: "🏃🏻",
-      color: "#46DBA0",
-      count: 5,
-      users: [
-        "../images/profile/pf_1.svg",
-        "../images/profile/pf_3.svg",
-        "../images/profile/pf_5.svg",
-      ],
-    },
-    {
-      id: 2,
-      title: "집중 50분, 10분 휴식 지키기",
-      icon: "🧘🏻",
-      color: "#F0CA4D",
-      count: 8888,
-      users: [
-        "../images/profile/pf_1.svg",
-        "../images/profile/pf_2.svg",
-        "../images/profile/pf_3.svg",
-        "../images/profile/pf_4.svg",
-        "../images/profile/pf_5.svg",
-      ],
-    },
-    {
-      id: 3,
-      title: "하루 2L 물마시기",
-      icon: "💧",
-      color: "#78B0FA",
-      count: 4,
-      users: [
-        "../images/profile/pf_1.svg",
-        "../images/profile/pf_2.svg",
-        "../images/profile/pf_3.svg",
-        "../images/profile/pf_4.svg",
-      ],
-    },
-    {
-      id: 4,
-      title: "12가지 인생의 법칙!",
-      icon: "❗️",
-      color: "#FF8C80",
-      count: 32,
-      users: [
-        "../images/profile/pf_1.svg",
-        "../images/profile/pf_2.svg",
-        "../images/profile/pf_3.svg",
-        "../images/profile/pf_4.svg",
-        "../images/profile/pf_5.svg",
-      ],
-    },
-    {
-      id: 6,
-      title: "자전거 같이 타요~!",
-      icon: "🚲",
-      color: "#AD8CFA",
-      count: 8,
-      users: [
-        "../images/profile/pf_1.svg",
-        "../images/profile/pf_2.svg",
-        "../images/profile/pf_3.svg",
-      ],
-    },
-  ];
-
+const Cards = ({ isAtHome, habits }) => {
+  const { isLogin, habits: userhabits } = useSelector(({ authReducer }) => authReducer);
   return (
     <CardList isAtHome={isAtHome}>
-      {dummy.map((el) => (
-        <CardItem key={el.id} color={el.color}>
-          <Card info={el} />
-        </CardItem>
-      ))}
+      {habits.map((habit) => {
+        let { color } = habit;
+        let isJoin = false;
+        if (isLogin && userhabits.find((userhabit) => userhabit.habitsId === habit.habitsId)) {
+          isJoin = true;
+          if (userhabits.done) {
+            color = "#9EA0B8";
+          }
+        }
+        return (
+          <CardItem key={habit.habitsId} color={color}>
+            <Card habit={habit} isJoin={isJoin} />
+          </CardItem>
+        );
+      })}
     </CardList>
   );
 };
@@ -108,6 +53,7 @@ Cards.defaultProps = {
 
 Cards.propTypes = {
   isAtHome: PropTypes.bool,
+  habits: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default Cards;

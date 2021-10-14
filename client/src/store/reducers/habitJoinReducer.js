@@ -12,7 +12,7 @@ const habitJoinReducer = (prevState = initialState, { type, payload }) => {
   switch (type) {
     case HABIT_JOIN_PROCEED:
       state = {
-        id: payload.id,
+        habitsId: payload.habitsId,
         title: payload.title,
         emojiId: payload.emojiId,
         color: payload.color,

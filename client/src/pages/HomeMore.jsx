@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
+import ReactRouterPropTypes from "react-router-prop-types";
 import Cards from "../components/Cards";
 import SortButton from "../components/SortButton";
+import habitsApi from "../api/habits";
 import { hidePopupAction } from "../store/actions";
 
 const Main = styled.div`
@@ -37,11 +39,30 @@ const MoreCards = styled(Cards)`
   margin: 5rem;
 `;
 
-const HomeMore = () => {
-  const { isPopup } = useSelector(({ homeReducer }) => homeReducer);
+const HomeMore = ({ match }) => {
   const dispatch = useDispatch();
+  const { isPopup } = useSelector(({ homeReducer }) => homeReducer);
+  const {
+    params: { enTitle },
+  } = match;
+
+  const [habitsByCategory, setHabitsByCategory] = useState([]);
+  const [sortName, setSortName] = useState("sortByUserCount");
+
+  useEffect(() => {
+    const getHabitsByCategory = async () => {
+      const res = await habitsApi.findHabits(enTitle, 10, sortName);
+      setHabitsByCategory(res.data.data);
+    };
+    getHabitsByCategory();
+  }, [enTitle, sortName]);
+
   const handlePopupClose = () => {
     dispatch(hidePopupAction);
+  };
+
+  const handleSortClick = (sort) => {
+    setSortName(sort);
   };
 
   return (
@@ -54,11 +75,15 @@ const HomeMore = () => {
           </HidePopup>
         </Popup>
       )}
-      <SortButton />
+      <SortButton handleSortClick={handleSortClick} />
       <Container />
-      <MoreCards />
+      <MoreCards habits={habitsByCategory} />
     </Main>
   );
+};
+
+HomeMore.propTypes = {
+  match: ReactRouterPropTypes.match.isRequired,
 };
 
 export default HomeMore;

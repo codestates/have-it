@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import styled, { css } from "styled-components";
 import { Emoji } from "emoji-mart";
 import DatePicker from "react-datepicker";
-import { habitJoinProceedAction } from "../store/actions";
 import "react-datepicker/dist/react-datepicker.css";
 
 const Form = styled.form`
@@ -296,7 +295,9 @@ const ColorPickerContainer = styled.div`
 `;
 
 const HabitJoin = () => {
-  const { id, title, emojiId, color } = useSelector(({ habitJoinReducer }) => habitJoinReducer);
+  const { habitsId, title, emojiId, color } = useSelector(
+    ({ habitJoinReducer }) => habitJoinReducer
+  );
   const [startDate, setStartDate] = useState(new Date());
   const [selectColor, setSelectColor] = useState("");
   const [message, setMessage] = useState(null);
@@ -319,21 +320,7 @@ const HabitJoin = () => {
     setSelectColor(arg);
   };
 
-  // TODO: 아래 코드는 나중에 삭제되어야 함
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(
-      habitJoinProceedAction({
-        id: 1,
-        title: "집중 50분, 10분 휴식 지키기",
-        emojiId: "grinning",
-        color: "#46DBA0",
-      })
-    );
-  }, [dispatch]);
-  // ---
-
-  return id ? (
+  return habitsId ? (
     <Form>
       <h1>해빗 참여</h1>
       <EmojiTitleContainer>
