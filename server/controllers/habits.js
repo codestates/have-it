@@ -159,9 +159,26 @@ module.exports = {
         start_date,
         end_date,
       });
-      const infoOfHabit = await joinHabit.getHabit();
-      await infoOfHabit.update({ user_count: infoOfHabit.user_count + 1 });
-      res.status(200).json({ userhabitsId: joinHabit.dataValues.userhabits_id });
+      const { done } = joinHabit.dataValues;
+      const habitInfo = await joinHabit.getHabit({
+        attributes: ["habits_id", "user_count", "title", "emoji_id", "color"],
+      });
+      const top_users = await Userhabit.findAll({
+        where: { habits_id },
+        attributes: [],
+        order: [["achievement", "DESC"]],
+        limit: 5,
+        include: { model: User, attributes: ["users_id", "image"] },
+      });
+      const topUsers = [];
+      top_users.forEach((el) => {
+        topUsers.push(el.dataValues.User.dataValues);
+      });
+
+      res.status(200).json({
+        message: "ok",
+        data: { ...snakeToCamal(habitInfo.dataValues), done, endDate: end_date, topUsers },
+      });
     } catch (err) {
       DBERROR(res, err);
     }
