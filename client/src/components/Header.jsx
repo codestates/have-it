@@ -96,7 +96,7 @@ const PageTitle = () => {
   }, [id]);
   console.log("headerTitle", headerTitle);
   console.log("id", id);
-  return <>{headerTitle}</>;
+  return <>{headerTitle}👏</>;
 };
 
 const Header = () => {
