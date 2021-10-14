@@ -11,7 +11,6 @@ import {
   UPDATE_INFO,
   SHOW_POPUP,
   HIDE_POPUP,
-  FIND_HABITS,
 } from "./actionTypes";
 
 // action
@@ -73,7 +72,4 @@ export const habitJoinProceedAction = (habit) => ({
 });
 export const habitJoinCancelAction = {
   type: HABIT_JOIN_CANCEL,
-};
-export const findHabitsAction = {
-  type: FIND_HABITS,
 };

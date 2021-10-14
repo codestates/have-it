@@ -221,11 +221,17 @@ const Status = styled.div`
   align-items: start;
   justify-content: start;
 `;
-const StatusButton = styled.button`
+const Ongoing = styled.button`
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
   margin-right: 1rem;
-  color: var(--color-black);
+  color: ${(props) => (props.status === "진행중 해빗" ? "#4D4DFF" : "#111A3D")};
+`;
+const Complete = styled.button`
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  color: ${(props) => (props.status === "완료한 해빗" ? "#4D4DFF" : "#111A3D")};
 `;
 
 const MyHabit = styled.div`
@@ -238,7 +244,7 @@ const MyPage = () => {
   const [photo, setPhoto] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [badges, setBadges] = useState([]);
-  const [isDone, setIsDone] = useState(false);
+  const [status, setStatus] = useState(null);
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -289,6 +295,8 @@ const MyPage = () => {
     }
   }, [dispatch]);
 
+  const [filteredHabits, setFilteredHabits] = useState(userInfo.habits);
+
   useEffect(() => {
     setInputValue({
       nickname: userInfo.nickname,
@@ -304,14 +312,16 @@ const MyPage = () => {
     getBadgesList();
   }, [userInfo]);
 
+  useEffect(() => {
+    setFilteredHabits(userInfo.habits.filter((el) => el.done === status));
+  }, []);
+
   const handleFileChange = (e) => {
     const fileInfo = e.target.files[0];
     const imageUrl = URL.createObjectURL(fileInfo);
 
     setPhoto(fileInfo);
     setImageUrl(imageUrl);
-    console.log("fileInfo", fileInfo);
-    console.log(imageUrl);
   };
 
   const handleInputChange = (event) => {
@@ -329,6 +339,13 @@ const MyPage = () => {
     const res = await usersApi.modifyUserInfo(userInfo.usersId, formData);
     dispatch(updateInfoAction(res.data));
     setIsEditMode(false);
+  };
+
+  const handleStatusChange = async (e) => {
+    await setStatus(e.target.value);
+    if (status === "진행중 해빗")
+      setFilteredHabits(userInfo.habits.filter((el) => el.done === true));
+    else setFilteredHabits(userInfo.habits.filter((el) => el.done === false));
   };
 
   return (
@@ -398,20 +415,20 @@ const MyPage = () => {
       <AchievementView>
         <Title>나의 뱃지</Title>
         <Badges>
-          {badges.map((el) => (
-            <img src={el.badge.image} />
+          {badges?.map((el) => (
+            <img key={el.categoriesId} src={el.badge.image} />
           ))}
         </Badges>
         <Status>
-          <StatusButton type="button" isDone={false}>
+          <Ongoing type="button" value="진행중 해빗" onClick={handleStatusChange} status={status}>
             진행중 해빗
-          </StatusButton>
-          <StatusButton type="button" isDone={true}>
+          </Ongoing>
+          <Complete type="button" value="완료한 해빗" onClick={handleStatusChange} status={status}>
             완료한 해빗
-          </StatusButton>
+          </Complete>
         </Status>
         <MyHabit>
-          <Cards />
+          <Cards habits={status === null ? userInfo.habits : filteredHabits} />
         </MyHabit>
       </AchievementView>
     </MyPageView>
