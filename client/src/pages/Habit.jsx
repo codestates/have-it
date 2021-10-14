@@ -34,6 +34,17 @@ const InfoContainer = styled.div`
   flex-direction: column;
 `;
 
+const HabitForm = styled.form`
+  margin-bottom: 60px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  * {
+    /* border: 1px solid red; */
+  }
+`;
+
 const HabitInfo = styled.div`
   margin-bottom: 60px;
   display: flex;
@@ -46,6 +57,7 @@ const CategoryContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 1rem;
 `;
 
 const Category = styled.div`
@@ -59,10 +71,63 @@ const Category = styled.div`
 `;
 
 const CoverContainer = styled.div`
-  margin: 1rem 0 2rem;
   width: 100%;
   height: fit-content;
   position: relative;
+  border-radius: 10px;
+`;
+
+const CoverInputContainer = styled(CoverContainer)`
+  height: 0;
+  padding-top: 60%;
+  border: 1px solid var(--color-midgray);
+  background-color: transparent;
+
+  > * {
+    position: absolute;
+    border-radius: 10px;
+    width: 100%;
+  }
+
+  :hover {
+    color: var(--color-white);
+    background-color: var(--color-shadow);
+  }
+`;
+
+const CoverLabel = styled.label`
+  top: 0;
+  left: 0;
+  height: 100%;
+  color: var(--color-white);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  ::before {
+    font-size: 2rem !important;
+    line-height: 280% !important;
+    border: 1px solid var(--color-white);
+    width: 24%;
+    height: 40%;
+    border-radius: 4rem;
+  }
+`;
+
+const CoverPreview = styled.div`
+  background-image: ${(props) => `url(${props.url})`};
+  background-size: cover;
+  top: 0;
+  left: 0;
+  height: 100%;
+`;
+
+const CoverInput = styled.input`
+  top: 0;
+  left: 0;
+  height: 0;
+  padding-top: 60%;
+  opacity: 0.6;
 `;
 
 const Image = styled.div`
@@ -99,7 +164,27 @@ const EmojiBox = styled.div`
 
 const Description = styled.div`
   width: 100%;
+  line-height: var(--lineHeight-normal);
+  margin: 2rem 0 1rem;
+  overflow-wrap: normal;
+`;
+
+const DescInput = styled.textarea`
+  width: 100%;
+  min-height: 6rem;
+  margin: 2rem 0 1rem;
   line-height: var(--lineHeight-relaxed);
+  border: 1px solid var(--color-midgray);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  inline-size: 100%;
+  overflow-wrap: break-word;
+  word-break: break-all;
+
+  :active,
+  :focus {
+    border: 1px solid var(--color-mainblue);
+  }
 `;
 
 const UserGoalInfo = styled.div`
@@ -206,11 +291,6 @@ const EmptyComponent = styled.div`
 `;
 
 const EmptyImage = styled(EmptyComponent)`
-  width: 100%;
-  height: 0;
-  padding-top: 60%;
-  border-radius: 10px;
-
   > * {
     width: 100%;
     position: absolute;
@@ -231,6 +311,25 @@ const EmptyFeed = styled(EmptyComponent)`
     text-align: center;
   }
 `;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: stretch;
+`;
+
+const Button = styled.button`
+  flex: 1 1 0;
+  font-size: 1rem;
+  height: 2.5rem;
+  margin-right: 10px;
+
+  :last-of-type {
+    margin-right: 0;
+  }
+`;
+
+const SubmitButton = styled(Button)``;
 
 const Habit = () => {
   const dispatch = useDispatch();
@@ -255,6 +354,10 @@ const Habit = () => {
     targetAmount: 0,
   });
   const [posts, setPosts] = useState([]);
+  const [isEditMode, setIsEditMode] = useState({ habit: false, user: false });
+  const [inputDescription, setInputDescription] = useState(habits.description);
+  const [inputFile, setInputFile] = useState(habits.image);
+  const [imgBase64, setImgBase64] = useState("");
   const { nickname } = useSelector(({ authReducer }) => authReducer);
 
   useEffect(() => {
@@ -282,39 +385,156 @@ const Habit = () => {
     getHabitInfo();
   }, [id]);
 
+  useEffect(() => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result;
+      if (base64) {
+        setImgBase64(base64.toString());
+      }
+    };
+  }, [inputFile]);
+
+  const handleEditClick = (event) => {
+    switch (event.target.name) {
+      case "habit":
+        setIsEditMode({ ...isEditMode, habit: true });
+        break;
+      case "user":
+        setIsEditMode({ ...isEditMode, user: true });
+        break;
+      default:
+      // setIsEditMode({ user: false, habit: false });
+    }
+  };
+
+  const handleDismissClick = (event) => {
+    switch (event.target.name) {
+      case "habit":
+        setIsEditMode({ ...isEditMode, habit: false });
+        break;
+      case "user":
+        setIsEditMode({ ...isEditMode, user: false });
+        break;
+      default:
+        setIsEditMode({ user: true, habit: true });
+    }
+  };
+
+  const handleInputChange = (event) => {
+    event.preventDefault();
+    const reader = new FileReader();
+    switch (event.target.name) {
+      case "image":
+        reader.onloadend = () => {
+          const base64 = reader.result;
+          if (base64) {
+            setImgBase64(base64.toString());
+          }
+        };
+        if (event.target.files[0]) {
+          reader.readAsDataURL(event.target.files[0]);
+          setInputFile(event.target.files[0]);
+        }
+        break;
+      case "description":
+        setInputDescription(event.target.value);
+        break;
+      default:
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    try {
+      event.preventDefault();
+      const formData = new FormData();
+      formData.append("image", inputFile);
+      formData.append("description", inputDescription);
+      await habitsApi.modifyHabit(habits.habitsId, formData);
+      setIsEditMode({ habit: false, user: false });
+      history.push("/");
+      history.push(`/habit/${habits.habitsId}`);
+    } catch (err) {
+      // console.log(err);
+    }
+  };
+
   return (
     <HabitContainer>
       <InfoContainer>
-        <HabitInfo>
-          <CategoryContainer>
-            <Category>{habits.categoryTitle}</Category>
-            <EditButton className="icon-pencil">
-              <div>수정</div>
-            </EditButton>
-          </CategoryContainer>
-          <CoverContainer>
-            {habits.image ? (
-              <Image src={habits.image} color={habits.color} />
-            ) : (
-              <EmptyImage>
-                <div>
-                  대표 사진이 아직 없어요. 🤨
-                  <br />
-                </div>
-              </EmptyImage>
-            )}
-            <EmojiContainer>
-              <EmojiBox color={habits.color}>
-                <Emoji emoji={habits.emojiId} size={40} />
-              </EmojiBox>
-            </EmojiContainer>
-          </CoverContainer>
-          <Description>{habits.description}</Description>
-        </HabitInfo>
+        {isEditMode.habit ? (
+          <HabitForm name="inputFile" encType="multipart/form-data" onSubmit={handleSubmit}>
+            <CategoryContainer>
+              <Category>{habits.categoryTitle}</Category>
+            </CategoryContainer>
+            <CoverInputContainer>
+              <CoverPreview url={imgBase64} />
+              <CoverLabel htmlFor="image" className="icon-pencil" />
+              <CoverInput
+                id="image"
+                type="file"
+                name="image"
+                accept="image/*,audio/*,video/mp4,video/x-m4v,application/pdf"
+                onChange={handleInputChange}
+              />
+              <EmojiContainer>
+                <EmojiBox color={habits.color}>
+                  <Emoji emoji={habits.emojiId} size={40} />
+                </EmojiBox>
+              </EmojiContainer>
+            </CoverInputContainer>
+            <DescInput
+              id="desc"
+              type="text"
+              name="description"
+              placeholder="습관 카드에 대한 간단한 소개를 적어주세요."
+              // value={inputDescription}
+              onChange={handleInputChange}
+            >
+              {inputDescription}
+            </DescInput>
+
+            <ButtonContainer>
+              <SubmitButton type="submit" name="habit">
+                저장
+              </SubmitButton>
+              <Button type="button" name="habit" onClick={handleDismissClick}>
+                취소
+              </Button>
+            </ButtonContainer>
+          </HabitForm>
+        ) : (
+          <HabitInfo>
+            <CategoryContainer>
+              <Category>{habits.categoryTitle}</Category>
+              <EditButton name="habit" className="icon-pencil" onClick={handleEditClick}>
+                <div>수정</div>
+              </EditButton>
+            </CategoryContainer>
+            <CoverContainer>
+              {habits.image ? (
+                <Image src={habits.image} color={habits.color} />
+              ) : (
+                <EmptyImage>
+                  <div>
+                    대표 사진이 아직 없어요. 🤨
+                    <br />
+                  </div>
+                </EmptyImage>
+              )}
+              <EmojiContainer>
+                <EmojiBox color={habits.color}>
+                  <Emoji emoji={habits.emojiId} size={40} />
+                </EmojiBox>
+              </EmojiContainer>
+            </CoverContainer>
+            <Description>{habits.description}</Description>
+          </HabitInfo>
+        )}
         <UserGoalInfo>
           <GoalTitleContainer>
             <GoalTitle>{nickname}님의 해빗</GoalTitle>
-            <EditButton className="icon-pencil">
+            <EditButton name="user" className="icon-pencil" onClick={handleEditClick}>
               <div>수정</div>
             </EditButton>
           </GoalTitleContainer>

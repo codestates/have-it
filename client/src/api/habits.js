@@ -21,7 +21,13 @@ const habitsApi = {
     }),
   findHabitById: (id) => api.get(`/habits/${id}`),
   joinHabit: () => api.post("/habits/:habits_id"),
-  TBD: () => api.put("/habits/:habits_id"),
+  modifyHabit: (id, data, options) =>
+    api.put(`/habits/${id}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      ...options,
+    }),
   getTitle: () => api.put("/habits/title/:habits_id"),
 };
 
