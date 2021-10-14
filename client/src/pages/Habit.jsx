@@ -5,6 +5,7 @@ import "react-sweet-progress/lib/style.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import uuid from "react-uuid";
+import { Emoji } from "emoji-mart";
 import authApi from "../api/auth";
 import habitsApi from "../api/habits";
 import { signInAction, signOutAction } from "../store/actions";
@@ -85,13 +86,15 @@ const EmojiContainer = styled.div`
   filter: drop-shadow(0 0 6px var(--color-shadow));
 `;
 
-const Emoji = styled.div`
-  font-size: 2.5rem;
-  line-height: 4.5rem;
-  text-align: center;
+const EmojiBox = styled.div`
+  width: 100%;
+  height: 100%;
   background-color: ${(props) => props.color}80;
   border: 1px solid ${(props) => props.color};
   border-radius: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Description = styled.div`
@@ -122,7 +125,8 @@ const GoalTitle = styled.h2`
 
 const EditButton = styled.button`
   font-family: Interop-Medium;
-  margin-top: 0.2rem;
+  padding: 0.325rem 0.4rem;
+  border-radius: 6px;
   font-size: 1rem;
   color: var(--color-midgray);
   display: flex;
@@ -130,6 +134,8 @@ const EditButton = styled.button`
 
   :hover {
     color: var(--color-gray);
+    background-color: var(--color-lightgray);
+    opacity: 0.9;
   }
 
   > div {
@@ -192,6 +198,40 @@ const Feed = styled.div`
   width: 100%;
 `;
 
+const EmptyComponent = styled.div`
+  border: 1px solid var(--color-mainblue);
+  background-color: var(--color-lightblue--02);
+  color: var(--color-mainblue);
+  position: relative;
+`;
+
+const EmptyImage = styled(EmptyComponent)`
+  width: 100%;
+  height: 0;
+  padding-top: 60%;
+  border-radius: 10px;
+
+  > * {
+    width: 100%;
+    position: absolute;
+    top: calc(50% - 0.5rem);
+    text-align: center;
+  }
+`;
+
+const EmptyFeed = styled(EmptyComponent)`
+  height: calc(100vh - 14.25rem - 80px);
+  border-radius: 10px;
+  margin: 0 6rem;
+
+  > * {
+    width: 100%;
+    position: absolute;
+    top: calc(50% - 0.5rem);
+    text-align: center;
+  }
+`;
+
 const Habit = () => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -233,11 +273,10 @@ const Habit = () => {
   useEffect(() => {
     const getHabitInfo = async () => {
       const res = await habitsApi.findHabitById(id);
-      console.log(res.data);
       if (res.status === 200) {
         setHabits(res.data.data.habits);
         setUserHabits(res.data.data.userInfo);
-        setPosts(res.data.data.habits.posts);
+        setPosts(res.data.data.habits.posts.reverse());
       }
     };
     getHabitInfo();
@@ -254,9 +293,20 @@ const Habit = () => {
             </EditButton>
           </CategoryContainer>
           <CoverContainer>
-            <Image src={habits.image} color={habits.color} />
+            {habits.image ? (
+              <Image src={habits.image} color={habits.color} />
+            ) : (
+              <EmptyImage>
+                <div>
+                  대표 사진이 아직 없어요. 🤨
+                  <br />
+                </div>
+              </EmptyImage>
+            )}
             <EmojiContainer>
-              <Emoji color={habits.color}>{habits.emojiId}</Emoji>
+              <EmojiBox color={habits.color}>
+                <Emoji emoji={habits.emojiId} size={40} />
+              </EmojiBox>
             </EmojiContainer>
           </CoverContainer>
           <Description>{habits.description}</Description>
@@ -285,10 +335,18 @@ const Habit = () => {
       </InfoContainer>
       <Divider />
       <Feed>
-        <Post isInput />
-        {posts.map((post) => (
-          <Post key={uuid()} info={post} />
-        ))}
+        <Post habitsId={habits.habitsId} />
+        {posts.length ? (
+          <>
+            {posts.map((post) => (
+              <Post key={uuid()} info={post} />
+            ))}
+          </>
+        ) : (
+          <EmptyFeed>
+            <div>습관을 실천한 해비터가 아직 없어요. 🤨</div>
+          </EmptyFeed>
+        )}
       </Feed>
     </HabitContainer>
   );

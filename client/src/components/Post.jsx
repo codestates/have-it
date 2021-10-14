@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import axios from "axios";
+import postsApi from "../api/posts";
 
 const PostContainer = styled.div`
   display: flex;
@@ -18,6 +19,24 @@ const PostContainer = styled.div`
       props.isMine ? "var(--color-lightblue--02)" : "var(--color-lightgray)"};
     border: 1px solid
       ${(props) => (props.isMine ? "var(--color-mainblue)" : "var(--color-midgray)")};
+    position: relative;
+    position: relative;
+
+    > #delete {
+      display: none;
+      position: absolute;
+      right: 0.5rem;
+      top: 0.5rem;
+      background-color: transparent;
+    }
+
+    :hover > #delete {
+      display: inline;
+
+      :hover {
+        background-color: var(--color-lightblue--04);
+      }
+    }
   }
 `;
 
@@ -153,7 +172,16 @@ const PostImage = styled.div`
   background-size: cover;
 `;
 
-const Post = ({ info, isInput }) => {
+const DeleteButton = styled.button`
+  width: 2rem;
+  height: 2rem;
+  color: var(--color-mainblue);
+  font-size: 1rem;
+  border-radius: 6px;
+`;
+
+const Post = ({ info, habitsId }) => {
+  const history = useHistory();
   const { usersId, nickname, image } = useSelector(({ authReducer }) => authReducer);
   const [inputText, setInputText] = useState("");
   const [inputFile, setInputFile] = useState("");
@@ -182,30 +210,37 @@ const Post = ({ info, isInput }) => {
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData();
-    formData.append("text", inputText);
-    formData.append("photo", inputFile);
-
-    axios({
-      method: "post",
-      url: "http://localhost:8080/test",
-      data: formData,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }).then(() => {
+  const handleSubmit = async (event) => {
+    try {
+      event.preventDefault();
+      const formData = new FormData();
+      formData.append("content", inputText);
+      formData.append("image", inputFile);
+      await postsApi.writePost(habitsId, formData);
       setInputText("");
       setInputFile("");
       setImgBase64("");
-    });
+      history.push("/");
+      history.push(`/habit/${habitsId}`);
+    } catch (err) {
+      // console.log(err);
+    }
+  };
+
+  const handleDeleteClick = async (id, infoHabitsId) => {
+    try {
+      await postsApi.removePost(id);
+      history.push("/");
+      history.push(`/habit/${infoHabitsId}`);
+    } catch (err) {
+      // console.log(err);
+    }
   };
 
   return (
-    <PostContainer isMine={info.usersId === usersId}>
+    <PostContainer isMine={!info.postsId || info.usersId === usersId}>
       <ProfileImage url={image} />
-      {isInput ? (
+      {!info.postsId ? (
         <InputForm
           className="container"
           name="inputFile"
@@ -245,7 +280,16 @@ const Post = ({ info, isInput }) => {
             <CreatedAt>{info.createdAt}</CreatedAt>
           </ProfileText>
           <Content>{info.content}</Content>
-          <PostImage url={info.image} />
+          {info.image && <PostImage url={info.image} />}
+          {info.usersId === usersId && (
+            <DeleteButton
+              className="icon-cancel"
+              id="delete"
+              onClick={() => {
+                handleDeleteClick(info.postsId, info.habitsId);
+              }}
+            />
+          )}
         </ContentContainer>
       )}
     </PostContainer>
@@ -253,7 +297,6 @@ const Post = ({ info, isInput }) => {
 };
 
 Post.defaultProps = {
-  isInput: true,
   info: {
     postsId: null,
     usersId: "",
@@ -263,6 +306,7 @@ Post.defaultProps = {
     image: "",
     content: "",
   },
+  habitsId: null,
 };
 
 Post.propTypes = {
@@ -275,7 +319,7 @@ Post.propTypes = {
     image: PropTypes.string,
     content: PropTypes.string,
   }),
-  isInput: PropTypes.bool,
+  habitsId: PropTypes.number,
 };
 
 export default Post;
