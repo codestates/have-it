@@ -28,7 +28,13 @@ const habitsApi = {
       start_date: startDate,
       end_date: endDate,
     }),
-  TBD: () => api.put("/habits/:habits_id"),
+  modifyHabit: (id, data, options) =>
+    api.put(`/habits/${id}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      ...options,
+    }),
   getTitle: (id) => api.get(`/habits/title/${id}`),
 };
 
