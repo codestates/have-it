@@ -11,7 +11,14 @@ const habitsApi = {
       params,
     });
   },
-  createHabit: () => api.post("/habits"),
+  createHabit: (categoryId, color, emojiId, title, description) =>
+    api.post("/habits", {
+      categories_id: categoryId,
+      color,
+      emoji_id: emojiId,
+      title,
+      description,
+    }),
   findHabitById: (id) => api.get(`/habits/${id}`),
   joinHabit: () => api.post("/habits/:habits_id"),
   TBD: () => api.put("/habits/:habits_id"),
