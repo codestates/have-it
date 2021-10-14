@@ -25,6 +25,7 @@ module.exports = {
             message: "ok",
             data: {
               usersId: users_id,
+              nickname: userInfo.dataValues.nickname,
               image: location || userInfo.dataValues.image,
               bio: userInfo.dataValues.bio,
             },
@@ -34,6 +35,7 @@ module.exports = {
             message: "Nickname already exists but else other information has been updated.",
             data: {
               usersId: users_id,
+              nickname: userInfo.dataValues.nickname,
               image: location || userInfo.dataValues.image,
               bio: userInfo.dataValues.bio,
             },
@@ -44,6 +46,7 @@ module.exports = {
           message: "ok",
           data: {
             usersId: users_id,
+            nickname: userInfo.dataValues.nickname,
             image: location || userInfo.dataValues.image,
             bio: userInfo.dataValues.bio,
           },

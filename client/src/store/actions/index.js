@@ -8,6 +8,7 @@ import {
   MODAL_OFF,
   SIGN_IN,
   SIGN_OUT,
+  UPDATE_INFO,
   SHOW_POPUP,
   HIDE_POPUP,
   FIND_HABITS,
@@ -50,6 +51,12 @@ export const signInAction = (data) => ({
 export const signOutAction = {
   type: SIGN_OUT,
 };
+export const updateInfoAction = (data) => ({
+  type: UPDATE_INFO,
+  payload: {
+    ...data,
+  },
+});
 
 // Home
 export const showPopupAction = {

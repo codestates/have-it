@@ -3,10 +3,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Cards from "../components/Cards";
 import authApi from "../api/auth";
-import { signInAction, signOutAction } from "../store/actions";
+import { signInAction, signOutAction, updateInfoAction } from "../store/actions";
+import usersApi from "../api/users";
+import badgesApi from "../api/badges";
 
 const MyPageView = styled.div`
   display: flex;
@@ -26,7 +28,6 @@ const ProfileView = styled.div`
   border-right: 1px solid var(--color-midgray--04);
   button {
     border-radius: 6px;
-    color: var(--color-gray);
   }
   input,
   textarea {
@@ -39,8 +40,8 @@ const ProfileView = styled.div`
     resize: none;
     padding: 0.5rem 0.75rem;
     font-size: 1rem;
-    color: var(--color-black);
-    line-spacing: 150%;
+    color: var(--color-white);
+    line-height: 150%;
     ::placeholder {
       color: var(--color-black);
     }
@@ -96,8 +97,70 @@ const Button = styled.button`
 
 const ProfileEditButton = styled(Button)``;
 
-const ProfileEditView = styled(ProfileView)``;
-const ProfileEditImage = styled(ProfileImage)``;
+const ProfileEditView = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 22.5rem;
+  height: 100%;
+  border-right: 1px solid var(--color-midgray--04);
+  button {
+    border-radius: 6px;
+    color: var(--color-gray);
+  }
+  input,
+  textarea {
+    width: 15rem;
+    height: 2rem;
+    border: 1px solid var(--color-midgray);
+    font-weight: var(--fontWeight-medium);
+    margin-top: 2px;
+    border-radius: 6px;
+    resize: none;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    color: var(--color-black);
+    line-height: 150%;
+    ::placeholder {
+      color: var(--color-gray);
+    }
+  }
+  textarea {
+    height: 6rem;
+  }
+`;
+const ProfileEditImage = styled.div`
+  width: 15rem;
+  height: 15rem;
+  border: 1px solid var(--color-midgray--04);
+  border-radius: 100%;
+  margin-bottom: 2.5rem;
+  background-image: url(${(props) => props.photo});
+  background-size: 100%;
+`;
+const ProfileEditInput = styled.input`
+  display: none;
+`;
+const ProfileEditLabel = styled.label`
+  display: block;
+  width: 15rem;
+  height: 15rem;
+  object-fit: cover;
+  background-color: var(--color-white);
+  font-weight: var(--fontWeight-bold);
+  font-size: 1.2rem;
+  color: black;
+  cursor: pointer;
+  margin: -1px;
+  text-align: center;
+  border-radius: 100%;
+  padding: 50% 0;
+  opacity: 0%;
+  :hover {
+    opacity: 50%;
+  }
+`;
 const ProfileEditUsername = styled.div`
   width: 15rem;
   font-size: 0.75rem;
@@ -153,14 +216,16 @@ const Badges = styled.div`
     margin-right: 3rem;
   }
 `;
-
 const Status = styled.div`
-  width: 100%;
+  display: flex;
+  align-items: start;
+  justify-content: start;
+`;
+const StatusButton = styled.button`
   margin-bottom: 1.5rem;
-  button {
-    font-size: 1.5rem;
-    margin-right: 1.5rem;
-  }
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  color: var(--color-black);
 `;
 
 const MyHabit = styled.div`
@@ -170,8 +235,18 @@ const MyHabit = styled.div`
 
 const MyPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
+  const [photo, setPhoto] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [badges, setBadges] = useState([]);
+  const [isDone, setIsDone] = useState(false);
+
   const history = useHistory();
   const dispatch = useDispatch();
+  const userInfo = useSelector(({ authReducer }) => authReducer);
+  const [inputValue, setInputValue] = useState({
+    nickname: userInfo.nickname,
+    bio: userInfo.bio,
+  });
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -214,38 +289,107 @@ const MyPage = () => {
     }
   }, [dispatch]);
 
+  useEffect(() => {
+    setInputValue({
+      nickname: userInfo.nickname,
+      bio: userInfo.bio,
+    });
+  }, [userInfo]);
+
+  useEffect(() => {
+    const getBadgesList = async () => {
+      const list = await badgesApi.getBadges(userInfo.nickname);
+      setBadges(list.data.data);
+    };
+    getBadgesList();
+  }, [userInfo]);
+
+  const handleFileChange = (e) => {
+    const fileInfo = e.target.files[0];
+    const imageUrl = URL.createObjectURL(fileInfo);
+
+    setPhoto(fileInfo);
+    setImageUrl(imageUrl);
+    console.log("fileInfo", fileInfo);
+    console.log(imageUrl);
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setInputValue((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("image", photo);
+    formData.append("nickname", inputValue.nickname);
+    formData.append("bio", inputValue.bio);
+
+    const res = await usersApi.modifyUserInfo(userInfo.usersId, formData);
+    dispatch(updateInfoAction(res.data));
+    setIsEditMode(false);
+  };
+
   return (
     <MyPageView>
       {!isEditMode ? (
         <ProfileView>
-          <ProfileImage src="../images/profile/pf_1.svg" />
+          <ProfileImage src={userInfo.image} />
           <Container>
-            <ProfileUsername>Leezy_Kim</ProfileUsername>
-            <ProfileUserBio>
-              🐢하루하루 꾸준히😌 <br />
-              🔥Never Say Never🔥
-            </ProfileUserBio>
+            <ProfileUsername>{userInfo.nickname}</ProfileUsername>
+            <ProfileUserBio>{userInfo.bio}</ProfileUserBio>
             <ProfileEditButton onClick={() => setIsEditMode(true)}>프로필 수정</ProfileEditButton>
           </Container>
         </ProfileView>
       ) : (
-        <ProfileEditView>
-          <ProfileEditImage src="../images/profile/pf_1.svg" />
+        <ProfileEditView onSubmit={handleSubmit}>
+          {imageUrl ? (
+            <ProfileEditImage photo={imageUrl}>
+              <ProfileEditLabel htmlFor="photo">프로필 이미지 수정</ProfileEditLabel>
+              <ProfileEditInput
+                id="photo"
+                type="file"
+                accept="image/png, image/jpeg"
+                onChange={handleFileChange}
+              />
+            </ProfileEditImage>
+          ) : (
+            <ProfileEditImage photo={userInfo.image}>
+              <ProfileEditLabel htmlFor="photo">프로필 이미지 수정</ProfileEditLabel>
+              <ProfileEditInput
+                id="photo"
+                type="file"
+                accept="image/png, image/jpeg"
+                onChange={handleFileChange}
+              />
+            </ProfileEditImage>
+          )}
           <Container>
             <ProfileEditUsername>
               <div>Name</div>
-              <input type="text" placeholder="Leezy_kim" />
+              <input
+                name="nickname"
+                type="text"
+                value={inputValue.nickname}
+                placeholder="Leezy_kim"
+                onChange={handleInputChange}
+              />
             </ProfileEditUsername>
             <ProfileEditUserBio>
               <div>Bio</div>
               <textarea
+                name="bio"
+                type="text"
+                value={inputValue.bio}
                 placeholder={`🐢하루하루 꾸준히😌
 🔥Nerver Say Never🔥`}
+                onChange={handleInputChange}
               />
             </ProfileEditUserBio>
             <ButtonContainer>
               <CancelButton onClick={() => setIsEditMode(false)}>취소</CancelButton>
-              <SaveButton onClick={() => setIsEditMode(false)}>저장</SaveButton>
+              <SaveButton type="submit">저장</SaveButton>
             </ButtonContainer>
             <DeleteAccountButton>회원 탈퇴</DeleteAccountButton>
           </Container>
@@ -254,15 +398,17 @@ const MyPage = () => {
       <AchievementView>
         <Title>나의 뱃지</Title>
         <Badges>
-          <img src="../images/badge/badge_1.svg" alt="badge_운동" />
-          <img src="../images/badge/badge_2.svg" alt="badge_운동" />
-          <img src="../images/badge/badge_3.svg" alt="badge_운동" />
-          <img src="../images/badge/badge_4.svg" alt="badge_운동" />
-          <img src="../images/badge/badge_5.svg" alt="badge_운동" />
+          {badges.map((el) => (
+            <img src={el.badge.image} />
+          ))}
         </Badges>
         <Status>
-          <button type="button">진행중 해빗</button>
-          <button type="button">완료한 해빗</button>
+          <StatusButton type="button" isDone={false}>
+            진행중 해빗
+          </StatusButton>
+          <StatusButton type="button" isDone={true}>
+            완료한 해빗
+          </StatusButton>
         </Status>
         <MyHabit>
           <Cards />
