@@ -160,9 +160,11 @@ module.exports = {
         end_date,
       });
       const { done } = joinHabit.dataValues;
+
       const habitInfo = await joinHabit.getHabit({
         attributes: ["habits_id", "user_count", "title", "emoji_id", "color"],
       });
+      let habitInfo_ = await habitInfo.increment("user_count", { by: 1 });
       const top_users = await Userhabit.findAll({
         where: { habits_id },
         attributes: [],
@@ -177,7 +179,7 @@ module.exports = {
 
       res.status(200).json({
         message: "ok",
-        data: { ...snakeToCamal(habitInfo.dataValues), done, endDate: end_date, topUsers },
+        data: { ...snakeToCamal(habitInfo_.dataValues), done, endDate: end_date, topUsers },
       });
     } catch (err) {
       DBERROR(res, err);
