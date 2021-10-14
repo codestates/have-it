@@ -8,6 +8,7 @@ import Cards from "../components/Cards";
 import authApi from "../api/auth";
 import { signInAction, signOutAction, updateInfoAction } from "../store/actions";
 import usersApi from "../api/users";
+import badgesApi from "../api/badges";
 
 const MyPageView = styled.div`
   display: flex;
@@ -215,14 +216,16 @@ const Badges = styled.div`
     margin-right: 3rem;
   }
 `;
-
 const Status = styled.div`
-  width: 100%;
+  display: flex;
+  align-items: start;
+  justify-content: start;
+`;
+const StatusButton = styled.button`
   margin-bottom: 1.5rem;
-  button {
-    font-size: 1.5rem;
-    margin-right: 1.5rem;
-  }
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  color: var(--color-black);
 `;
 
 const MyHabit = styled.div`
@@ -234,6 +237,8 @@ const MyPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [photo, setPhoto] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [badges, setBadges] = useState([]);
+  const [isDone, setIsDone] = useState(false);
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -291,6 +296,14 @@ const MyPage = () => {
     });
   }, [userInfo]);
 
+  useEffect(() => {
+    const getBadgesList = async () => {
+      const list = await badgesApi.getBadges(userInfo.nickname);
+      setBadges(list.data.data);
+    };
+    getBadgesList();
+  }, [userInfo]);
+
   const handleFileChange = (e) => {
     const fileInfo = e.target.files[0];
     const imageUrl = URL.createObjectURL(fileInfo);
@@ -315,6 +328,7 @@ const MyPage = () => {
 
     const res = await usersApi.modifyUserInfo(userInfo.usersId, formData);
     dispatch(updateInfoAction(res.data));
+    setIsEditMode(false);
   };
 
   return (
@@ -330,15 +344,27 @@ const MyPage = () => {
         </ProfileView>
       ) : (
         <ProfileEditView onSubmit={handleSubmit}>
-          <ProfileEditImage photo={imageUrl}>
-            <ProfileEditLabel htmlFor="photo">프로필 이미지 수정</ProfileEditLabel>
-            <ProfileEditInput
-              id="photo"
-              type="file"
-              accept="image/png, image/jpeg"
-              onChange={handleFileChange}
-            />
-          </ProfileEditImage>
+          {imageUrl ? (
+            <ProfileEditImage photo={imageUrl}>
+              <ProfileEditLabel htmlFor="photo">프로필 이미지 수정</ProfileEditLabel>
+              <ProfileEditInput
+                id="photo"
+                type="file"
+                accept="image/png, image/jpeg"
+                onChange={handleFileChange}
+              />
+            </ProfileEditImage>
+          ) : (
+            <ProfileEditImage photo={userInfo.image}>
+              <ProfileEditLabel htmlFor="photo">프로필 이미지 수정</ProfileEditLabel>
+              <ProfileEditInput
+                id="photo"
+                type="file"
+                accept="image/png, image/jpeg"
+                onChange={handleFileChange}
+              />
+            </ProfileEditImage>
+          )}
           <Container>
             <ProfileEditUsername>
               <div>Name</div>
@@ -372,15 +398,17 @@ const MyPage = () => {
       <AchievementView>
         <Title>나의 뱃지</Title>
         <Badges>
-          <img src="../images/badge/badge_1.svg" alt="badge_운동" />
-          <img src="../images/badge/badge_2.svg" alt="badge_운동" />
-          <img src="../images/badge/badge_3.svg" alt="badge_운동" />
-          <img src="../images/badge/badge_4.svg" alt="badge_운동" />
-          <img src="../images/badge/badge_5.svg" alt="badge_운동" />
+          {badges.map((el) => (
+            <img src={el.badge.image} />
+          ))}
         </Badges>
         <Status>
-          <button type="button">진행중 해빗</button>
-          <button type="button">완료한 해빗</button>
+          <StatusButton type="button" isDone={false}>
+            진행중 해빗
+          </StatusButton>
+          <StatusButton type="button" isDone={true}>
+            완료한 해빗
+          </StatusButton>
         </Status>
         <MyHabit>
           <Cards />

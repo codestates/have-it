@@ -26,7 +26,7 @@ const authReducer = (prevState = initialState, action) => {
       break;
     case UPDATE_INFO:
       state = {
-        ...initialState,
+        ...prevState,
         image: action.payload.data.image,
         nickname: action.payload.data.nickname,
         bio: action.payload.data.bio,
