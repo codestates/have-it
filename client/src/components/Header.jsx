@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { signInModalOnAction, signUpModalOnAction, signOutAction } from "../store/actions";
 import categoriesApi from "../api/categories";
 import authApi from "../api/auth";
+import habitsApi from "../api/habits";
 
 const HeaderContatiner = styled.div`
   display: flex;
@@ -82,6 +83,22 @@ const CategoryTitle = () => {
   );
 };
 
+const PageTitle = () => {
+  const [headerTitle, setHeaderTitle] = useState("");
+  const { id } = useParams();
+  useEffect(() => {
+    const getTitle = async () => {
+      const res = await habitsApi.getTitle(id);
+      console.log(res);
+      setHeaderTitle(res.data.title);
+    };
+    getTitle(id);
+  }, [id]);
+  console.log("headerTitle", headerTitle);
+  console.log("id", id);
+  return <>{headerTitle}</>;
+};
+
 const Header = () => {
   const { isLogin, nickname, image } = useSelector(({ authReducer }) => authReducer);
   const dispatch = useDispatch();
@@ -110,7 +127,11 @@ const Header = () => {
           <Route path="/mypage" render={() => <PageInfoContainer>마이 페이지</PageInfoContainer>} />
           <Route
             path="/habit/:id"
-            render={() => <PageInfoContainer>습관 제목 수정필요 ‼️</PageInfoContainer>}
+            render={() => (
+              <PageInfoContainer>
+                <PageTitle />
+              </PageInfoContainer>
+            )}
           />
         </Switch>
         {isLogin ? (

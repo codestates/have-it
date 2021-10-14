@@ -116,7 +116,7 @@ const Home = () => {
       )}
 
       <>
-        <Title>지금 뜨는 채널</Title>
+        <Title>지금 뜨는 습관</Title>
         <Cards isAtHome habits={trendingHabits} />
         <CategoryListContainer>
           <CategoryList isAtHome handleCategoryClick={handleCategoryClick} />

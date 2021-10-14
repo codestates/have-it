@@ -4,10 +4,16 @@ import PropTypes from "prop-types";
 
 const Container = styled.div`
   margin: 24px 0px 24px 40px;
-  position: absolute;
-  z-index: 1;
+  width: 5.5rem;
+  height: 6rem;
+  z-index: 0;
   background-color: var(--color-white);
   border-radius: 5px;
+  max-height: 2rem;
+  li {
+    z-index: 2;
+    background-color: var(--color-white);
+  }
 `;
 
 const SortButton = styled.li`
@@ -24,7 +30,7 @@ const SortButton = styled.li`
   font-weight: var(--fontWeight-semibold);
   cursor: pointer;
   :hover {
-    background-color: var(--color-lightblue--02);
+    background-color: #cbcbff;
   }
   :nth-of-type(1) {
     border-top-right-radius: 5px;
@@ -34,16 +40,19 @@ const SortButton = styled.li`
     border-bottom: ${(props) => props.isClicked && "none"};
   }
   :nth-of-type(2) {
+    position: relative;
     border-bottom: ${(props) => props.isClicked && "none"};
     border-top: ${(props) => !props.isClicked && "none"};
   }
   :nth-of-type(3) {
-    border-bottom: ${(props) => props.isClicked && "none"};
+    position: relative;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+
     border-top: ${(props) => props.isClicked && "none"};
   }
   :nth-of-type(4) {
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
+    position: relative;
     border-top: ${(props) => props.isClicked && "none"};
   }
 `;
