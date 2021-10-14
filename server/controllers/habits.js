@@ -118,7 +118,14 @@ module.exports = {
       delete habitInfo.dataValues.categories_id;
       const userHabitInfo = await Userhabit.findOne({
         where: { users_id: req.userId, habits_id },
-        attributes: ["userhabits_id", "goal", "actual_amount", "target_amount"],
+        attributes: [
+          "userhabits_id",
+          "goal",
+          "actual_amount",
+          "target_amount",
+          "start_date",
+          "end_date",
+        ],
       });
       if (userHabitInfo) {
         res.status(200).json({
@@ -142,14 +149,15 @@ module.exports = {
     }
   },
   joinHabit: async (req, res) => {
-    //TODO: 날짜 데이터 확정되면 추가할 필드 start_date, end_date , 현재 디폴트 now()
-    const { habits_id, goal, habit_day } = req.body;
+    const { habits_id, goal, habit_day, start_date, end_date } = req.body;
     try {
       const joinHabit = await Userhabit.create({
         users_id: req.userId,
         habits_id,
         goal,
         habit_day,
+        start_date,
+        end_date,
       });
       const infoOfHabit = await joinHabit.getHabit();
       await infoOfHabit.update({ user_count: infoOfHabit.user_count + 1 });
