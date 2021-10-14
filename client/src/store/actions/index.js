@@ -11,6 +11,7 @@ import {
   UPDATE_INFO,
   SHOW_POPUP,
   HIDE_POPUP,
+  UPDATE_USER_HABIT,
 } from "./actionTypes";
 
 // action
@@ -52,6 +53,12 @@ export const signOutAction = {
 };
 export const updateInfoAction = (data) => ({
   type: UPDATE_INFO,
+  payload: {
+    ...data,
+  },
+});
+export const updateUserHabitAction = (data) => ({
+  type: UPDATE_USER_HABIT,
   payload: {
     ...data,
   },
