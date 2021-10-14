@@ -1,5 +1,6 @@
 const { User } = require("../models");
 const { DeleteImageinTable, DBERROR } = require("./functions");
+const { clearCookie } = require("./token");
 
 module.exports = {
   modifyUserInfo: async (req, res) => {
@@ -56,25 +57,23 @@ module.exports = {
       DBERROR(res, err);
     }
   },
-  removeUserInfo: (req, res) => {
-    const { users_id } = req.params;
-    const accessTokenData = isAuthorized(req);
-    if (!accessTokenData) {
-      res.status(404).send("invalid user");
-    } else {
-      if (accessTokenData.users_id !== users_id) {
-        res.status(403).send("don't have permission.");
-      } else {
-        User.destroy({
-          users_id: accessTokenData.users_id,
-        }).then((result) => {
-          setJwtCookie(res, req.cookies.jwt, 1);
-          res.status(200).json({
-            users_id: accessTokenData.users_id,
-            email: accessTokenData.email,
-          });
-        });
-      }
+
+  removeUserInfo: async (req, res) => {
+    const {
+      params: { users_id },
+      token,
+    } = req;
+
+    const foundUser = await User.findOne({
+      where: { users_id },
+    });
+
+    if (!foundUser) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    await foundUser.destroy();
+    clearCookie(res, token);
+    return res.status(200).json({ message: "User deleted", data: { usersId: users_id } });
   },
 };
