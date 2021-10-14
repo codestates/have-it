@@ -29,7 +29,7 @@ const habitsApi = {
       end_date: endDate,
     }),
   TBD: () => api.put("/habits/:habits_id"),
-  getTitle: () => api.put("/habits/title/:habits_id"),
+  getTitle: (id) => api.get(`/habits/title/${id}`),
 };
 
 export default habitsApi;

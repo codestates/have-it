@@ -32,11 +32,11 @@ const HidePopup = styled.button`
 
 const Container = styled.div`
   width: calc(100vw - 5rem);
-  height: 2.5rem;
 `;
 
 const MoreCards = styled(Cards)`
-  margin: 5rem;
+  position: absolute;
+  top: 3rem;
 `;
 
 const HomeMore = ({ match }) => {
