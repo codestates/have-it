@@ -328,7 +328,7 @@ const Habit = () => {
       </InfoContainer>
       <Divider />
       <Feed>
-        <Post isInput />
+        <Post />
         {posts.length ? (
           <>
             {posts.map((post) => (

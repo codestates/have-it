@@ -18,6 +18,23 @@ const PostContainer = styled.div`
       props.isMine ? "var(--color-lightblue--02)" : "var(--color-lightgray)"};
     border: 1px solid
       ${(props) => (props.isMine ? "var(--color-mainblue)" : "var(--color-midgray)")};
+    position: relative;
+
+    > #delete {
+      display: none;
+      position: absolute;
+      right: 0.5rem;
+      top: 0.5rem;
+      background-color: transparent;
+    }
+
+    :hover > #delete {
+      display: inline;
+
+      :hover {
+        background-color: var(--color-lightblue--04);
+      }
+    }
   }
 `;
 
@@ -153,7 +170,15 @@ const PostImage = styled.div`
   background-size: cover;
 `;
 
-const Post = ({ info, isInput }) => {
+const DeleteButton = styled.button`
+  width: 2rem;
+  height: 2rem;
+  color: var(--color-mainblue);
+  font-size: 1rem;
+  border-radius: 6px;
+`;
+
+const Post = ({ info }) => {
   const { usersId, nickname, image } = useSelector(({ authReducer }) => authReducer);
   const [inputText, setInputText] = useState("");
   const [inputFile, setInputFile] = useState("");
@@ -203,9 +228,10 @@ const Post = ({ info, isInput }) => {
   };
 
   return (
-    <PostContainer isMine={info.usersId === usersId}>
+    <PostContainer isMine={usersId === "e8023291-7809-46d0-9afd-f29d561d1248"}>
+      {/* isMine이 참일 경우가 필요해 임시로 수정함 : info.usersId === usersId */}
       <ProfileImage url={image} />
-      {isInput ? (
+      {!info.postsId ? (
         <InputForm
           className="container"
           name="inputFile"
@@ -245,7 +271,8 @@ const Post = ({ info, isInput }) => {
             <CreatedAt>{info.createdAt}</CreatedAt>
           </ProfileText>
           <Content>{info.content}</Content>
-          <PostImage url={info.image} />
+          {info.image && <PostImage url={info.image} />}
+          <DeleteButton className="icon-cancel" id="delete" />
         </ContentContainer>
       )}
     </PostContainer>
@@ -253,7 +280,6 @@ const Post = ({ info, isInput }) => {
 };
 
 Post.defaultProps = {
-  isInput: true,
   info: {
     postsId: null,
     usersId: "",
@@ -275,7 +301,6 @@ Post.propTypes = {
     image: PropTypes.string,
     content: PropTypes.string,
   }),
-  isInput: PropTypes.bool,
 };
 
 export default Post;
