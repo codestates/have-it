@@ -163,7 +163,6 @@ module.exports = {
       const habitInfo = await joinHabit.getHabit({
         attributes: ["habits_id", "user_count", "title", "emoji_id", "color"],
       });
-      // snakeToCamal(habitInfo.dataValues)
       const top_users = await Userhabit.findAll({
         where: { habits_id },
         attributes: [],
