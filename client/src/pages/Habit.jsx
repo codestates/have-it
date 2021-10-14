@@ -214,7 +214,7 @@ const EmptyImage = styled(EmptyComponent)`
 `;
 
 const EmptyFeed = styled(EmptyComponent)`
-  height: 100%;
+  height: calc(100vh - 14.25rem - 80px);
   border-radius: 10px;
   margin: 0 6rem;
 
