@@ -107,12 +107,15 @@ module.exports = {
         where: { habits_id },
         attributes: { exclude: ["created_at"] },
       });
-      console.log(snakeToCamal(habitInfo.dataValues));
-      const postlist = await habitInfo.getPosts({ attributes: { exclude: ["updatedAt"] } });
+      const postlist = await habitInfo.getPosts({
+        attributes: { exclude: ["updatedAt"] },
+      });
       const posts = postlist.map((el) => {
         return snakeToCamal(el.dataValues);
       });
-
+      const categoryInfo = await habitInfo.getCategory({ attributes: ["title"] });
+      const categoryTitle = categoryInfo.dataValues.title;
+      delete habitInfo.dataValues.categories_id;
       const userHabitInfo = await Userhabit.findOne({
         where: { users_id: req.userId, habits_id },
         attributes: ["userhabits_id", "goal", "actual_amount", "target_amount"],
@@ -121,7 +124,7 @@ module.exports = {
         res.status(200).json({
           message: "ok",
           data: {
-            habits: { ...snakeToCamal(habitInfo.dataValues), posts },
+            habits: { ...snakeToCamal(habitInfo.dataValues), categoryTitle, posts },
             userInfo: snakeToCamal(userHabitInfo.dataValues || null),
           },
         });
@@ -129,7 +132,7 @@ module.exports = {
         res.status(200).json({
           message: "ok",
           data: {
-            habits: snakeToCamal(habitInfo.dataValues),
+            habits: { ...snakeToCamal(habitInfo.dataValues), categoryTitle, posts },
             userInfo: null,
           },
         });
