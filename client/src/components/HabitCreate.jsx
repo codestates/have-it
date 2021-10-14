@@ -2,7 +2,10 @@ import React, { useCallback, useState } from "react";
 import styled, { css } from "styled-components";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker, Emoji } from "emoji-mart";
+import { useDispatch } from "react-redux";
 import CategoryList from "./CategoryList";
+import habitsApi from "../api/habits";
+import { habitJoinModalOnAction, habitJoinProceedAction, modalOffAction } from "../store/actions";
 
 const Form = styled.form`
   width: 48rem;
@@ -142,6 +145,8 @@ const CloseIcon = styled.div`
 `;
 
 const HabitCreate = () => {
+  const dispatch = useDispatch();
+
   const [isEmojiPicker, setIsEmojiPicker] = useState(false);
   const [isColorPicker, setIsColorPicker] = useState(false);
   const [selectEmojiId, setSelectEmojiId] = useState(null);
@@ -190,7 +195,7 @@ const HabitCreate = () => {
     }
     return true;
   };
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (
       !validate(selectCategory, "카테고리를 선택해주세요.") ||
@@ -201,17 +206,28 @@ const HabitCreate = () => {
     ) {
       return;
     }
-    console.log("모두 통과");
-    // TODO:
-    // 1. 서버로 요청보내어 해빗 생성
-    // 2. habitJoin State update
-    // 3. 모달 창 끄고, habitJoin 모달 창 켜기
+    const res = await habitsApi.createHabit(
+      selectCategory.id,
+      selectColor,
+      selectEmojiId,
+      inputValue.title,
+      inputValue.description
+    );
+    if (res.status === 201) {
+      dispatch(habitJoinProceedAction(res.data.data));
+      dispatch(modalOffAction);
+      dispatch(habitJoinModalOnAction);
+    }
   };
   return (
     <Form onSubmit={handleSubmit}>
       <h1>해빗 생성</h1>
       <CategoryColorPickerContainer>
-        <CategoryList handleCategoryClick={handleCategoryClick} selectColor={selectColor} />
+        <CategoryList
+          handleCategoryClick={handleCategoryClick}
+          selectColor={selectColor}
+          isAtHome={false}
+        />
         <ColorPickerContainer>
           <ColorList isColorPicker={isColorPicker}>
             {colors.map((color) => (
