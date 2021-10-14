@@ -150,7 +150,6 @@ module.exports = {
   },
   joinHabit: async (req, res) => {
     const { habits_id, goal, habit_day, start_date, end_date } = req.body;
-    console.log(start_date, end_date);
     try {
       const joinHabit = await Userhabit.create({
         users_id: req.userId,
