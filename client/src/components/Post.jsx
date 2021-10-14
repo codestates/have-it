@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import axios from "axios";
@@ -153,8 +154,7 @@ const PostImage = styled.div`
 `;
 
 const Post = ({ info, isInput }) => {
-  const inputLimit = 40;
-  const nowUserId = 2;
+  const { usersId, nickname, image } = useSelector(({ authReducer }) => authReducer);
   const [inputText, setInputText] = useState("");
   const [inputFile, setInputFile] = useState("");
   const [imgBase64, setImgBase64] = useState("");
@@ -203,8 +203,8 @@ const Post = ({ info, isInput }) => {
   };
 
   return (
-    <PostContainer isMine={nowUserId === info.usersId}>
-      <ProfileImage url={info.userImage} />
+    <PostContainer isMine={info.usersId === usersId}>
+      <ProfileImage url={image} />
       {isInput ? (
         <InputForm
           className="container"
@@ -216,7 +216,7 @@ const Post = ({ info, isInput }) => {
             id="text"
             type="text"
             name="text"
-            placeholder={`오늘 달성하신 습관에 대해 공유해보세요. (최대 ${inputLimit}자)`}
+            placeholder="오늘 달성하신 습관에 대해 공유해보세요."
             value={inputText}
             onChange={handleInputChange}
             required
@@ -229,7 +229,6 @@ const Post = ({ info, isInput }) => {
             onChange={handleInputChange}
           />
           <PreviewImage url={imgBase64} />
-          {/* <image src={inputFile} /> */}
           <PostButtonContainer>
             <AddImage className="icon-picture" htmlFor="photo" />
             <UploadPost type="submit">공유하기</UploadPost>
@@ -239,14 +238,14 @@ const Post = ({ info, isInput }) => {
         <ContentContainer
           className="container"
           key={info.postsId}
-          isMine={nowUserId === info.usersId}
+          isMine={usersId === info.usersId}
         >
           <ProfileText>
-            <Nickname>{info.nickname}</Nickname>
+            <Nickname>{nickname}</Nickname>
             <CreatedAt>{info.createdAt}</CreatedAt>
           </ProfileText>
           <Content>{info.content}</Content>
-          <PostImage url={info.postImage} />
+          <PostImage url={info.image} />
         </ContentContainer>
       )}
     </PostContainer>
@@ -254,19 +253,28 @@ const Post = ({ info, isInput }) => {
 };
 
 Post.defaultProps = {
-  isInput: false,
+  isInput: true,
+  info: {
+    postsId: null,
+    usersId: "",
+    habitsId: null,
+    userhabitsId: null,
+    createdAt: "",
+    image: "",
+    content: "",
+  },
 };
 
 Post.propTypes = {
   info: PropTypes.shape({
     postsId: PropTypes.number,
-    usersId: PropTypes.number,
-    nickname: PropTypes.string,
-    userImage: PropTypes.string,
-    postImage: PropTypes.string,
-    content: PropTypes.string,
+    usersId: PropTypes.string,
+    habitsId: PropTypes.number,
+    userhabitsId: PropTypes.number,
     createdAt: PropTypes.string,
-  }).isRequired,
+    image: PropTypes.string,
+    content: PropTypes.string,
+  }),
   isInput: PropTypes.bool,
 };
 
