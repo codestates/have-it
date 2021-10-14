@@ -5,6 +5,7 @@ import "react-sweet-progress/lib/style.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import uuid from "react-uuid";
+import { Emoji } from "emoji-mart";
 import authApi from "../api/auth";
 import habitsApi from "../api/habits";
 import { signInAction, signOutAction } from "../store/actions";
@@ -85,13 +86,15 @@ const EmojiContainer = styled.div`
   filter: drop-shadow(0 0 6px var(--color-shadow));
 `;
 
-const Emoji = styled.div`
-  font-size: 2.5rem;
-  line-height: 4.5rem;
-  text-align: center;
+const EmojiBox = styled.div`
+  width: 100%;
+  height: 100%;
   background-color: ${(props) => props.color}80;
   border: 1px solid ${(props) => props.color};
   border-radius: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Description = styled.div`
@@ -122,7 +125,8 @@ const GoalTitle = styled.h2`
 
 const EditButton = styled.button`
   font-family: Interop-Medium;
-  margin-top: 0.2rem;
+  padding: 0.325rem 0.4rem;
+  border-radius: 6px;
   font-size: 1rem;
   color: var(--color-midgray);
   display: flex;
@@ -130,6 +134,8 @@ const EditButton = styled.button`
 
   :hover {
     color: var(--color-gray);
+    background-color: var(--color-lightgray);
+    opacity: 0.9;
   }
 
   > div {
@@ -299,7 +305,9 @@ const Habit = () => {
               </EmptyImage>
             )}
             <EmojiContainer>
-              <Emoji color={habits.color}>{habits.emojiId}</Emoji>
+              <EmojiBox color={habits.color}>
+                <Emoji emoji={habits.emojiId} size={40} />
+              </EmojiBox>
             </EmojiContainer>
           </CoverContainer>
           <Description>{habits.description}</Description>
