@@ -1,9 +1,15 @@
 import { combineReducers } from "redux";
-import exampleReducer from "./exampleReducer";
+import modalReducer from "./modalReducer";
+import authReducer from "./authReducer";
+import homeReducer from "./homeReducer";
+import habitJoinReducer from "./habitJoinReducer";
 
 const rootReducer = combineReducers({
-  exampleReducer,
-  // ...
+  modalReducer,
+  authReducer,
+  homeReducer,
+  habitJoinReducer,
+  // ...exampleReducer,
 });
 
 export default rootReducer;

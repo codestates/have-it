@@ -13,11 +13,9 @@ function required(key, defaultValue = undefined) {
 module.exports = {
   jwt: {
     secretKey: required("ACCESS_SECRET"),
-    // expiresInSec: parseInt(required("JWT_EXPIRES_SEC", 86400)),
+    expiresInSec: parseInt(required("JWT_EXPIRES_SEC", 7200), 10),
   },
-  bcrypt: {
-    saltRounds: parseInt(required("BCRYPT_SALT_ROUNDS", 12), 10),
-  },
+  saltRounds: parseInt(required("BCRYPT_SALT_ROUNDS", 12), 10),
   port: parseInt(required("PORT", 8080), 10),
   db: {
     host: required("DB_HOST"),
@@ -25,5 +23,14 @@ module.exports = {
     database: required("DB_DATABASE"),
     password: required("DB_PASSWORD"),
     port: required("DB_PORT"),
+  },
+  cors: {
+    allowedOrigin: required("CORS_ALLOW_ORIGIN"),
+  },
+  oauth: {
+    naverClientId: required("NAVER_CLIENT_ID"),
+    naverClientSecret: required("NAVER_CLIENT_SECRET"),
+    googleClientId: required("GOOGLE_CLIENT_ID"),
+    googleClientSecret: required("GOOGLE_CLIENT_SECRET"),
   },
 };

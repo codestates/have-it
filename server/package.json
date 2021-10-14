@@ -25,17 +25,21 @@
     "sequelize-cli": "^6.2.0"
   },
   "dependencies": {
+    "aws-sdk": "^2.1006.0",
     "axios": "^0.22.0",
     "bcrypt": "^5.0.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
     "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.3",
+    "multer-s3": "^2.9.0",
     "mysql2": "^2.3.0",
-    "sequelize": "^6.6.5"
+    "sequelize": "^6.6.5",
+    "uuid": "^8.3.2"
   }
 }
