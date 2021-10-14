@@ -21,7 +21,7 @@ const CategoryColorPickerContainer = styled.div`
 const EmojiPicker = styled.button`
   width: 3rem;
   height: 3rem;
-  border: 1px solid ${({ selectColor }) => selectColor};
+  background-color: ${({ selectColor }) => selectColor};
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -30,7 +30,7 @@ const EmojiPicker = styled.button`
 
 const PlusIcon = styled.div`
   font-size: 1.5rem;
-  color: ${({ selectColor }) => selectColor};
+  color: var(--color-white);
 `;
 
 const EmojiPickerContainer = styled.div`
@@ -206,6 +206,7 @@ const HabitCreate = () => {
     ) {
       return;
     }
+    setMessage(null);
     const res = await habitsApi.createHabit(
       selectCategory.id,
       selectColor,

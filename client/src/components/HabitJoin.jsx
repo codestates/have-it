@@ -1,17 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import styled, { css } from "styled-components";
 import { Emoji } from "emoji-mart";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import habitsApi from "../api/habits";
 
 const Form = styled.form`
   width: 48rem;
-  h1,
-  h3 {
-    margin-top: 1.5rem;
-    margin-bottom: 0.7rem;
-  }
 `;
 
 const EmojiTitleContainer = styled.div`
@@ -22,6 +18,7 @@ const EmojiContainer = styled.div`
   width: 3rem;
   height: 3rem;
   border: 1px solid ${({ selectColor }) => selectColor};
+  background-color: ${({ selectColor }) => selectColor};
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -36,10 +33,9 @@ const Title = styled.span`
   padding: 0.5rem;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid var(--color-gray);
 `;
 
-const DescriptionInput = styled.textarea`
+const GoalInput = styled.textarea`
   border-radius: 0.25rem;
   border: 1px solid var(--color-gray);
   width: 100%;
@@ -82,7 +78,7 @@ const SubmitButton = styled.button`
   height: 100%;
   padding: 0 1rem;
   font-size: 1.2rem;
-  background-color: var(--color-mainblue);
+  background-color: ${({ selectColor }) => selectColor};
   text-align: right;
   color: var(--color-white);
   margin-left: 1rem;
@@ -97,8 +93,6 @@ const CloseIcon = styled.div`
 `;
 const DateContainer = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: start;
 `;
 
 const StartDate = styled.div`
@@ -108,15 +102,11 @@ const StartDate = styled.div`
   align-items: start;
   font-size: 1rem;
   color: var(--color-gray);
-  div {
-    margin-bottom: 4px;
-  }
 `;
 const EndDate = styled(StartDate)``;
-const Day = styled(StartDate)``;
+const SetDayContainer = styled(StartDate)``;
 
 const StyledDate = styled.div`
-  margin-top: 10px;
   .react-datepicker {
     width: 100%;
     /* height: 476px; */
@@ -265,7 +255,7 @@ const StyledDate = styled.div`
 const StyledDatePicker = styled(DatePicker)`
   font-family: Interop-Bold;
   padding: 0.65rem;
-  border-radius: 2rem;
+  border-radius: 0.25rem;
   margin-right: 0.5rem;
   color: var(--color-gray);
   border: 1px solid var(--color-gray);
@@ -274,109 +264,209 @@ const StyledDatePicker = styled(DatePicker)`
   text-align: center;
 `;
 
-const Color = styled.button`
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background-color: var(--color-white);
-  color: var(--color-mainblue);
-  border: 1px solid var(--color-lightblue);
-  margin-left: 0.2rem;
-  ${({ selected }) =>
-    selected &&
-    css`
-      color: var(--color-white);
-      background-color: var(--color-mainblue);
-    `};
+const StyledH1 = styled.h1`
+  margin-top: 1.4rem;
+  margin-bottom: 1rem;
+`;
+const StyledH3 = styled.h3`
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+`;
+const StyledH4 = styled.h4`
+  margin-bottom: 0.5rem;
 `;
 
-const ColorPickerContainer = styled.div`
+const DaysContainer = styled.div`
   display: flex;
+  flex: 1;
+  align-items: center;
 `;
+
+const Day = styled.button`
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid ${({ selectColor }) => selectColor};
+  margin-right: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: ${({ selectColor }) => selectColor};
+  transition: background-color 100ms ease-out;
+  ${({ selected, selectColor }) =>
+    selected &&
+    css`
+      background-color: ${selectColor};
+      border-color: ${selectColor};
+      color: var(--color-white);
+    `}
+`;
+
+const getDay = (value) => {
+  let tempValue = value;
+  const week = { 월: 64, 화: 32, 수: 16, 목: 8, 금: 4, 토: 2, 일: 1 };
+  if (Array.isArray(tempValue)) {
+    return tempValue.reduce((acc, cur) => {
+      if (!week[cur] || typeof acc === "string") {
+        return "잘못된 요일입니다";
+      }
+      return acc + week[cur];
+    }, 0);
+  }
+  const weekKey = Object.keys(week);
+  const selectWeek = [];
+  weekKey.forEach((el) => {
+    const num = tempValue - week[el];
+    if (num >= 0) {
+      selectWeek.push(el);
+      tempValue = num;
+    }
+  });
+  if (tempValue !== 0) return "잘못된 숫자입니다";
+  return selectWeek;
+};
 
 const HabitJoin = () => {
   const { habitsId, title, emojiId, color } = useSelector(
     ({ habitJoinReducer }) => habitJoinReducer
   );
-  const [startDate, setStartDate] = useState(new Date());
-  const [selectColor, setSelectColor] = useState("");
-  const [message, setMessage] = useState(null);
-  const [inputValue, setInputValue] = useState({ title: "", description: "" });
-  const colors = ["#FF80B3", "#FF8C80", "#F0CA4D", "#46DBA0", "#78B0FA", "#31307e", "#AD8CFA"];
-  const days = ["월", "화", "수", "목", "금", "토", "일"];
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setInputValue((prevState) => ({ ...prevState, [name]: value }));
-  };
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [goal, setGoal] = useState("");
+  const [habitDayNumber, setHabitDayNumber] = useState(0);
+  const [habitDayArray, setHabitDayArray] = useState([]);
+  const [message, setMessage] = useState(null);
+  const days = [
+    { str: "월", num: 64 },
+    { str: "화", num: 32 },
+    { str: "수", num: 16 },
+    { str: "목", num: 8 },
+    { str: "금", num: 4 },
+    { str: "토", num: 2 },
+    { str: "일", num: 1 },
+  ];
+
+  useEffect(() => {
+    const tempHabitDayArray = getDay(habitDayNumber);
+    setHabitDayArray(tempHabitDayArray);
+  }, [habitDayNumber]);
 
   const handleMessageCloseClick = () => {
     setMessage(null);
-    setSelectColor("#78B0FA");
   };
 
-  const handleColorClick = (arg) => {
-    // setIsColorPicker(false);
-    setSelectColor(arg);
+  const handleGoalChange = (e) => {
+    setGoal(e.target.value);
+  };
+
+  const handleDayClick = (selected, num) => {
+    if (selected) {
+      return setHabitDayNumber((prevNum) => prevNum - num);
+    }
+    return setHabitDayNumber((prevNum) => prevNum + num);
+  };
+
+  const validate = (item, msg) => {
+    if (!item) {
+      setMessage(msg);
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (
+      !validate(goal, "목표를 작성해주세요.") ||
+      !validate(habitDayNumber, "요일을 선택해주세요.")
+    ) {
+      return;
+    }
+    setMessage(null);
+    const res = await habitsApi.joinHabit(habitsId, startDate, endDate, goal, habitDayNumber);
+    // if (res.status === 201) {
+    // TODO:
+    // 1. auth reducer 업데이트
+    // 2. 모달 오프
+    // 3. /habits/{habitsId} 로 push
+    //   dispatch(habitJoinProceedAction(res.data.data));
+    //   dispatch(modalOffAction);
+    //   dispatch(habitJoinModalOnAction);
+    // }
   };
 
   return habitsId ? (
-    <Form>
-      <h1>해빗 참여</h1>
+    <Form onSubmit={handleSubmit}>
+      <StyledH1>해빗 참여</StyledH1>
       <EmojiTitleContainer>
         <EmojiContainer selectColor={color}>
           <Emoji emoji={emojiId} size={24} />
         </EmojiContainer>
         <Title>{title}</Title>
       </EmojiTitleContainer>
-      <h3>참여 기간</h3>
+      <StyledH3>참여 기간</StyledH3>
       <DateContainer>
         <StartDate>
-          <div>시작</div>
+          <StyledH4>시작</StyledH4>
           <StyledDate>
             <StyledDatePicker
               dateFormat="yyyy/MM/dd"
               showPopperArrow={false}
               selected={startDate}
-              onChange={(date) => setStartDate(date)}
+              onChange={(date) => {
+                console.log(date);
+                setStartDate(date);
+              }}
             />
           </StyledDate>
         </StartDate>
         <EndDate>
-          <div>종료</div>
+          <StyledH4>종료</StyledH4>
           <StyledDate>
             <StyledDatePicker
               dateFormat="yyyy/MM/dd"
               showPopperArrow={false}
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
+              selected={endDate}
+              onChange={(date) => {
+                let tempDate = date;
+                if (tempDate < startDate) {
+                  tempDate = startDate;
+                }
+                setEndDate(tempDate);
+              }}
             />
           </StyledDate>
         </EndDate>
-        <Day>
-          <div>요일 설정</div>
-          <ColorPickerContainer>
-            {colors.map((el, index) => (
-              <Color
-                key={el}
-                type="button"
-                color={el}
-                selected={el === selectColor}
-                onClick={() => handleColorClick(el)}
-              >
-                {days[index]}
-              </Color>
-            ))}
-          </ColorPickerContainer>
-        </Day>
+        <SetDayContainer>
+          <StyledH4>요일 설정</StyledH4>
+          <DaysContainer>
+            {days.map((day) => {
+              let selected = false;
+              if (habitDayArray.find((ele) => ele === day.str)) {
+                selected = true;
+              }
+              return (
+                <Day
+                  type="button"
+                  selectColor={color}
+                  selected={selected}
+                  onClick={() => handleDayClick(selected, day.num)}
+                >
+                  {day.str}
+                </Day>
+              );
+            })}
+          </DaysContainer>
+        </SetDayContainer>
       </DateContainer>
-      <h3>나만의 구체적인 목표</h3>
-      <DescriptionInput
+      <StyledH3>나만의 구체적인 목표</StyledH3>
+      <GoalInput
         placeholder="Your Goal"
         type="text"
-        value={inputValue.description}
+        value={goal}
         name="description"
-        onChange={handleInputChange}
+        onChange={handleGoalChange}
       />
       <MessageSubmitButtonContainer>
         {message && (
@@ -388,7 +478,9 @@ const HabitJoin = () => {
             </MessageCloseButton>
           </MessageContainer>
         )}
-        <SubmitButton selectColor={selectColor}>참여하기</SubmitButton>
+        <SubmitButton type="submit" selectColor={color}>
+          참여하기
+        </SubmitButton>
       </MessageSubmitButtonContainer>
     </Form>
   ) : (

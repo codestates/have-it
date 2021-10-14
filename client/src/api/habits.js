@@ -20,7 +20,14 @@ const habitsApi = {
       description,
     }),
   findHabitById: (id) => api.get(`/habits/${id}`),
-  joinHabit: () => api.post("/habits/:habits_id"),
+  joinHabit: (habitsId, startDate, endDate, goal, habitDayNumber) =>
+    api.post(`/habits/${habitsId}`, {
+      habits_id: habitsId,
+      goal,
+      habit_day: habitDayNumber,
+      start_date: startDate,
+      end_date: endDate,
+    }),
   TBD: () => api.put("/habits/:habits_id"),
   getTitle: () => api.put("/habits/title/:habits_id"),
 };
