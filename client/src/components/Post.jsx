@@ -277,7 +277,7 @@ const Post = ({ info, habitsId }) => {
         >
           <ProfileText>
             <Nickname>{nickname}</Nickname>
-            <CreatedAt>{info.createdAt}</CreatedAt>
+            <CreatedAt>{info.createdAt.split("T")[0].split("-").join(". ")}</CreatedAt>
           </ProfileText>
           <Content>{info.content}</Content>
           {info.image && <PostImage url={info.image} />}
