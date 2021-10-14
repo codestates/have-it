@@ -42,6 +42,9 @@ const MoreCards = styled(Cards)`
 const HomeMore = ({ match }) => {
   const dispatch = useDispatch();
   const { isPopup } = useSelector(({ homeReducer }) => homeReducer);
+  const {
+    params: { enTitle },
+  } = match;
 
   const [habitsByCategory, setHabitsByCategory] = useState([]);
   const [sortName, setSortName] = useState("sortByUserCount");
@@ -52,7 +55,7 @@ const HomeMore = ({ match }) => {
       setHabitsByCategory(res.data.data);
     };
     getHabitsByCategory();
-  }, [sortName]);
+  }, [enTitle, sortName]);
 
   const handlePopupClose = () => {
     dispatch(hidePopupAction);
