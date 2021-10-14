@@ -25,8 +25,9 @@ module.exports = {
             message: "ok",
             data: {
               usersId: users_id,
+              nickname: checkNickName.dataValues.nickname,
+              bio: bio || userInfo.dataValues.bio,
               image: location || userInfo.dataValues.image,
-              bio: userInfo.dataValues.bio,
             },
           });
         } else {
@@ -34,8 +35,9 @@ module.exports = {
             message: "Nickname already exists but else other information has been updated.",
             data: {
               usersId: users_id,
-              image: location || userInfo.dataValues.image,
+              nickname: checkNickName.dataValues.nickname,
               bio: userInfo.dataValues.bio,
+              image: location || userInfo.dataValues.image,
             },
           });
         }
@@ -44,8 +46,9 @@ module.exports = {
           message: "ok",
           data: {
             usersId: users_id,
-            image: location || userInfo.dataValues.image,
+            nickname: userInfo.dataValues.nickname,
             bio: userInfo.dataValues.bio,
+            image: userInfo.dataValues.image,
           },
         });
       }
