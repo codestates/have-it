@@ -290,7 +290,24 @@ const EmptyComponent = styled.div`
   position: relative;
 `;
 
-const EmptyImage = styled(EmptyComponent)`
+const EmptyImageInput = styled(EmptyComponent)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400px;
+  height: 240px;
+  border-radius: 10px;
+
+  > * {
+    width: 100%;
+    position: absolute;
+    top: calc(50% - 0.5rem);
+    text-align: center;
+  }
+`;
+
+const EmptyImage = styled(EmptyImageInput)`
+  position: relative;
   > * {
     width: 100%;
     position: absolute;
@@ -477,6 +494,16 @@ const Habit = () => {
                 accept="image/*,audio/*,video/mp4,video/x-m4v,application/pdf"
                 onChange={handleInputChange}
               />
+              {habits.image ? (
+                <Image src={habits.image} color={habits.color} />
+              ) : (
+                <EmptyImageInput>
+                  <div>
+                    대표 사진이 아직 없어요. 🤨
+                    <br />
+                  </div>
+                </EmptyImageInput>
+              )}
               <EmojiContainer>
                 <EmojiBox color={habits.color}>
                   <Emoji emoji={habits.emojiId} size={40} />
@@ -541,9 +568,9 @@ const Habit = () => {
           <GoalContentContainer>
             <GoalSubtitle>하루 목표</GoalSubtitle>
             <GoalContent>{userHabits.goal}</GoalContent>
-            <GoalSubtitle>달성율 {userHabits.actualAmount * 100}%</GoalSubtitle>
+            <GoalSubtitle>달성율 {userHabits.actualAmount * 10}%</GoalSubtitle>
             <ProgressBar
-              percent={userHabits.actualAmount * 100}
+              percent={userHabits.actualAmount * 10}
               theme={{
                 success: { symbol: "🥳", color: "var(--color-mainblue)" },
                 active: { symbol: "🔥", color: "var(--color-mainblue)" },
