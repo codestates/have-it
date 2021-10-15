@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       actual_amount: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DECIMAL(7, 1),
         defaultValue: 0,
         allowNull: false,
       },
