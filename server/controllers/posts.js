@@ -17,7 +17,7 @@ module.exports = {
         attributes: ["userhabits_id", "actual_amount"],
       });
       console.log(userhabits.dataValues);
-      await userhabits.update({ actual_amount: userhabits.dataValues.actual_amount + 1 });
+      await userhabits.update({ actual_amount: userhabits.dataValues.actual_amount + 0.1 });
       const userhabits_id = userhabits.dataValues.userhabits_id;
       const postInfo = await Post.create({
         users_id,
