@@ -110,9 +110,14 @@ module.exports = {
       const postlist = await habitInfo.getPosts({
         attributes: { exclude: ["updatedAt"] },
       });
-      const posts = postlist.map((el) => {
-        return snakeToCamal(el.dataValues);
-      });
+      const posts = [];
+
+      for (let i = 0; i < postlist.length; i++) {
+        const user = await postlist[i].getUser({ attributes: ["nickname", "image"] });
+        const { image: profileImage, nickname } = user.dataValues;
+        const postInfo = snakeToCamal(postlist[i].dataValues);
+        posts.push({ profileImage, nickname, ...postInfo });
+      }
       const categoryInfo = await habitInfo.getCategory({ attributes: ["title"] });
       const categoryTitle = categoryInfo.dataValues.title;
       delete habitInfo.dataValues.categories_id;
