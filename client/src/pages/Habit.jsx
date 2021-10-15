@@ -375,7 +375,7 @@ const Habit = () => {
   const [inputDescription, setInputDescription] = useState(habits.description);
   const [inputFile, setInputFile] = useState(habits.image);
   const [imgBase64, setImgBase64] = useState("");
-  const { nickname } = useSelector(({ authReducer }) => authReducer);
+  const { nickname, usersId } = useSelector(({ authReducer }) => authReducer);
 
   useEffect(() => {
     const checkValidUser = async () => {
@@ -534,9 +534,11 @@ const Habit = () => {
           <HabitInfo>
             <CategoryContainer>
               <Category>{habits.categoryTitle}</Category>
-              <EditButton name="habit" className="icon-pencil" onClick={handleEditClick}>
-                <div>수정</div>
-              </EditButton>
+              {habits.categoriesId === usersId && (
+                <EditButton name="habit" className="icon-pencil" onClick={handleEditClick}>
+                  <div>수정</div>
+                </EditButton>
+              )}
             </CategoryContainer>
             <CoverContainer>
               {habits.image ? (
