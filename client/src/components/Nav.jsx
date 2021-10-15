@@ -13,7 +13,7 @@ const NavContainer = styled.div`
   min-width: 5rem;
   height: 100vh;
   background-color: var(--color-lightgray);
-  z-index: 1;
+  z-index: 10;
 `;
 
 const FlexContainer = styled.div`
