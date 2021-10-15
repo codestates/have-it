@@ -377,7 +377,7 @@ const MyPage = () => {
               <ProfileEditInput
                 id="photo"
                 type="file"
-                accept="image/png, image/jpeg"
+                accept="image/*,audio/*,video/mp4,video/x-m4v,application/pdf"
                 onChange={handleFileChange}
               />
             </ProfileEditImage>
