@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import Card from "./Card";
 
 const CardList = styled.div`
-  margin: ${(props) => props.isAtHome && "40px"};
+  margin: 0px;
   position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, auto));

@@ -36,7 +36,11 @@ const CategoryListContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 4rem 2.5rem -1rem 2.5rem;
+  margin: 1.5rem 2.5rem -1rem 2.5rem;
+`;
+
+const CardContainer = styled.div`
+  padding: 40px;
 `;
 
 const ViewMore = styled.button`
@@ -117,7 +121,9 @@ const Home = () => {
 
       <>
         <Title>지금 뜨는 습관</Title>
-        <Cards isAtHome habits={trendingHabits} />
+        <CardContainer>
+          <Cards isAtHome habits={trendingHabits} />
+        </CardContainer>
         <CategoryListContainer>
           <CategoryList isAtHome handleCategoryClick={handleCategoryClick} />
           <Link to={`/more/${selectCategory.enTitle}`}>
@@ -127,7 +133,9 @@ const Home = () => {
             </ViewMore>
           </Link>
         </CategoryListContainer>
-        <Cards isAtHome habits={habitsByCategory} />
+        <CardContainer>
+          <Cards isAtHome habits={habitsByCategory} />
+        </CardContainer>
       </>
     </Main>
   );

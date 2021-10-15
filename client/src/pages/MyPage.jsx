@@ -428,7 +428,7 @@ const MyPage = () => {
           </Complete>
         </Status>
         <MyHabit>
-          <Cards habits={status === null ? userInfo.habits : filteredHabits} />
+          <Cards isMyPage={false} habits={status === null ? userInfo.habits : filteredHabits} />
         </MyHabit>
       </AchievementView>
     </MyPageView>

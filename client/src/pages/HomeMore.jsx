@@ -34,6 +34,10 @@ const Container = styled.div`
   width: calc(100vw - 5rem);
 `;
 
+const CardContainer = styled.div`
+  padding: 0.5rem 2.5rem 2.5rem 2.5rem;
+`;
+
 const MoreCards = styled(Cards)`
   position: absolute;
   top: 3rem;
@@ -77,7 +81,9 @@ const HomeMore = ({ match }) => {
       )}
       <SortButton handleSortClick={handleSortClick} />
       <Container />
-      <MoreCards habits={habitsByCategory} />
+      <CardContainer>
+        <MoreCards habits={habitsByCategory} />
+      </CardContainer>
     </Main>
   );
 };
