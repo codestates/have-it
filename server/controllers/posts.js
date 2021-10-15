@@ -17,7 +17,7 @@ module.exports = {
         attributes: ["userhabits_id", "actual_amount"],
       });
       console.log(userhabits.dataValues);
-      await userhabits.update({ actual_amount: userhabits.dataValues.actual_amount + 0.1 });
+      await userhabits.update({ actual_amount: userhabits.dataValues.actual_amount + 1 });
       const userhabits_id = userhabits.dataValues.userhabits_id;
       const postInfo = await Post.create({
         users_id,
@@ -65,7 +65,7 @@ module.exports = {
       }
       if (req.userId === postInfo.users_id) {
         const userhabits = await postInfo.getUserhabit();
-        userhabits.update({ actual_amount: userhabits.dataValues.actual_amount - 0.1 });
+        userhabits.update({ actual_amount: userhabits.dataValues.actual_amount - 1 });
         await postInfo.destroy();
         res.status(200).json({ message: "ok", data: { postsId: posts_id } });
       } else {
