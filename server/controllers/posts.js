@@ -65,7 +65,7 @@ module.exports = {
       }
       if (req.userId === postInfo.users_id) {
         const userhabits = await postInfo.getUserhabit();
-        userhabits.update({ actual_amount: userhabits.dataValues.actual_amount - 1 });
+        userhabits.update({ actual_amount: userhabits.dataValues.actual_amount - 0.1 });
         await postInfo.destroy();
         res.status(200).json({ message: "ok", data: { postsId: posts_id } });
       } else {
